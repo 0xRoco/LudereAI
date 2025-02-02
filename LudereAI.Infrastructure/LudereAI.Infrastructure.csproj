@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\LudereAI.Application\LudereAI.Application.csproj" />
+      <ProjectReference Include="..\LudereAI.Domain\LudereAI.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="ElevenLabs-DotNet" Version="3.4.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.1">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="9.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
+      <PackageReference Include="Minio" Version="6.0.4" />
+      <PackageReference Include="OpenAI" Version="2.1.0" />
+      <PackageReference Include="Stripe.net" Version="47.3.0" />
+      <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.3.1" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="BCrypt.Net.BCrypt" Alias="BC" Static="False"/>
+    </ItemGroup>
+
+</Project>
