@@ -1,4 +1,4 @@
-name: .NET 9 WPF Build
+name: LudereAI Build
 
 on:
   push:
@@ -24,15 +24,15 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup .NET 9
+    - name: Setup
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 9.0.x
 
-    - name: Restore dependencies
+    - name: Restore
       run: dotnet restore $env:Solution_Name
 
-    - name: Build and Publish Single File
+    - name: Build and Publish
       run: |
         dotnet publish $env:Wpf_Project_Path `
         --configuration $env:Build_Configuration `
@@ -43,15 +43,12 @@ jobs:
         /p:IncludeAllContentForSelfExtract=false `
         /p:IncludeSymbolsInSingleFile=false
 
+    - name: Clean up
+      run: |
+        Remove-Item -Path ./publish/* -Exclude *.exe
+        
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: WPF App
+        name: LudereAI
         path: ./publish
-        
-    - name: Clean output directory
-      run: |
-        Remove-Item -Path ./publish/* -Exclude *.exe
-    
-    - name: List output files
-      run: dir ./publish
