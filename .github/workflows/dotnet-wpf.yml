@@ -34,13 +34,13 @@ jobs:
 
     - name: Build and Publish Single File
       run: |
-        dotnet publish $env:Wpf_Project_Path \
-        --configuration $env:Build_Configuration \
-        --output ./publish \
-        --runtime $env:Runtime_Identifier \
-        --self-contained false \
-        /p:PublishSingleFile=true \
-        /p:IncludeAllContentForSelfExtract=false \
+        dotnet publish $env:Wpf_Project_Path `
+        --configuration $env:Build_Configuration `
+        --output ./publish `
+        --runtime $env:Runtime_Identifier `
+        --self-contained false `
+        /p:PublishSingleFile=true `
+        /p:IncludeAllContentForSelfExtract=false `
         /p:IncludeSymbolsInSingleFile=false
 
     - name: Upload Artifact
