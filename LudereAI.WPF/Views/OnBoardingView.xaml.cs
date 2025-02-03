@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace LudereAI.WPF.MVVM.Views;
+namespace LudereAI.WPF.Views;
 
 public partial class OnBoardingView : UserControl
 {

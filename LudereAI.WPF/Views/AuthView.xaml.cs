@@ -1,7 +1,7 @@
 ﻿using System.Windows;
-using LudereAI.WPF.MVVM.ViewModels;
+using LudereAI.WPF.ViewModels;
 
-namespace LudereAI.WPF.MVVM.Views;
+namespace LudereAI.WPF.Views;
 
 public partial class AuthView : Window
 {

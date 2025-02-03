@@ -27,15 +27,25 @@ public sealed class DatabaseContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Account>().HasMany(e => e.Conversations).WithOne().HasForeignKey(c => c.AccountId);
-        modelBuilder.Entity<Account>().HasOne(e => e.Subscription).WithOne().HasForeignKey<Subscription>(s => s.AccountId);
-        
-        modelBuilder.Entity<Conversation>().HasMany(e => e.Messages).WithOne().HasForeignKey(m => m.ConversationId);
-        modelBuilder.Entity<Conversation>().HasOne(e => e.Account).WithMany().HasForeignKey(c => c.AccountId);
+        modelBuilder.Entity<Account>()
+            .HasMany(e => e.Conversations)
+            .WithOne(c => c.Account)
+            .HasForeignKey(c => c.AccountId);
 
+        modelBuilder.Entity<Account>()
+            .HasOne(e => e.Subscription)
+            .WithOne()
+            .HasForeignKey<Subscription>(s => s.AccountId);
         
-        modelBuilder.Entity<Message>().HasOne(e => e.Conversation).WithMany(c => c.Messages).HasForeignKey(m => m.ConversationId);
-        modelBuilder.Entity<Message>().HasOne(m => m.Screenshot).WithOne(s => s.Message).HasForeignKey<Screenshot>(m => m.MessageId);
+        modelBuilder.Entity<Conversation>()
+            .HasMany(e => e.Messages)
+            .WithOne(m => m.Conversation)
+            .HasForeignKey(m => m.ConversationId);
+        
+        modelBuilder.Entity<Message>()
+            .HasOne(m => m.Screenshot)
+            .WithOne(s => s.Message)
+            .HasForeignKey<Screenshot>(m => m.MessageId);
 
     }
 }

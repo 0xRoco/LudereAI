@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using LudereAI.WPF.Infrastructure;
 using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.MVVM.Models;
+using LudereAI.WPF.Models;
 using Microsoft.Extensions.Logging;
 using Encoder = System.Drawing.Imaging.Encoder;
 

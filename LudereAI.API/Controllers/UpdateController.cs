@@ -11,13 +11,11 @@ namespace LudereAI.API.Controllers;
 public class UpdateController : ControllerBase
 {
     private ILogger<UpdateController> _logger;
-    private readonly IConfiguration _configuration;
-    private string _updateInfoPath;
+    private readonly string _updateInfoPath;
 
-    public UpdateController(ILogger<UpdateController> logger, IConfiguration configuration)
+    public UpdateController(ILogger<UpdateController> logger)
     {
         _logger = logger;
-        _configuration = configuration;
         _updateInfoPath = Path.Combine(AppContext.BaseDirectory, "update-info.json");
     }
 
@@ -25,7 +23,7 @@ public class UpdateController : ControllerBase
     public async Task<ActionResult<APIResult<UpdateInfoDTO>>> Get()
     {
         if (!System.IO.File.Exists(_updateInfoPath))
-            return Ok(APIResult<bool>.Error(HttpStatusCode.NotFound, "Update info not found"));
+            return Ok(APIResult<UpdateInfoDTO>.Error(HttpStatusCode.NotFound, "Update info not found"));
 
         var updateInfo = (await System.IO.File.ReadAllTextAsync(_updateInfoPath)).FromJson<UpdateInfoDTO>();
         

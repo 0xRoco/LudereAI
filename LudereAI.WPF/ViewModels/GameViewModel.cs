@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using LudereAI.WPF.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace LudereAI.WPF.MVVM.ViewModels;
+namespace LudereAI.WPF.ViewModels;
 
 public partial class GameViewModel : ObservableObject
 {

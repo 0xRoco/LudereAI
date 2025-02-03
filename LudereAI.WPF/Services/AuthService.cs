@@ -1,6 +1,6 @@
 ﻿using LudereAI.Shared.DTOs;
 using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.MVVM.Views;
+using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
 
 namespace LudereAI.WPF.Services;

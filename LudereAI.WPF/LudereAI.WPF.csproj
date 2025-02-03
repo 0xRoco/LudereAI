@@ -10,12 +10,13 @@
         <Product>LudereAI</Product>
         <PackageId>LudereAI.WPF</PackageId>
         <Authors>LudereAI.WPF</Authors>
+        <AssemblyName>LudereAI</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-      <PackageReference Include="MaterialDesignColors" Version="5.2.2-ci886" />
-      <PackageReference Include="MaterialDesignThemes" Version="5.2.2-ci886" />
+      <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
+      <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
       <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
@@ -24,7 +25,7 @@
       <PackageReference Include="Sentry.AspNetCore" Version="5.0.1" />
       <PackageReference Include="Sentry.Profiling" Version="5.0.1" />
       <PackageReference Include="Sentry.Serilog" Version="5.0.1" />
-      <PackageReference Include="Serilog" Version="4.2.1-dev-02337" />
+      <PackageReference Include="Serilog" Version="4.2.0" />
       <PackageReference Include="Serilog.Extensions" Version="8.0.3" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
@@ -32,20 +33,25 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Page Update="MVVM\Views\ChatView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-        <XamlRuntime>Wpf</XamlRuntime>
-        <SubType>Designer</SubType>
-        </Page>
-        <Page Update="MVVM\Views\LoginView.xaml">
-            <Generator>MSBuild:Compile</Generator>
-            <XamlRuntime>Wpf</XamlRuntime>
-            <SubType>Designer</SubType>
-        </Page>
+      <ProjectReference Include="..\LudereAI.Shared\LudereAI.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\LudereAI.Shared\LudereAI.Shared.csproj" />
+      <Page Update="Views\AuthView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\ChatView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\LoginView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\OnBoardingView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
+      <Page Update="Views\SignUpView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </Page>
     </ItemGroup>
 
 </Project>

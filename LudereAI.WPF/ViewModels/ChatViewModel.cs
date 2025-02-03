@@ -5,10 +5,10 @@ using CommunityToolkit.Mvvm.Input;
 using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
 using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.MVVM.Models;
+using LudereAI.WPF.Models;
 using Microsoft.Extensions.Logging;
 
-namespace LudereAI.WPF.MVVM.ViewModels;
+namespace LudereAI.WPF.ViewModels;
 
 public partial class ChatViewModel : ObservableObject
 {

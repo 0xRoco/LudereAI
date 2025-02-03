@@ -1,8 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using LudereAI.WPF.MVVM.ViewModels;
+using LudereAI.WPF.ViewModels;
 
-namespace LudereAI.WPF.MVVM.Views;
+namespace LudereAI.WPF.Views;
 
 public partial class LoginView : UserControl
 {

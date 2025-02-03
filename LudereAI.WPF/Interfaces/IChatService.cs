@@ -1,6 +1,6 @@
 ﻿using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
-using LudereAI.WPF.MVVM.Models;
+using LudereAI.WPF.Models;
 
 namespace LudereAI.WPF.Interfaces;
 

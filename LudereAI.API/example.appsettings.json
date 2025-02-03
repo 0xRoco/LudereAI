@@ -16,7 +16,7 @@
       "WithProperty"
     ],
     "Properties": {
-      "Application": "GameAssistant.API"
+      "Application": "LudereAI.API"
     },
     "WriteTo": [
       {

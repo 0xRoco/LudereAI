@@ -2,9 +2,9 @@
 using System.Windows;
 using System.Windows.Threading;
 using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.MVVM.ViewModels;
-using LudereAI.WPF.MVVM.Views;
 using LudereAI.WPF.Services;
+using LudereAI.WPF.ViewModels;
+using LudereAI.WPF.Views;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -23,14 +23,14 @@ public partial class App : Application
 
     private const string DevApiUrl = "https://localhost:9099/api/";
     private const string ProdApiUrl = "https://assistant.mdnite.dev/api/";
-    private readonly string _environment = Environment.GetEnvironmentVariable("APP_ENVIRONMENT") ?? "Production";
+    private readonly string _environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Production;
     private readonly LoggingLevelSwitch _loggingLevelSwitch = new();
     private readonly string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LudereAI", "Logs");
 
     public App()
     {
         Directory.CreateDirectory(_logDirectory);
-        _loggingLevelSwitch.MinimumLevel = _environment == "Development" ? LogEventLevel.Debug : LogEventLevel.Information;
+        _loggingLevelSwitch.MinimumLevel = _environment == Environments.Development ? LogEventLevel.Debug : LogEventLevel.Information;
         _loggingLevelSwitch.MinimumLevel = Environment.GetEnvironmentVariable("LOG_LEVEL") switch
         {
             "Debug" => LogEventLevel.Debug,
@@ -41,14 +41,14 @@ public partial class App : Application
             _ => _loggingLevelSwitch.MinimumLevel
         };
         
-        if (_environment == "Development") return;
+        if (_environment == Environments.Development) return;
         
         SentrySdk.Init(options =>
         {
             options.Dsn = "https://4e80dccaaa4336baf45d556d80cebbc6@o4506301335142400.ingest.us.sentry.io/4508719728558080";
             options.Debug = false;
-            options.TracesSampleRate = 1.0;
-            options.ProfilesSampleRate = 1.0;
+            options.TracesSampleRate = 0.5;
+            options.ProfilesSampleRate = 0.5;
             options.IsGlobalModeEnabled = true;
             options.SendDefaultPii = true;
             options.AttachStacktrace = true;
@@ -98,7 +98,7 @@ public partial class App : Application
         Log.Information("Command line arguments: [ {Args} ]", $"{string.Join(" ", e.Args)}");
         Log.Information("Environment: {Environment}", _environment);
         
-        if (_environment == "Development")
+        if (_environment == Environments.Development)
         {
             Log.Warning("Development environment detected. Using development API URL: {URL}", DevApiUrl);
             Log.Debug("Sentry is disabled in development environment");
@@ -147,7 +147,7 @@ public partial class App : Application
         services.AddHttpClient("LudereAI", client =>
         {
             client.BaseAddress = new Uri(
-                _environment == "Development"
+                _environment == Environments.Development
                     ? DevApiUrl 
                     : ProdApiUrl);
         });

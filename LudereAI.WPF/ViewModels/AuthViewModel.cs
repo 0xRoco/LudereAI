@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using LudereAI.WPF.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace LudereAI.WPF.MVVM.ViewModels;
+namespace LudereAI.WPF.ViewModels;
 
 public partial class AuthViewModel : ObservableObject
 {
@@ -13,7 +13,6 @@ public partial class AuthViewModel : ObservableObject
     
     [ObservableProperty]
     private int _currentView;
-
     
     public AuthViewModel(ILogger<AuthViewModel> logger, IAuthService authService, ISessionService sessionService, INavigationService navigationService, ITokenService tokenService)
     {

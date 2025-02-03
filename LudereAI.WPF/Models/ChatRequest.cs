@@ -1,4 +1,4 @@
-﻿namespace LudereAI.WPF.MVVM.Models;
+﻿namespace LudereAI.WPF.Models;
 
 public class ChatRequest
 {

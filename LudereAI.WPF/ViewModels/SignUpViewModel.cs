@@ -4,7 +4,7 @@ using LudereAI.Shared.DTOs;
 using LudereAI.WPF.Interfaces;
 using Microsoft.Extensions.Logging;
 
-namespace LudereAI.WPF.MVVM.ViewModels;
+namespace LudereAI.WPF.ViewModels;
 
 public partial class SignUpViewModel : ObservableObject
 {
