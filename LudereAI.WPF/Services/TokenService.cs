@@ -2,6 +2,7 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using LudereAI.Shared;
+using LudereAI.Shared.DTOs;
 using LudereAI.WPF.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -15,34 +16,35 @@ public class TokenService(ILogger<ITokenService> logger,
     
     public event EventHandler? TokenInvalidated;
 
-    public async Task<bool> ValidateToken()
+    public async Task<AccountDTO?> ValidateToken()
     {
         try
         {
             var token = sessionService.Token;
             if (!sessionService.IsAuthenticated || string.IsNullOrEmpty(token))
             {
-                return false;
+                return null;
             }
 
             _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             var response = await _httpClient.GetAsync("Auth/ValidateToken");
-            var result = await response.Content.ReadFromJsonAsync<APIResult<bool>>();
+            var result = await response.Content.ReadFromJsonAsync<APIResult<AccountDTO>>();
 
-            var isValid = result is { IsSuccess: true, Data: true };
-
-            if (isValid) return isValid;
+            if (result?.IsSuccess == true)
+            {
+                return result.Data;
+            }
 
             logger.LogWarning("Token validation failed: {message}", result?.Message);
             OnTokenInvalidated();
-            return isValid;
+            return null;
         }
         catch (Exception e)
         {
             logger.LogError(e, "An error occurred while validating token");
             OnTokenInvalidated();
-            return false;
+            return null;
         }
     }
 

@@ -39,8 +39,7 @@ public partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private async Task Login()
     {
-        var success = await _authService.LoginAsync(new LoginDTO()
-        {
+        var success = await _authService.LoginAsync(new LoginDTO {
             Username = Username,
             Password = Password,
         });

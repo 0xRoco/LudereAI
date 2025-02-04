@@ -195,6 +195,7 @@ void RegisterDependencies(WebApplicationBuilder builder)
 {
     // Repositories
     builder.Services.AddTransient<IAccountRepository, AccountRepository>();
+    builder.Services.AddTransient<IGuestRepository, GuestRepository>();
     builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
     builder.Services.AddTransient<IConversationRepository, ConversationRepository>();
     builder.Services.AddTransient<IMessageRepository, MessageRepository>();
@@ -206,6 +207,7 @@ void RegisterDependencies(WebApplicationBuilder builder)
 
     // Business Services
     builder.Services.AddTransient<IAccountService, AccountService>();
+    builder.Services.AddTransient<IGuestService, GuestService>();
     builder.Services.AddTransient<IConversationsService, ConversationsService>();
     builder.Services.AddTransient<IMessageService, MessageService>();
     builder.Services.AddTransient<IStripeService, StripeService>();

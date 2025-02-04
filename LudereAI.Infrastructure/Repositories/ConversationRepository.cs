@@ -1,10 +1,5 @@
-﻿using LudereAI.Application.Interfaces;
-using LudereAI.Application.Interfaces.Repositories;
-using LudereAI.Domain;
-using LudereAI.Domain.Enums;
-using LudereAI.Domain.Models;
+﻿using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Domain.Models.Chat;
-using LudereAI.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace LudereAI.Infrastructure.Repositories;

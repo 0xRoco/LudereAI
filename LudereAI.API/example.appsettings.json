@@ -77,7 +77,8 @@
     "MaintenanceMode": false,
     "Auth": {
       "SignupEnabled": true,
-      "LoginEnabled": true
+      "LoginEnabled": true,
+      "GuestEnabled": true
     },
     "Subscription":{
       "NewSubscriptionsEnabled": true,
