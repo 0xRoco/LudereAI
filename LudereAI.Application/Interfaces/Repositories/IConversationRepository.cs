@@ -1,8 +1,4 @@
-﻿using LudereAI.Domain;
-using LudereAI.Domain.Enums;
-using LudereAI.Domain.Models;
-using LudereAI.Domain.Models.Chat;
-using LudereAI.Shared.Enums;
+﻿using LudereAI.Domain.Models.Chat;
 
 namespace LudereAI.Application.Interfaces.Repositories;
 

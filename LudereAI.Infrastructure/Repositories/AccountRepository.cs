@@ -85,6 +85,8 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
             
             if (trackedEntity != null) trackedEntity.State = EntityState.Detached;
             
+            account.UpdatedAt = DateTime.UtcNow;
+            
             context.Accounts.Attach(account);
             context.Entry(account).State = EntityState.Modified;
             

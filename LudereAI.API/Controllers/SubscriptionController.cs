@@ -52,52 +52,90 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
     {
         try
         {
-            var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (string.IsNullOrWhiteSpace(accountId))
-            {
-                logger.LogWarning("Invalid token received for subscription attempt");
-                return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid token"));
-            }
+            var account = await ValidateAndGetAccount();
+            if (account.Result != null) return account.Result;
 
-            var account = await accountService.GetAccount(accountId);
-            if (account == null)
-            {
-                logger.LogWarning("Account not found for ID {AccountId}", accountId);
-                return NotFound(APIResult<string>.Error(HttpStatusCode.NotFound, "Account not found"));
-            }
-
+            var validationResult = await ValidateSubscriptionEligibility(account.Account!);
+            if (validationResult != null) return validationResult;
 
             var priceId = GetPriceIdForPlan(dto.SubscriptionPlan);
-            
             if (string.IsNullOrWhiteSpace(priceId))
             {
-                logger.LogWarning("Invalid plan type recieved {PlanType}", dto.SubscriptionPlan);
+                logger.LogWarning("Invalid plan type received {PlanType}", dto.SubscriptionPlan);
                 return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid plan type"));
             }
 
-            var session = await stripeService.CreateCheckoutSession(account, priceId, dto.SubscriptionPlan);
-            if (session == null)
-            {
-                logger.LogWarning("Failed to create subscription session for account: {AccountId}", account.Id);
-                return StatusCode((int)HttpStatusCode.InternalServerError,
-                    APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
-            }
-
-            logger.LogInformation("Successfully created subscription session for account: {AccountId}", account.Id);
-            return Ok(APIResult<string>.Success(data: session.Url));
+            return await CreateStripeCheckoutSession(account.Account!, priceId, dto.SubscriptionPlan);
         }
         catch (StripeException ex)
         {
-            logger.LogError(ex, "Stripe error occured while creating subscription session");
-            return StatusCode((int)HttpStatusCode.InternalServerError,
+            logger.LogError(ex, "Stripe error occurred while creating subscription session");
+            return StatusCode((int)HttpStatusCode.ServiceUnavailable,
                 APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occured while processing subscription ");
+            logger.LogError(ex, "Error occurred while processing subscription");
             return StatusCode((int)HttpStatusCode.InternalServerError,
-                APIResult<string>.Error(HttpStatusCode.InternalServerError, "An unexpected error occured"));
+                APIResult<string>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
+    }
+
+    private async Task<(AccountDTO? Account, ActionResult<APIResult<string>>? Result)> ValidateAndGetAccount()
+    {
+        var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrWhiteSpace(accountId))
+        {
+            logger.LogWarning("Invalid token received for subscription attempt");
+            return (null, BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid token")));
+        }
+
+        var account = await accountService.GetAccount(accountId);
+        if (account == null)
+        {
+            logger.LogWarning("Account not found for ID {AccountId}", accountId);
+            return (null, NotFound(APIResult<string>.Error(HttpStatusCode.NotFound, "Account not found")));
+        }
+
+        return (account, null);
+    }
+
+    private async Task<ActionResult<APIResult<string>>?> ValidateSubscriptionEligibility(AccountDTO account)
+    {
+        if (account.Subscription?.Status == SubscriptionStatus.Active || account.IsSubscribed)
+        {
+            logger.LogWarning("Account {AccountId} already has an active subscription", account.Id);
+            return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Account already has an active subscription"));
+        }
+
+        if (account.Role == AccountRole.Guest)
+        {
+            logger.LogWarning("Guest account {AccountId} cannot subscribe to a plan", account.Id);
+            return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Guest account cannot subscribe to a plan"));
+        }
+
+        if (account.Status != AccountStatus.Active)
+        {
+            logger.LogWarning("Account {AccountId} is not active", account.Id);
+            return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Account is not active"));
+        }
+
+        return null;
+    }
+
+    private async Task<ActionResult<APIResult<string>>> CreateStripeCheckoutSession(
+        AccountDTO account, string priceId, SubscriptionPlan subscriptionPlan)
+    {
+        var session = await stripeService.CreateCheckoutSession(account, priceId, subscriptionPlan);
+        if (session == null)
+        {
+            logger.LogWarning("Failed to create subscription session for account: {AccountId}", account.Id);
+            return StatusCode((int)HttpStatusCode.InternalServerError,
+                APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
+        }
+
+        logger.LogInformation("Successfully created subscription session for account: {AccountId}", account.Id);
+        return Ok(APIResult<string>.Success(data: session.Url));
     }
 
     private string GetPriceIdForPlan(SubscriptionPlan subscriptionPlan) => subscriptionPlan switch

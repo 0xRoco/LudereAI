@@ -7,4 +7,5 @@ namespace LudereAI.Application.Interfaces;
 public interface IAccountFactory
 {
     Account Create(SignUpDTO dto);
+    Account Create(GuestDTO dto);
 }

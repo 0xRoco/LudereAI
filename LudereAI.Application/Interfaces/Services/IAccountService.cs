@@ -9,6 +9,7 @@ public interface IAccountService
     Task<AccountDTO?> GetAccountByEmail(string email);
     Task<bool> AccountExists(string username);
     Task<AccountDTO?> CreateAccount(SignUpDTO dto);
+    Task<AccountDTO?> CreateGuestAccount(GuestDTO dto); 
     Task<AccountDTO?> UpdateAccount(string id, UpdateAccountDTO dto);
     Task<bool> DeleteAccount(string id);
 }

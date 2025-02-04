@@ -43,7 +43,7 @@
                                              Height="50" 
                                              HorizontalAlignment="Center"/>
                     <Button Content="Continue as Guest"
-                            Command="{Binding GuestCommand}"
+                            Command="{Binding GuestLoginCommand}"
                             Style="{StaticResource MaterialDesignOutlinedButton}"
                             Width="200"
                             materialDesign:ButtonAssist.CornerRadius="8"

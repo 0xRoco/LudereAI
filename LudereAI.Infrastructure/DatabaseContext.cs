@@ -3,8 +3,6 @@ using LudereAI.Domain.Models.Account;
 using LudereAI.Domain.Models.Chat;
 using LudereAI.Domain.Models.Media;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
 namespace LudereAI.Infrastructure;
@@ -12,6 +10,7 @@ namespace LudereAI.Infrastructure;
 public sealed class DatabaseContext : DbContext
 {
     public DbSet<Account> Accounts => Set<Account>();
+    public DbSet<GuestAccount> Guests => Set<GuestAccount>();
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Screenshot> Screenshots => Set<Screenshot>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
@@ -46,6 +45,5 @@ public sealed class DatabaseContext : DbContext
             .HasOne(m => m.Screenshot)
             .WithOne(s => s.Message)
             .HasForeignKey<Screenshot>(m => m.MessageId);
-
     }
 }
