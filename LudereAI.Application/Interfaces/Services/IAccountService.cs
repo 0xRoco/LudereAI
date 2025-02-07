@@ -12,4 +12,6 @@ public interface IAccountService
     Task<AccountDTO?> CreateGuestAccount(GuestDTO dto); 
     Task<AccountDTO?> UpdateAccount(string id, UpdateAccountDTO dto);
     Task<bool> DeleteAccount(string id);
+    
+    Task<bool> UpdateLastLogin(string accountId);
 }

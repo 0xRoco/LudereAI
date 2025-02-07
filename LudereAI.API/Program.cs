@@ -4,9 +4,9 @@ using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Mappers;
-using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Configs;
 using LudereAI.Domain.Models.Features;
+using LudereAI.Domain.Models.Tiers;
 using LudereAI.Infrastructure;
 using LudereAI.Infrastructure.Repositories;
 using LudereAI.Infrastructure.Services;
@@ -102,14 +102,6 @@ void ConfigureMapper(WebApplicationBuilder builder)
     Log.Information("Mapper configured");
 }
 
-void ConfigureFeatureFlags(WebApplicationBuilder builder)
-{
-    builder.Services.Configure<FeatureFlagsConfig>(
-        builder.Configuration.GetSection("FeatureFlags"));
-    builder.Services.AddSingleton<IFeatureFlagsService, FeatureFlagsService>();
-    
-    Log.Information("Feature flags configured");
-}
 
 void ConfigureServices(WebApplicationBuilder builder)
 {
@@ -120,7 +112,6 @@ void ConfigureServices(WebApplicationBuilder builder)
         options.AddDocumentTransformer<BearerSecuritySchemeTransformer>();
     });
     
-    ConfigureFeatureFlags(builder);
     ConfigureAuthentication(builder);
     ConfigureMinio(builder);
     ConfigureStripe(builder);
@@ -168,6 +159,10 @@ void ConfigureMinio(WebApplicationBuilder builder)
 void ConfigureOptions(WebApplicationBuilder builder)
 {
     builder.Services.AddOptions();
+    builder.Services.Configure<FeatureFlagsConfig>(
+        builder.Configuration.GetSection("FeatureFlags"));
+    builder.Services.Configure<TierLimitsConfig>(
+        builder.Configuration.GetSection("TierLimits"));
     builder.Services.Configure<OpenAIConfig>(
         builder.Configuration.GetSection("OpenAI"));
     builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
@@ -186,7 +181,7 @@ void ConfigureDatabase(WebApplicationBuilder builder)
             
             if (builder.Environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
-        }, ServiceLifetime.Transient);
+        }, ServiceLifetime.Transient); // TODO: Change to Scoped - Fix tracking issues
     
     Log.Information("Database configured");
 }
@@ -213,7 +208,9 @@ void RegisterDependencies(WebApplicationBuilder builder)
     builder.Services.AddTransient<IStripeService, StripeService>();
     builder.Services.AddTransient<ISubscriptionService, SubscriptionService>();
     builder.Services.AddTransient<IFileStorageService, FileStorageService>();
-
+    builder.Services.AddTransient<IFeatureFlagsService, FeatureFlagsService>();
+    builder.Services.AddTransient<IAccountUsageService, AccountUsageService>();
+    
     // Factories and Handlers
     builder.Services.AddTransient<IAccountFactory, AccountFactory>();
     builder.Services.AddTransient<IInstructionLoader, InstructionLoader>();

@@ -36,10 +36,16 @@ public class MessageRepository(DatabaseContext context) : IMessageRepository
         msg.Content = message.Content;
         msg.Role = message.Role;
         
-        msg.UpdatedAt = DateTime.UtcNow;
+        var local = context.Set<Message>().Local.FirstOrDefault(e => e.Id == message.Id);
+
+        if (local != null)
+        {
+            context.Entry(local).State = EntityState.Detached;
+        }
         
+        
+        context.Messages.Update(msg);
         await context.SaveChangesAsync();
-        
         return true;
     }
 
@@ -48,10 +54,8 @@ public class MessageRepository(DatabaseContext context) : IMessageRepository
         var msg = await context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
         if (msg == null) return false;
         
-        msg.DeletedAt = DateTime.UtcNow;
-        msg.UpdatedAt = DateTime.UtcNow;
+        context.Messages.Remove(msg);
         await context.SaveChangesAsync();
-        
         return true;
     }
 }

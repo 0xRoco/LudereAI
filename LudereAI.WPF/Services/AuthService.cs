@@ -68,6 +68,7 @@ public class AuthService(ILogger<IAuthService> logger,
     {
         try
         {
+            dto.DeviceId = GetDeviceId();
             var result = await apiClient.PostAsync<string>("Auth/SignUp", dto);
             if (result?.IsSuccess == true)
             {

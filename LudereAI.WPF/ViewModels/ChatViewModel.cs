@@ -87,7 +87,7 @@ public partial class ChatViewModel : ObservableObject
         !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && SelectedWindow != null;
 
     public bool CanWriteMessage => !IsAssistantThinking;
-    public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: false, Role: not AccountRole.Guest };
+    public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: false, Tier: not SubscriptionTier.Guest};
 
     [RelayCommand]
     private void NewChat()
@@ -174,7 +174,7 @@ public partial class ChatViewModel : ObservableObject
                 var response = result.Value;
                 
                 await RefreshConversationsAsync();
-                CurrentConversation = Enumerable.FirstOrDefault<ConversationDTO>(Conversations, c => c.Id == response.ConversationId);
+                CurrentConversation = Conversations.FirstOrDefault(c => c.Id == response.ConversationId);
                 if (CurrentConversation != null)
                 {
                     Messages = new ObservableCollection<MessageDTO>(CurrentConversation.Messages);

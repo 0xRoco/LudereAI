@@ -33,14 +33,14 @@ public class APIClient(ILogger<IAPIClient> logger,
         {
             await SetAuthHeader();
             var response = await _client.GetAsync(endpoint);
+            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("GET request to {endpoint} failed with status code {statusCode}", endpoint, response.StatusCode);
-                return null;
+                return result;
             }
             
-            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             logger.LogDebug("GET request to {endpoint} returned {result}", endpoint, result?.ToJson());
             return result;
         }
@@ -56,14 +56,14 @@ public class APIClient(ILogger<IAPIClient> logger,
         {
             await SetAuthHeader();
             var response = await _client.PostAsJsonAsync(endpoint, data);
+            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("POST request to {endpoint} failed with status code {statusCode}", endpoint, response.StatusCode);
-                return null;
+                return result;
             }
             
-            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             logger.LogDebug("POST request to {endpoint} returned {result}", endpoint, result?.ToJson());
             return result;
         }
@@ -79,14 +79,14 @@ public class APIClient(ILogger<IAPIClient> logger,
         {
             await SetAuthHeader();
             var response = await _client.PutAsJsonAsync(endpoint, data);
+            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("PUT request to {endpoint} failed with status code {statusCode}", endpoint, response.StatusCode);
-                return null;
+                return result;
             }
             
-            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             logger.LogDebug("PUT request to {endpoint} returned {result}", endpoint, result?.ToJson());
             return result;
         }
@@ -102,14 +102,14 @@ public class APIClient(ILogger<IAPIClient> logger,
         {
             await SetAuthHeader();
             var response = await _client.DeleteAsync(endpoint);
+            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             
             if (!response.IsSuccessStatusCode)
             {
                 logger.LogWarning("DELETE request to {endpoint} failed with status code {statusCode}", endpoint, response.StatusCode);
-                return null;
+                return result;
             }
             
-            var result = await response.Content.ReadFromJsonAsync<APIResult<T>>();
             logger.LogDebug("DELETE request to {endpoint} returned {result}", endpoint, result?.ToJson());
             return result;
         }

@@ -60,11 +60,18 @@ public class SubscriptionService(ILogger<ISubscriptionService> logger,
                 await subscriptionRepository.Update(existingSubscription);
             }
             
-            var account = await accountRepository.GetAsync(accountId);
+            var account = await accountRepository.Get(accountId);
             if (account == null) return;
-            account.IsSubscribed = true;
+            account.Tier = existingSubscription?.SubscriptionPlan switch
+            {
+                SubscriptionPlan.Pro => SubscriptionTier.Pro,
+                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
+                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
+                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
+                _ => SubscriptionTier.Free
+            };
             
-            await accountRepository.UpdateAsync(account);
+            await accountRepository.Update(account);
         }
         catch (Exception ex)
         {
@@ -84,7 +91,12 @@ public class SubscriptionService(ILogger<ISubscriptionService> logger,
             subscription.Status = SubscriptionStatus.Canceled;
             subscription.EndDate = cancelDate;
 
+            var account = await accountRepository.Get(subscription.AccountId);
+            if (account == null) return;
+            
+            account.Tier = SubscriptionTier.Free;
             await subscriptionRepository.Update(subscription);
+            await accountRepository.Update(account);
         }
         catch (Exception ex)
         {
@@ -103,8 +115,21 @@ public class SubscriptionService(ILogger<ISubscriptionService> logger,
             subscription.Status = MapSubscriptionStatus(status);
             subscription.SubscriptionPlan = MapPlanType(priceId);
             subscription.EndDate = currentPeriodEnd;
+            
+            var account = await accountRepository.Get(subscription.AccountId);
+            if (account == null) return;
 
+            account.Tier = subscription.SubscriptionPlan switch
+            {
+                SubscriptionPlan.Pro => SubscriptionTier.Pro,
+                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
+                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
+                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
+                _ => SubscriptionTier.Free
+            };
+            
             await subscriptionRepository.Update(subscription);
+            await accountRepository.Update(account);
         }
         catch (Exception ex)
         {
@@ -124,7 +149,20 @@ public class SubscriptionService(ILogger<ISubscriptionService> logger,
             subscription.Status = string.IsNullOrWhiteSpace(status) ? SubscriptionStatus.Active : MapSubscriptionStatus(status);
             subscription.SubscriptionPlan = MapPlanType(priceId);
         
+            var account = await accountRepository.Get(subscription.AccountId);
+            if (account == null) return;
+            
+            account.Tier = subscription.SubscriptionPlan switch
+            {
+                SubscriptionPlan.Pro => SubscriptionTier.Pro,
+                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
+                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
+                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
+                _ => SubscriptionTier.Free
+            };
+            
             await subscriptionRepository.Update(subscription);
+            await accountRepository.Update(account);
         }
         catch (Exception ex)
         {

@@ -14,7 +14,7 @@ public class SubscriptionService(ILogger<ISubscriptionService> logger,
         var request = new SubscriptionRequestDTO(){ SubscriptionPlan = subscriptionPlan };
         
         var result = await apiClient.PostAsync<string>("Subscription/Subscribe", request);
-        if (result is { IsSuccess: true, Data: not null })
+        if (result is { IsSuccess: true, Data: not null } )
         {
             var sessionUrl = result.Data;
             logger.LogInformation("Redirecting to {sessionUrl}", sessionUrl);

@@ -4,9 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
-using LudereAI.Domain.Models.Account;
 using LudereAI.Shared.DTOs;
-using LudereAI.Shared.Enums;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -39,7 +37,7 @@ public class AuthService : IAuthService
 
     public async Task<bool> LoginAsync(LoginDTO dto)
     {
-        var account = await _accountRepository.GetByUsernameAsync(dto.Username);
+        var account = await _accountRepository.GetByUsername(dto.Username);
         
         return account != null && _securityService.VerifyPassword(dto.Password, account.HashedPassword);
     }

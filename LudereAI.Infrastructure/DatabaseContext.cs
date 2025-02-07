@@ -16,6 +16,7 @@ public sealed class DatabaseContext : DbContext
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<Subscription> Subscriptions => Set<Subscription>();
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
+    public DbSet<AccountUsage> AccountUsages => Set<AccountUsage>();
     
     
     public DatabaseContext(DbContextOptions<DatabaseContext> options, ILogger<DatabaseContext> logger) : base(options)

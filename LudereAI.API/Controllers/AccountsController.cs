@@ -16,6 +16,7 @@ public class AccountsController(ILogger<AccountsController> logger,
 {
     
     [HttpGet("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<AccountDTO>> GetAccount([Required] string id)
     {
         try

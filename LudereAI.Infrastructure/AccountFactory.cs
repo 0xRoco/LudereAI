@@ -24,8 +24,8 @@ public class AccountFactory(ISecurityService securityService) : IAccountFactory
             HashedPassword = securityService.HashPassword(dto.Password),
             Role = AccountRole.User,
             Status = AccountStatus.Active,
-            LastLogin = null,
-            IsSubscribed = false,
+            Tier = SubscriptionTier.Free,
+            LastLogin = null, 
             DeviceId = dto.DeviceId,
         };
     }
@@ -45,10 +45,10 @@ public class AccountFactory(ISecurityService securityService) : IAccountFactory
             FirstName = "Guest",
             LastName = "User",
             HashedPassword = "",
-            Role = AccountRole.Guest,
+            Role = AccountRole.User,
             Status = AccountStatus.Active,
+            Tier = SubscriptionTier.Guest,
             LastLogin = null,
-            IsSubscribed = false,
             DeviceId = dto.DeviceId,
         };
     }

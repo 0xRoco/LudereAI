@@ -32,32 +32,32 @@ public class AccountService : IAccountService
 
     public async Task<AccountDTO?> GetAccount(string id)
     {
-        var account = await _accountRepository.GetAsync(id);
+        var account = await _accountRepository.Get(id);
         return _mapper.Map<AccountDTO>(account);
     }
 
     public async Task<AccountDTO?> GetAccountByUsername(string username)
     {
-        var account = await _accountRepository.GetByUsernameAsync(username);
+        var account = await _accountRepository.GetByUsername(username);
         return _mapper.Map<AccountDTO>(account);
     }
 
     public async Task<AccountDTO?> GetAccountByEmail(string email)
     {
-        var account = await _accountRepository.GetByEmailAsync(email);
+        var account = await _accountRepository.GetByEmail(email);
         return _mapper.Map<AccountDTO>(account);
     }
 
     public async Task<bool> AccountExists(string username)
     {
-        return await _accountRepository.GetByUsernameAsync(username) != null;
+        return await _accountRepository.GetByUsername(username) != null;
     }
 
     public async Task<AccountDTO?> CreateAccount(SignUpDTO dto)
     {
         var account = _accountFactory.Create(dto);
         
-        if (!await _accountRepository.CreateAsync(account)) return null;
+        if (!await _accountRepository.Create(account)) return null;
         
         await _stripeService.CreateOrSyncAccount(account);
         return _mapper.Map<AccountDTO>(account);
@@ -67,7 +67,7 @@ public class AccountService : IAccountService
     public async Task<AccountDTO?> CreateGuestAccount(GuestDTO dto)
     {
         var account = _accountFactory.Create(dto);
-        if (!await _accountRepository.CreateAsync(account)) return null;
+        if (!await _accountRepository.Create(account)) return null;
         
         //await _stripeService.CreateOrSyncAccount(account);
         return _mapper.Map<AccountDTO>(account);
@@ -75,12 +75,12 @@ public class AccountService : IAccountService
 
     public async Task<AccountDTO?> UpdateAccount(string id, UpdateAccountDTO dto)
     {
-        var account = await _accountRepository.GetAsync(id);
+        var account = await _accountRepository.Get(id);
         if (account == null) return null;
 
         account = _mapper.Map(dto, account);
 
-        if (!await _accountRepository.UpdateAsync(account)) return null;
+        if (!await _accountRepository.Update(account)) return null;
         
         await _stripeService.CreateOrSyncAccount(account);
         return _mapper.Map<AccountDTO>(account);
@@ -89,6 +89,11 @@ public class AccountService : IAccountService
 
     public async Task<bool> DeleteAccount(string id)
     {
-        return await _accountRepository.DeleteAsync(id);
+        return await _accountRepository.Delete(id);
+    }
+
+    public async Task<bool> UpdateLastLogin(string accountId)
+    {
+        return await _accountRepository.UpdateLastLogin(accountId);
     }
 }

@@ -23,7 +23,7 @@ public class GuestRepository : IGuestRepository
 
     public async Task<GuestAccount?> Get(string id)
     {
-        return await _context.Guests.FindAsync(id);
+        return await _context.Guests.AsNoTracking().FirstOrDefaultAsync(g => g.Id == id);
     }
 
     public async Task<GuestAccount?> GetByDeviceId(string deviceId)

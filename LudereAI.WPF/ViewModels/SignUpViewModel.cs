@@ -47,7 +47,8 @@ public partial class SignUpViewModel : ObservableObject
             LastName = LastName,
             Username = Username,
             Email = Email,
-            Password = Password
+            Password = Password,
+            DeviceId = ""
         });
         
         if (!success) return;

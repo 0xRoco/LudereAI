@@ -5,11 +5,13 @@ namespace LudereAI.Application.Interfaces.Repositories;
 
 public interface IAccountRepository
 {
-    Task<IEnumerable<Account>> GetAllAsync();
-    Task<Account?> GetAsync(string accountId);
-    Task<Account?> GetByUsernameAsync(string username);
-    Task<Account?> GetByEmailAsync(string email);
-    Task<bool> CreateAsync(Account account);
-    Task<bool> UpdateAsync(Account account);
-    Task<bool> DeleteAsync(string accountId);
+    Task<IEnumerable<Account>> GetAll();
+    Task<Account?> Get(string accountId);
+    Task<Account?> GetByUsername(string username);
+    Task<Account?> GetByEmail(string email);
+    Task<bool> Create(Account account);
+    Task<bool> Update(Account account);
+    Task<bool> Delete(string accountId);
+
+    Task<bool> UpdateLastLogin(string accountId);
 }

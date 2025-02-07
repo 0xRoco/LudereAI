@@ -22,7 +22,7 @@ public class UpdateService : IUpdateService
     {
         _logger = logger;
         _apiClient = apiClient;
-        _updateDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+        _updateDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "LudereAI", "Updates");
     }
 
@@ -119,23 +119,37 @@ public class UpdateService : IUpdateService
 
             using var client = new HttpClient();
             var response = await client.GetAsync(_cachedUpdateInfo.DownloadUrl);
-            await using var fs = new FileStream(installerPath, FileMode.Create);
-            await response.Content.CopyToAsync(fs);
-
-            using var sh256 = SHA256.Create();
-            await using var stream = File.OpenRead(installerPath);
-            var hash = Convert.ToHexStringLower(await sh256.ComputeHashAsync(stream));
-
-            if (hash != _cachedUpdateInfo.Hash)
+            await using (var fs = new FileStream(installerPath, FileMode.Create))
             {
-                throw new Exception("Downloaded file hash does not match expected hash");
+                await response.Content.CopyToAsync(fs);
+                await fs.FlushAsync();
             }
 
-            Process.Start(new ProcessStartInfo
+            using (var sh256 = SHA256.Create())
+            await using (var stream = File.OpenRead(installerPath))
             {
-                FileName = installerPath,
-                UseShellExecute = true
-            });
+                var hash = Convert.ToHexStringLower(await sh256.ComputeHashAsync(stream));
+
+                if (hash != _cachedUpdateInfo.Hash)
+                {
+                    throw new Exception("Downloaded file hash does not match expected hash");
+                }
+            }
+
+
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo
+                {
+                    FileName = installerPath,
+                    UseShellExecute = true
+                }
+            };
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            Application.Current.Exit += (sender, args) => process.Start();
 
             Application.Current.Shutdown();
         }

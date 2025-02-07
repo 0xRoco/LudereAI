@@ -45,13 +45,13 @@ public class ChatService : IChatService
             GameContext = request.GameContext
         };
         
-        var response = await _assistantService.SendMessage(assistantRequest);
-        if (response == null)
+        var result = await _assistantService.SendMessage(assistantRequest);
+        if (result is { Status: AssistantService.AssistantRequestResult.Success, Value: not null })
         {
-            return Result<MessageDTO, IChatService.ChatRequestResult>.Error(IChatService.ChatRequestResult.Error, "Failed to send message");
+            return Result<MessageDTO, IChatService.ChatRequestResult>.Success(result.Value);
         }
         
-        return Result<MessageDTO, IChatService.ChatRequestResult>.Success(response);
+        return Result<MessageDTO, IChatService.ChatRequestResult>.Error(IChatService.ChatRequestResult.Error, $"Failed to send message: {result.Message}");
     }
 
     public async Task<IEnumerable<ConversationDTO>> GetConversations()

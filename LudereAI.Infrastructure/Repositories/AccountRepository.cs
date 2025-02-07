@@ -1,10 +1,6 @@
-﻿using LudereAI.Application.Interfaces;
-using LudereAI.Application.Interfaces.Repositories;
-using LudereAI.Domain.Models;
+﻿using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Domain.Models.Account;
 using LudereAI.Domain.Models.Chat;
-using LudereAI.Shared.DTOs;
-using LudereAI.Shared.Enums;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,14 +11,14 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
     ISubscriptionRepository subscriptionRepository,
     IConversationRepository conversationRepository) : IAccountRepository
 {
-    public async Task<IEnumerable<Account>> GetAllAsync()
+    public async Task<IEnumerable<Account>> GetAll()
     {
         return await context.Accounts.AsNoTracking().ToListAsync();
     }
 
-    public async Task<Account?> GetAsync(string accountId)
+    public async Task<Account?> Get(string accountId)
     {
-        var account =  await context.Accounts.FindAsync(accountId);
+        var account =  await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == accountId);
         if (account == null) return null;
 
         var (conversations, subscription) = await GetAccountData(accountId);
@@ -32,7 +28,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         return account;
     }
 
-    public async Task<Account?> GetByUsernameAsync(string username)
+    public async Task<Account?> GetByUsername(string username)
     {
         var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Username == username);
         if (account == null) return null;
@@ -44,7 +40,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         return account;
     }
 
-    public async Task<Account?> GetByEmailAsync(string email)
+    public async Task<Account?> GetByEmail(string email)
     {
         var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Email == email);
         if (account == null) return null;
@@ -56,11 +52,11 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         return account;
     }
 
-    public async Task<bool> CreateAsync(Account account)
+    public async Task<bool> Create(Account account)
     {
         try
         {
-            if (await GetByUsernameAsync(account.Username) != null || await GetAsync(account.Id) != null) return false;
+            if (await GetByUsername(account.Username) != null || await Get(account.Id) != null) return false;
             
             await context.Accounts.AddAsync(account);
             await context.SaveChangesAsync();
@@ -74,22 +70,22 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         }
     }
 
-    public async Task<bool> UpdateAsync(Account account)
+    public async Task<bool> Update(Account account)
     {
         try
         {
-            if (await GetAsync(account.Id) == null) return false;
+            if (await Get(account.Id) == null) return false;
             
-            var trackedEntity = context.ChangeTracker
-                .Entries<Account>().FirstOrDefault(e=> e.Entity.Id == account.Id);
+            var local = context.Set<Account>()
+                .Local
+                .FirstOrDefault(entry => entry.Id.Equals(account.Id));
             
-            if (trackedEntity != null) trackedEntity.State = EntityState.Detached;
+            if (local != null)
+            {
+                context.Entry(local).State = EntityState.Detached;
+            }
             
-            account.UpdatedAt = DateTime.UtcNow;
-            
-            context.Accounts.Attach(account);
-            context.Entry(account).State = EntityState.Modified;
-            
+            context.Accounts.Update(account);
             await context.SaveChangesAsync();
             return true;
         }
@@ -100,16 +96,24 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         }
     }
 
-    public async Task<bool> DeleteAsync(string accountId)
+    public async Task<bool> Delete(string accountId)
     {
-        var account = await GetAsync(accountId);
+        var account = await Get(accountId);
         if (account == null) return false;
-        
-        account.DeletedAt = DateTime.UtcNow;
 
-        return await UpdateAsync(account);
+        context.Accounts.Remove(account);
+        return await context.SaveChangesAsync() > 0;
     }
-    
+
+    public async Task<bool> UpdateLastLogin(string accountId)
+    {
+        var account = await Get(accountId);
+        if (account == null) return false;
+
+        account.LastLogin = DateTime.UtcNow;
+        return await Update(account);
+    }
+
     private async Task<(IEnumerable<Conversation> conversations, Subscription? subscription)> GetAccountData(string accountId)
     {
         var conversations = await conversationRepository.GetConversationsByAccountId(accountId);

@@ -31,7 +31,7 @@ public class UpdateController : ControllerBase
     }
     
     [HttpPost]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<APIResult<bool>>> SetUpdateInfo([FromBody] UpdateInfoDTO updateInfo)
     {
         try

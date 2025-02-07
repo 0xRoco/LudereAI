@@ -32,7 +32,7 @@ public class StripeService : IStripeService
 
     public async Task<Session?> CreateCheckoutSession(AccountDTO dto, string priceId, SubscriptionPlan subscriptionPlan)
     {
-        var account = await _accountRepository.GetAsync(dto.Id);
+        var account = await _accountRepository.Get(dto.Id);
         if (account == null)
         {
             _logger.LogWarning("Account not found for ID {AccountId}", dto.Id);
@@ -75,7 +75,7 @@ public class StripeService : IStripeService
 
     public async Task SyncAllAccounts()
     {
-        var accounts = await _accountRepository.GetAllAsync();
+        var accounts = await _accountRepository.GetAll();
 
         foreach (var account in accounts)
         {
@@ -137,7 +137,7 @@ public class StripeService : IStripeService
             }
             
             account.StripeCustomerId = customer.Id;
-            await _accountRepository.UpdateAsync(account);
+            await _accountRepository.Update(account);
 
             return customer.Id;
         }

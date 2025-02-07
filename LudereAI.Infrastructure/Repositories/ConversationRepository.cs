@@ -4,20 +4,29 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LudereAI.Infrastructure.Repositories;
 
-public class ConversationRepository(DatabaseContext context, IMessageRepository messageRepository) : IConversationRepository
+public class ConversationRepository : IConversationRepository
 {
+    private readonly DatabaseContext _context;
+    private readonly IMessageRepository _messageRepository;
+
+    public ConversationRepository(DatabaseContext context, IMessageRepository messageRepository)
+    {
+        _context = context;
+        _messageRepository = messageRepository;
+    }
+
     public async Task<Conversation?> GetConversationAsync(string conversationId)
     {
-        var conv =  await context.Conversations.AsNoTracking().FirstOrDefaultAsync(c => c.Id == conversationId);
+        var conv =  await _context.Conversations.AsNoTracking().FirstOrDefaultAsync(c => c.Id == conversationId);
         if (conv == null) return null;
         
-        conv.Messages = await messageRepository.GetMessagesAsync(conversationId);
+        conv.Messages = await _messageRepository.GetMessagesAsync(conversationId);
         return conv;
     }
 
     public async Task<IEnumerable<Conversation>> GetConversationsByAccountId(string accountId)
     {
-        var conv = await context.Conversations.AsNoTracking().Where(c => c.AccountId == accountId)
+        var conv = await _context.Conversations.AsNoTracking().Where(c => c.AccountId == accountId)
             .Include(conversation => conversation.Messages).ToListAsync();
 
         conv = conv.OrderByDescending(c => c.CreatedAt).ToList();
@@ -34,8 +43,8 @@ public class ConversationRepository(DatabaseContext context, IMessageRepository 
     {
         try
         {
-            await context.Conversations.AddAsync(conversation);
-            await context.SaveChangesAsync();
+            await _context.Conversations.AddAsync(conversation);
+            await _context.SaveChangesAsync();
             return true;
         }
         catch (Exception e)

@@ -36,9 +36,15 @@ public class SubscriptionRepository(ILogger<ISubscriptionRepository> logger, Dat
     {
         if (await GetByAccountId(subscription.AccountId) == null) return false;
         
+        var local = context.Set<Subscription>().Local.FirstOrDefault(e => e.Id == subscription.Id);
+
+        if (local != null)
+        {
+            context.Entry(local).State = EntityState.Detached;
+        }
+
         context.Subscriptions.Update(subscription);
         await context.SaveChangesAsync();
-        
         return true;
     }
 
@@ -47,9 +53,7 @@ public class SubscriptionRepository(ILogger<ISubscriptionRepository> logger, Dat
         var subscription = await GetByAccountId(accountId);
         if (subscription == null) return;
         
-        subscription.DeletedAt = DateTime.UtcNow;
-        
-        context.Subscriptions.Update(subscription);
+        context.Subscriptions.Remove(subscription);
         await context.SaveChangesAsync();
     }
 }

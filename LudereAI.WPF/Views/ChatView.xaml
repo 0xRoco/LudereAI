@@ -119,7 +119,7 @@
                                 </StackPanel>
 
                                 <TextBlock
-                                    Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=TwoWay}"
+                                    Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Style="{StaticResource MaterialDesignBody2TextBlock}"
                                     Margin="52,0,0,16">
                                     <TextBlock.Text>

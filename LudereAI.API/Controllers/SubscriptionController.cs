@@ -2,7 +2,6 @@
 using System.Security.Claims;
 using LudereAI.API.Core;
 using LudereAI.Application.Interfaces.Services;
-using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Configs;
 using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
@@ -11,7 +10,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Stripe;
-using Stripe.Checkout;
 
 namespace LudereAI.API.Controllers;
 
@@ -108,7 +106,7 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
             return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Account already has an active subscription"));
         }
 
-        if (account.Role == AccountRole.Guest)
+        if (account.Tier == SubscriptionTier.Guest)
         {
             logger.LogWarning("Guest account {AccountId} cannot subscribe to a plan", account.Id);
             return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Guest account cannot subscribe to a plan"));

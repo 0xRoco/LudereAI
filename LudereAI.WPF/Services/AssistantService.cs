@@ -1,4 +1,5 @@
-﻿using LudereAI.Shared.DTOs;
+﻿using LudereAI.Shared;
+using LudereAI.Shared.DTOs;
 using LudereAI.WPF.Interfaces;
 using Microsoft.Extensions.Logging;
 
@@ -6,7 +7,14 @@ namespace LudereAI.WPF.Services;
 
 public class AssistantService(ILogger<IAssistantService> logger, IAPIClient apiClient) : IAssistantService
 {
-    public async Task<MessageDTO?> SendMessage(AssistantRequestDTO requestDto)
+    
+    public enum AssistantRequestResult
+    {
+        Success,
+        Error
+    }
+    
+    public async Task<Result<MessageDTO?, AssistantRequestResult>> SendMessage(AssistantRequestDTO requestDto)
     {
         try
         {
@@ -14,17 +22,17 @@ public class AssistantService(ILogger<IAssistantService> logger, IAPIClient apiC
             
             if (result is { IsSuccess: true, Data: not null })
             {
-                return result.Data;
+                return Result<MessageDTO?, AssistantRequestResult>.Success(result.Data);
             }
             
 
             logger.LogWarning("Failed to get response from assistant: {Message}", result?.Message);
-            return null;
+            return Result<MessageDTO?, AssistantRequestResult>.Error(AssistantRequestResult.Error, result?.Message ?? "Failed to get response from assistant");
         }
         catch (Exception e)
         {
             logger.LogError(e, "Failed to get response from assistant");
-            return null;
+            return Result<MessageDTO?, AssistantRequestResult>.Error(AssistantRequestResult.Error, e.Message);
         }
     }
 

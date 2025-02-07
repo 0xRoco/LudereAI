@@ -60,7 +60,8 @@ public class AuthController : ControllerBase
                 Token = token,
                 Account = account
             };
-
+            
+            await _accountService.UpdateLastLogin(account.Id);
             return Ok(APIResult<LoginResponseDTO>.Success(data: response));
         }
         catch (Exception ex)
@@ -103,14 +104,15 @@ public class AuthController : ControllerBase
                     Email = "guest@LudereAI.com",
                     FirstName = "Guest",
                     LastName = "User",
-                    IsSubscribed = false,
                     DeviceId = account.DeviceId,
-                    Role = AccountRole.Guest,
+                    Role = AccountRole.User,
                     Status = AccountStatus.Active,
+                    Tier = SubscriptionTier.Guest,
                     CreatedAt = account.CreatedAt,
                 }
             };
 
+            await _accountService.UpdateLastLogin(account.Id);
             return Ok(APIResult<LoginResponseDTO>.Success(data: response));
         }
         catch (Exception ex)
