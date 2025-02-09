@@ -1,0 +1,68 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LudereAI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
+    <link rel="stylesheet" href="~/css/site.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+<header class="site-header">
+    <div class="preview-banner">
+        <i class="fas fa-tools"></i> This site is currently in preview. Some features may not work as expected.
+        <br/> For any inquiries or issues, please contact
+        <a href="mailto:support@ludereai.com">Support@LudereAI.com</a>
+    </div>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top navbar-custom" data-aos="fade-down">
+        <div class="container">
+            <a class="navbar-brand" href="/">LudereAI</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item"><a class="nav-link" href="/#features">Features</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/#pricing">Pricing</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/Download">Download</a></li>
+                    <li class="nav-item"><a class="nav-link btn btn-primary text-white" href="/Login">Login</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="hero-section text-center text-white" data-aos="zoom-in">
+        <div class="overlay"></div>
+        <div class="container d-flex flex-column justify-content-center align-items-center content" style="height: 100%;">
+            <h1 class="display-1 fw-bold">AI-Powered Context Aware Gaming Assistance</h1>
+            <p class="lead">Enhance your gaming experience with real-time AI insights and voice interactions.</p>
+            <a href="/Signup" class="btn btn-light btn-lg btn-pulse">Get Started</a>
+        </div>
+    </div>
+</header>
+<main role="main" class="container my-5">
+    @RenderBody()
+</main>
+
+<footer class="text-center py-3" data-aos="fade-up">
+    <div class="container">
+        <p class="mb-0">&copy; 2025 LudereAI. All rights reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
+<script src="js/site.js"></script>
+<script>
+    AOS.init({
+        duration: 800,
+        once: true
+    });
+</script>
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

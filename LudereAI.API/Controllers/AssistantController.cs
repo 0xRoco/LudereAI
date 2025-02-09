@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace LudereAI.API.Controllers;
 
-[ApiController, Authorize, Route("api/[controller]")]
+[ApiController, Authorize, Route("[controller]")]
 public class AssistantController : ControllerBase
 {
     private readonly ILogger<AssistantController> _logger;

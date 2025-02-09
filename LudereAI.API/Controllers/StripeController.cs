@@ -11,7 +11,7 @@ using Subscription = Stripe.Subscription;
 namespace LudereAI.API.Controllers;
 
 
-[ApiController, Route("api/[controller]")]
+[ApiController, Route("[controller]")]
 public class StripeController : ControllerBase
 {
     private readonly ILogger<StripeController> _logger;

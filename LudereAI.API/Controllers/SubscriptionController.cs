@@ -14,34 +14,63 @@ using Stripe;
 namespace LudereAI.API.Controllers;
 
 
-[ApiController, Authorize, Route("api/[controller]")]
-public class SubscriptionController(ILogger<SubscriptionController> logger,
-    IAccountService accountService,
-    IStripeService stripeService,
-    ISubscriptionService subscriptionService,
-    IOptions<StripeConfig> stripeConfig) : ControllerBase
+[ApiController, Authorize, Route("[controller]")]
+public class SubscriptionController : ControllerBase
 {
-    
+    private readonly ILogger<SubscriptionController> _logger;
+    private readonly IAccountService _accountService;
+    private readonly IStripeService _stripeService;
+    private readonly ISubscriptionService _subscriptionService;
+    private readonly IOptions<StripeConfig> _stripeConfig;
+
+    private readonly string _plansInfoPath;
+
+    public SubscriptionController(ILogger<SubscriptionController> logger,
+        IAccountService accountService,
+        IStripeService stripeService,
+        ISubscriptionService subscriptionService,
+        IOptions<StripeConfig> stripeConfig)
+    {
+        _logger = logger;
+        _accountService = accountService;
+        _stripeService = stripeService;
+        _subscriptionService = subscriptionService;
+        _stripeConfig = stripeConfig;
+        
+        _plansInfoPath = Path.Combine(AppContext.BaseDirectory, "plans-info.json");
+    }
+
     [HttpGet("me")]
-    public async Task<ActionResult<SubscriptionDTO>> GetCurrentSubscription()
+    public async Task<ActionResult<APIResult<SubscriptionDTO>>> GetCurrentSubscription()
     {
         var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(accountId))
         {
-            logger.LogWarning("Invalid token received for subscription attempt");
+            _logger.LogWarning("Invalid token received for subscription attempt");
             return BadRequest(APIResult<SubscriptionDTO>.Error(HttpStatusCode.BadRequest, "Invalid token"));
         }
 
-        var account = await accountService.GetAccount(accountId);
+        var account = await _accountService.GetAccount(accountId);
         if (account == null)
         {
-            logger.LogWarning("Account not found for ID {AccountId}", accountId);
+            _logger.LogWarning("Account not found for ID {AccountId}", accountId);
             return NotFound(APIResult<SubscriptionDTO>.Error(HttpStatusCode.NotFound, "Account not found"));
         }
         
-        var subscription = await subscriptionService.GetSubscriptionByAccountId(account.Id);
+        var subscription = await _subscriptionService.GetSubscriptionByAccountId(account.Id);
 
         return Ok(APIResult<SubscriptionDTO>.Success(data: subscription));
+    }
+    
+    [HttpGet("plans"), AllowAnonymous]
+    public async Task<ActionResult<APIResult<PlansInfoConfig>>> GetSubscriptionPlans()
+    {
+        if (!System.IO.File.Exists(_plansInfoPath))
+            return Ok(APIResult<PlansInfoConfig>.Error(HttpStatusCode.NotFound, "Plans info not found"));
+        
+        var plans = (await System.IO.File.ReadAllTextAsync(_plansInfoPath)).FromJson<PlansInfoConfig>();
+        
+        return Ok(APIResult<PlansInfoConfig>.Success(data: plans));
     }
     
     [RequireFeature("Subscription.NewSubscriptionsEnabled")]
@@ -59,7 +88,7 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
             var priceId = GetPriceIdForPlan(dto.SubscriptionPlan);
             if (string.IsNullOrWhiteSpace(priceId))
             {
-                logger.LogWarning("Invalid plan type received {PlanType}", dto.SubscriptionPlan);
+                _logger.LogWarning("Invalid plan type received {PlanType}", dto.SubscriptionPlan);
                 return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid plan type"));
             }
 
@@ -67,13 +96,13 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
         }
         catch (StripeException ex)
         {
-            logger.LogError(ex, "Stripe error occurred while creating subscription session");
+            _logger.LogError(ex, "Stripe error occurred while creating subscription session");
             return StatusCode((int)HttpStatusCode.ServiceUnavailable,
                 APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error occurred while processing subscription");
+            _logger.LogError(ex, "Error occurred while processing subscription");
             return StatusCode((int)HttpStatusCode.InternalServerError,
                 APIResult<string>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
@@ -84,14 +113,14 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
         var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(accountId))
         {
-            logger.LogWarning("Invalid token received for subscription attempt");
+            _logger.LogWarning("Invalid token received for subscription attempt");
             return (null, BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid token")));
         }
 
-        var account = await accountService.GetAccount(accountId);
+        var account = await _accountService.GetAccount(accountId);
         if (account == null)
         {
-            logger.LogWarning("Account not found for ID {AccountId}", accountId);
+            _logger.LogWarning("Account not found for ID {AccountId}", accountId);
             return (null, NotFound(APIResult<string>.Error(HttpStatusCode.NotFound, "Account not found")));
         }
 
@@ -102,19 +131,19 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
     {
         if (account.Subscription?.Status == SubscriptionStatus.Active || account.IsSubscribed)
         {
-            logger.LogWarning("Account {AccountId} already has an active subscription", account.Id);
+            _logger.LogWarning("Account {AccountId} already has an active subscription", account.Id);
             return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Account already has an active subscription"));
         }
 
         if (account.Tier == SubscriptionTier.Guest)
         {
-            logger.LogWarning("Guest account {AccountId} cannot subscribe to a plan", account.Id);
+            _logger.LogWarning("Guest account {AccountId} cannot subscribe to a plan", account.Id);
             return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Guest account cannot subscribe to a plan"));
         }
 
         if (account.Status != AccountStatus.Active)
         {
-            logger.LogWarning("Account {AccountId} is not active", account.Id);
+            _logger.LogWarning("Account {AccountId} is not active", account.Id);
             return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Account is not active"));
         }
 
@@ -124,24 +153,24 @@ public class SubscriptionController(ILogger<SubscriptionController> logger,
     private async Task<ActionResult<APIResult<string>>> CreateStripeCheckoutSession(
         AccountDTO account, string priceId, SubscriptionPlan subscriptionPlan)
     {
-        var session = await stripeService.CreateCheckoutSession(account, priceId, subscriptionPlan);
+        var session = await _stripeService.CreateCheckoutSession(account, priceId, subscriptionPlan);
         if (session == null)
         {
-            logger.LogWarning("Failed to create subscription session for account: {AccountId}", account.Id);
+            _logger.LogWarning("Failed to create subscription session for account: {AccountId}", account.Id);
             return StatusCode((int)HttpStatusCode.InternalServerError,
                 APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
         }
 
-        logger.LogInformation("Successfully created subscription session for account: {AccountId}", account.Id);
+        _logger.LogInformation("Successfully created subscription session for account: {AccountId}", account.Id);
         return Ok(APIResult<string>.Success(data: session.Url));
     }
 
     private string GetPriceIdForPlan(SubscriptionPlan subscriptionPlan) => subscriptionPlan switch
     {
-        SubscriptionPlan.Pro => stripeConfig.Value.ProMonthlyId,
-        SubscriptionPlan.ProYearly => stripeConfig.Value.ProYearlyId,
-        SubscriptionPlan.Ultimate => stripeConfig.Value.UltimateMonthlyId,
-        SubscriptionPlan.UltimateYearly => stripeConfig.Value.UltimateYearlyId,
+        SubscriptionPlan.Pro => _stripeConfig.Value.ProMonthlyId,
+        SubscriptionPlan.ProYearly => _stripeConfig.Value.ProYearlyId,
+        SubscriptionPlan.Ultimate => _stripeConfig.Value.UltimateMonthlyId,
+        SubscriptionPlan.UltimateYearly => _stripeConfig.Value.UltimateYearlyId,
         _ => ""
     };
     

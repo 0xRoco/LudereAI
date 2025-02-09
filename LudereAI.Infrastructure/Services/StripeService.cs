@@ -43,6 +43,7 @@ public class StripeService : IStripeService
 
         var options = new SessionCreateOptions
         {
+            AllowPromotionCodes = true,
             Customer = customerId,
             Mode = "subscription",
             LineItems = new List<SessionLineItemOptions>

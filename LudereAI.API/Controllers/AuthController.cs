@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LudereAI.API.Controllers;
 
 
-[ApiController, Route("api/[controller]")]
+[ApiController, Route("[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly ILogger<AuthController> _logger;
