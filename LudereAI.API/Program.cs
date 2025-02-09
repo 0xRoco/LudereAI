@@ -235,7 +235,7 @@ void ConfigureLogging(WebApplication app, string[] args)
     }
     else
     {
-        Log.Information("Production environment detected. Using production API URL: {URL}", "$ProdApiUrl$");
+        Log.Information("Production environment detected. Using production API URL: {URL}", "https://api.LudereAI.com/");
     }
 }
 

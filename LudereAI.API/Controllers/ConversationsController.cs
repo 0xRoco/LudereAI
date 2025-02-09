@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LudereAI.API.Controllers;
 
 
-[ApiController, Route("api/[controller]")]
+[ApiController, Route("[controller]")]
 public class ConversationsController : ControllerBase
 { 
     private readonly ILogger<ConversationsController> _logger;

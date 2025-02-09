@@ -21,8 +21,8 @@ public partial class App : Application
 {
     public IHost? Host;
 
-    private const string DevApiUrl = "https://localhost:9099/api/";
-    private const string ProdApiUrl = "https://assistant.mdnite.dev/api/";
+    private const string DevApiUrl = "https://localhost:9099/";
+    private const string ProdApiUrl = "https://api.ludereai.com/";
     private readonly string _environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Production;
     private readonly LoggingLevelSwitch _loggingLevelSwitch = new();
     private readonly string _logDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LudereAI", "Logs");

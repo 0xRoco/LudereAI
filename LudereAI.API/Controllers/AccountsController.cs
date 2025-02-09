@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LudereAI.API.Controllers;
 
 
-[ApiController, Route("api/[controller]")]
+[ApiController, Route("[controller]")]
 public class AccountsController(ILogger<AccountsController> logger,
     IAccountService accountService) : ControllerBase
 {
