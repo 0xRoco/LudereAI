@@ -13,12 +13,7 @@
 </head>
 <body>
 <header class="site-header">
-    <div class="preview-banner">
-        <i class="fas fa-tools"></i> This site is currently in preview. Some features may not work as expected.
-        <br/> For any inquiries or issues, please contact
-        <a href="mailto:support@ludereai.com">Support@LudereAI.com</a>
-    </div>
-    <nav class="navbar navbar-expand-lg navbar-dark sticky-top navbar-custom" data-aos="fade-down">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom" data-aos="fade-down">
         <div class="container">
             <a class="navbar-brand" href="/">LudereAI</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -26,25 +21,60 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav align-items-center">
                     <li class="nav-item"><a class="nav-link" href="/#features">Features</a></li>
                     <li class="nav-item"><a class="nav-link" href="/#pricing">Pricing</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Download">Download</a></li>
-                    <li class="nav-item"><a class="nav-link btn btn-primary text-white" href="/Login">Login</a></li>
+
+                    @if (User.Identity is { IsAuthenticated: true })
+                    {
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fas fa-user-circle me-1"></i>
+                                @User.Identity.Name
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                <li><a class="dropdown-item" href="/Account">
+                                        <i class="fas fa-columns me-2"></i>Dashboard
+                                    </a></li>
+                                <li><a class="dropdown-item" href="/Account">
+                                        <i class="fas fa-user-cog me-2"></i>Profile Settings
+                                    </a></li>
+                                <li><a class="dropdown-item" href="/Account">
+                                        <i class="fas fa-credit-card me-2"></i>Subscription
+                                    </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form class="form-inline" method="post" asp-controller="Auth" asp-action="Logout">
+                                        <button type="submit" class="dropdown-item text-danger">
+                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item"><a class="nav-link" href="/Login">Login</a></li>
+                        <li class="nav-item ms-2">
+                            <a class="nav-link btn btn-primary text-white px-3" href="/SignUp">
+                                <i class="fas fa-user-plus me-1"></i>Sign Up
+                            </a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
     </nav>
-    <div class="hero-section text-center text-white" data-aos="zoom-in">
-        <div class="overlay"></div>
-        <div class="container d-flex flex-column justify-content-center align-items-center content" style="height: 100%;">
-            <h1 class="display-1 fw-bold">AI-Powered Context Aware Gaming Assistance</h1>
-            <p class="lead">Enhance your gaming experience with real-time AI insights and voice interactions.</p>
-            <a href="/Signup" class="btn btn-light btn-lg btn-pulse">Get Started</a>
-        </div>
-    </div>
 </header>
-<main role="main" class="container my-5">
+<main role="main" class="">
+    <div class="preview-banner ">
+        <i class="fas fa-tools"></i> This site is currently in preview. Some features may not work as expected.
+        <br/> For any inquiries or issues, please contact
+        <a href="mailto:support@ludereai.com">Support@LudereAI.com</a>
+    </div>
     @RenderBody()
 </main>
 
@@ -54,13 +84,26 @@
     </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
+<script src="https://js.sentry-cdn.com/3f82a53c02a09c6bd4ab34cfe8d05292.min.js" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.js"></script>
 <script src="js/site.js"></script>
 <script>
     AOS.init({
         duration: 800,
         once: true
+    });
+
+    Sentry.onLoad(function() {
+        Sentry.init({
+            integrations: [
+                Sentry.replayIntegration(),
+            ],
+
+            replaysSessionSampleRate: 0.1,
+            replaysOnErrorSampleRate: 1.0,
+        });
     });
 </script>
 @await RenderSectionAsync("Scripts", required: false)

@@ -31,6 +31,6 @@ public class Account : BaseEntity
     public string FullName => $"{FirstName} {LastName}".Trim();
     public bool IsSubscribed => Tier is SubscriptionTier.Pro or SubscriptionTier.Ultimate;
     
-    public Subscription? Subscription { get; set; }
+    public UserSubscription? Subscription { get; set; }
     public IEnumerable<Conversation>? Conversations { get; set; } = new List<Conversation>();
 }

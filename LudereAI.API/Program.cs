@@ -65,18 +65,14 @@ return;
 
 void ConfigureSentry(WebApplicationBuilder builder)
 {
-    if (builder.Environment.IsDevelopment()) return;
 
     builder.WebHost.UseSentry(o =>
     {
-        o.InitializeSdk = false;
         o.Dsn = builder.Configuration["Sentry:Dsn"];
         o.Environment = builder.Environment.EnvironmentName;
-        o.Debug = builder.Environment.IsDevelopment();
-        o.TracesSampleRate = 0.05;
+        o.TracesSampleRate = 0.2;
         o.MinimumEventLevel = LogLevel.Error;
         o.MinimumBreadcrumbLevel = LogLevel.Information;
-        o.SendDefaultPii = true;
         o.AttachStacktrace = true;
     });
     
@@ -181,7 +177,7 @@ void ConfigureDatabase(WebApplicationBuilder builder)
             
             if (builder.Environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
-        }, ServiceLifetime.Transient); // TODO: Change to Scoped - Fix tracking issues
+        });
     
     Log.Information("Database configured");
 }
@@ -268,6 +264,7 @@ void ConfigureMiddleware(WebApplication app)
     }
 
     app.UseHttpsRedirection();
+    app.UseSentryTracing();
     app.UseSerilogRequestLogging();
     app.UseAuthentication();
     app.UseAuthorization();

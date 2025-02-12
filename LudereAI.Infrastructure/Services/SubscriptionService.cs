@@ -1,225 +1,219 @@
 ﻿using AutoMapper;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
-using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Account;
 using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
 using Microsoft.Extensions.Logging;
+using Stripe;
+using Account = LudereAI.Domain.Models.Account.Account;
 
-namespace LudereAI.Infrastructure.Services;
-
-public class SubscriptionService(ILogger<ISubscriptionService> logger,
-    ISubscriptionRepository subscriptionRepository,
-    IAccountRepository accountRepository,
-    IMapper mapper) : ISubscriptionService 
+namespace LudereAI.Infrastructure.Services
 {
-    public async Task<SubscriptionDTO?> GetSubscription(string subscriptionId)
+    public class SubscriptionService : ISubscriptionService
     {
-        var subscription = await subscriptionRepository.Get(subscriptionId);
-        var subscriptionDTO = mapper.Map<SubscriptionDTO>(subscription);
-        
-        return subscriptionDTO;
-    }
+        private readonly ILogger<ISubscriptionService> _logger;
+        private readonly ISubscriptionRepository _subscriptionRepository;
+        private readonly IAccountRepository _accountRepository;
+        private readonly Stripe.SubscriptionService _stripeSubscriptionService;
+        private readonly IMapper _mapper;
 
-    public async Task<SubscriptionDTO?> GetSubscriptionByAccountId(string accountId)
-    {
-        var subscription = await subscriptionRepository.GetByAccountId(accountId);
-        var subscriptionDTO = mapper.Map<SubscriptionDTO>(subscription);
-        
-        return subscriptionDTO;
-    }
-
-    public async Task ActivateSubscription(string accountId, string subscriptionId, string priceId, DateTime startDate, DateTime endDate, string status = "")
-    {
-        try
+        public SubscriptionService(
+            ILogger<ISubscriptionService> logger,
+            ISubscriptionRepository subscriptionRepository,
+            IAccountRepository accountRepository,
+            Stripe.SubscriptionService stripeSubscriptionService,
+            IMapper mapper)
         {
-            var subStatus = string.IsNullOrWhiteSpace(status) ? SubscriptionStatus.Active : MapSubscriptionStatus(status);
-            var existingSubscription = await subscriptionRepository.GetByAccountId(accountId);
-            if (existingSubscription == null)
+            _logger = logger;
+            _subscriptionRepository = subscriptionRepository;
+            _accountRepository = accountRepository;
+            _stripeSubscriptionService = stripeSubscriptionService;
+            _mapper = mapper;
+        }
+
+        public async Task<UserSubscriptionDTO?> GetSubscription(string subscriptionId)
+        {
+            var subscription = await _subscriptionRepository.GetByStripeId(subscriptionId);
+            return _mapper.Map<UserSubscriptionDTO>(subscription);
+        }
+
+        public async Task<UserSubscriptionDTO?> GetSubscriptionByAccountId(string accountId)
+        {
+            var subscription = await _subscriptionRepository.GetByAccountId(accountId);
+            return _mapper.Map<UserSubscriptionDTO>(subscription);
+        }
+
+        public async Task CreateSubscription(Subscription stripeSubscription)
+        {
+            if (!stripeSubscription.Metadata.TryGetValue("AccountId", out var accountId) ||
+                string.IsNullOrWhiteSpace(accountId))
             {
-                var subscription = new Subscription
-                {
-                    AccountId = accountId,
-                    StripeId = subscriptionId,
-                    SubscriptionPlan = MapPlanType(priceId),
-                    StartDate = DateTime.UtcNow,
-                    EndDate = DateTime.UtcNow.AddMonths(1),
-                    Status = subStatus,
-                };
-                await subscriptionRepository.Create(subscription);
+                throw new ArgumentException($"Stripe subscription {stripeSubscription.Id} is missing AccountId metadata.");
+            }
+
+            var account = await _accountRepository.Get(accountId) 
+                ?? throw new ArgumentException($"Account with ID {accountId} not found.");
+
+            var existingSub = await _subscriptionRepository.GetByAccountId(accountId);
+            if (existingSub != null)
+            {
+                await UpdateExistingSubscription(existingSub, stripeSubscription, account);
+                return;
+            }
+
+            var newSub = new UserSubscription
+            {
+                AccountId = accountId,
+                StripeCustomerId = stripeSubscription.CustomerId,
+                StripeSubscriptionId = stripeSubscription.Id,
+                Status = MapSubscriptionStatus(stripeSubscription.Status),
+                Plan = MapPlanType(stripeSubscription.Items.Data[0].Price.Id ?? ""),
+                CurrentPeriodStart = stripeSubscription.CurrentPeriodStart,
+                CurrentPeriodEnd = stripeSubscription.CurrentPeriodEnd,
+                CancelAtPeriodEnd = stripeSubscription.CancelAtPeriodEnd,
+            };
+
+            await _subscriptionRepository.Create(newSub);
+            account.Tier = MapPlanToTier(newSub.Plan);
+            await _accountRepository.Update(account);
+        }
+
+        public async Task UpdateSubscription(Subscription stripeSubscription)
+        {
+            var existingSub = await _subscriptionRepository.GetByStripeId(stripeSubscription.Id);
+            if (existingSub == null)
+            {
+                await CreateSubscription(stripeSubscription);
+                return;
+            }
+
+            var account = await _accountRepository.Get(existingSub.AccountId) 
+                ?? throw new ArgumentException($"Account not found for subscription {stripeSubscription.Id}");
+
+            await UpdateExistingSubscription(existingSub, stripeSubscription, account);
+        }
+
+        private async Task UpdateExistingSubscription(UserSubscription existingSub, Subscription stripeSubscription,
+            Account account)
+        {
+            existingSub.StripeCustomerId = stripeSubscription.CustomerId;
+            existingSub.StripeSubscriptionId = stripeSubscription.Id;
+            existingSub.Status = MapSubscriptionStatus(stripeSubscription.Status);
+            existingSub.Plan = MapPlanType(stripeSubscription.Items.Data[0].Price.Id ?? "");
+            existingSub.CurrentPeriodStart = stripeSubscription.CurrentPeriodStart;
+            existingSub.CurrentPeriodEnd = stripeSubscription.CurrentPeriodEnd;
+            existingSub.CancelAtPeriodEnd = stripeSubscription.CancelAtPeriodEnd;
+
+            account.Tier = MapPlanToTier(existingSub.Plan);
+
+            await _subscriptionRepository.Update(existingSub);
+            await _accountRepository.Update(account);
+        }
+
+        public async Task HandleSubscriptionCanceled(Subscription stripeSubscription)
+        {
+            var sub = await _subscriptionRepository.GetByStripeId(stripeSubscription.Id);
+            if (sub == null) return;
+
+            var account = await _accountRepository.Get(sub.AccountId);
+            if (account == null) return;
+
+            sub.Status = SubscriptionStatus.Cancelled;
+            sub.CancelledAt = DateTime.UtcNow;
+            account.Tier = SubscriptionTier.Free;
+
+            await _subscriptionRepository.Update(sub);
+            await _accountRepository.Update(account);
+        }
+
+        public async Task HandlePaymentFailure(Invoice invoice)
+        {
+            if (invoice.SubscriptionId == null) return;
+
+            var userSubscription = await _subscriptionRepository.GetByStripeId(invoice.SubscriptionId);
+            if (userSubscription == null) return;
+
+            var account = await _accountRepository.Get(userSubscription.AccountId);
+            if (account == null) return;
+
+            if (invoice.AttemptCount >= 3)
+            {
+                userSubscription.Status = SubscriptionStatus.Unpaid;
+                account.Tier = SubscriptionTier.Free;
+                await _accountRepository.Update(account);
             }
             else
             {
-                existingSubscription.StripeId = subscriptionId;
-                existingSubscription.SubscriptionPlan = MapPlanType(priceId);
-                existingSubscription.StartDate = startDate;
-                existingSubscription.EndDate = endDate;
-                existingSubscription.Status = subStatus;
-
-                await subscriptionRepository.Update(existingSubscription);
+                userSubscription.Status = SubscriptionStatus.PastDue;
             }
-            
-            var account = await accountRepository.Get(accountId);
-            if (account == null) return;
-            account.Tier = existingSubscription?.SubscriptionPlan switch
+
+            await _subscriptionRepository.Update(userSubscription);
+        }
+
+        public Task HandleTrialEnding(Subscription stripeSubscription)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<bool> HasActiveSubscription(string accountId)
+        {
+            var sub = await _subscriptionRepository.GetByAccountId(accountId);
+            return sub?.Status is SubscriptionStatus.Active or SubscriptionStatus.Trialing;
+        }
+
+        public async Task<bool> IsTrialing(string accountId)
+        {
+            var sub = await _subscriptionRepository.GetByAccountId(accountId);
+            return sub?.Status == SubscriptionStatus.Trialing;
+        }
+
+        public async Task SyncSubscription(string subscriptionId)
+        {
+            var stripeSub = await _stripeSubscriptionService.GetAsync(subscriptionId);
+            var sub = await _subscriptionRepository.GetByStripeId(subscriptionId);
+
+            if (stripeSub == null || sub == null) return;
+
+            await UpdateSubscription(stripeSub);
+        }
+
+        private static SubscriptionPlan MapPlanType(string plan)
+        {
+            return plan switch
             {
-                SubscriptionPlan.Pro => SubscriptionTier.Pro,
-                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
-                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
-                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
-                _ => SubscriptionTier.Free
+                "price_1QnSNQIC8mU8ubEvfggFA6l7" => SubscriptionPlan.Pro,
+                "price_1QnSPRIC8mU8ubEvQmB2U0BK" => SubscriptionPlan.ProYearly,
+                "price_1QnSNnIC8mU8ubEvjvSxX0dV" => SubscriptionPlan.Ultimate,
+                "price_1QnSQ8IC8mU8ubEv3nwoEmeq" => SubscriptionPlan.UltimateYearly,
+                _ => throw new ArgumentException($"Invalid plan type: {plan}", nameof(plan))
             };
-            
-            await accountRepository.Update(account);
         }
-        catch (Exception ex)
+
+        private static SubscriptionStatus MapSubscriptionStatus(string status)
         {
-            logger.LogError(ex, "Error activating subscription for account {AccountId}", accountId);
-            throw;
-        }
-        
-    }
+            if (string.IsNullOrWhiteSpace(status))
+                throw new ArgumentNullException(nameof(status));
 
-    public async Task CancelSubscription(string subscriptionId, DateTime cancelDate)
-    {
-        try
-        {
-            var subscription = await subscriptionRepository.GetByStripeId(subscriptionId);
-            if (subscription == null) return;
-
-            subscription.Status = SubscriptionStatus.Canceled;
-            subscription.EndDate = cancelDate;
-
-            var account = await accountRepository.Get(subscription.AccountId);
-            if (account == null) return;
-            
-            account.Tier = SubscriptionTier.Free;
-            await subscriptionRepository.Update(subscription);
-            await accountRepository.Update(account);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error canceling subscription {SubscriptionId}", subscriptionId);
-            throw;
-        }
-    }
-
-    public async Task UpdateSubscription(string subscriptionId, string status, string priceId, DateTime currentPeriodEnd)
-    {
-        try
-        {
-            var subscription = await subscriptionRepository.GetByStripeId(subscriptionId);
-            if (subscription == null) return;
-
-            subscription.Status = MapSubscriptionStatus(status);
-            subscription.SubscriptionPlan = MapPlanType(priceId);
-            subscription.EndDate = currentPeriodEnd;
-            
-            var account = await accountRepository.Get(subscription.AccountId);
-            if (account == null) return;
-
-            account.Tier = subscription.SubscriptionPlan switch
+            return status switch
             {
-                SubscriptionPlan.Pro => SubscriptionTier.Pro,
-                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
-                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
-                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
-                _ => SubscriptionTier.Free
+                "active" => SubscriptionStatus.Active,
+                "canceled" => SubscriptionStatus.Cancelled,
+                "incomplete" => SubscriptionStatus.Incomplete,
+                "incomplete_expired" => SubscriptionStatus.IncompleteExpired,
+                "past_due" => SubscriptionStatus.PastDue,
+                "trialing" => SubscriptionStatus.Trialing,
+                "unpaid" => SubscriptionStatus.Unpaid,
+                "paused" => SubscriptionStatus.Paused,
+                _ => SubscriptionStatus.Unknown
             };
-            
-            await subscriptionRepository.Update(subscription);
-            await accountRepository.Update(account);
         }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error updating subscription {SubscriptionId}", subscriptionId);
-            throw;
-        }
-    }
 
-    public async Task RenewSubscription(string subscriptionId, DateTime newEndDate,string priceId, string status = "")
-    {
-        try
+        private static SubscriptionTier MapPlanToTier(SubscriptionPlan plan) => plan switch
         {
-            var subscription = await subscriptionRepository.GetByStripeId(subscriptionId);
-            if (subscription == null) return;
-        
-            subscription.EndDate = newEndDate;
-            subscription.Status = string.IsNullOrWhiteSpace(status) ? SubscriptionStatus.Active : MapSubscriptionStatus(status);
-            subscription.SubscriptionPlan = MapPlanType(priceId);
-        
-            var account = await accountRepository.Get(subscription.AccountId);
-            if (account == null) return;
-            
-            account.Tier = subscription.SubscriptionPlan switch
-            {
-                SubscriptionPlan.Pro => SubscriptionTier.Pro,
-                SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
-                SubscriptionPlan.Ultimate => SubscriptionTier.Ultimate,
-                SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
-                _ => SubscriptionTier.Free
-            };
-            
-            await subscriptionRepository.Update(subscription);
-            await accountRepository.Update(account);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error renewing subscription {SubscriptionId}", subscriptionId);
-            throw;
-        }
-    }
-
-    public async Task HandleFailedPayment(string subscriptionId, DateTime failureDate)
-    {
-        try
-        {
-            var subscription = await subscriptionRepository.GetByStripeId(subscriptionId);
-            if (subscription == null) return;
-        
-            subscription.Status = SubscriptionStatus.PastDue;
-            subscription.EndDate = failureDate;
-        
-            await subscriptionRepository.Update(subscription);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Error handling failed payment for subscription {SubscriptionId}", subscriptionId);
-            throw;
-        }
-    }
-
-
-    private static SubscriptionPlan MapPlanType(string plan)
-    {
-        if (string.IsNullOrWhiteSpace(plan)) throw new ArgumentNullException(nameof(plan));
-        
-        return plan switch
-        {
-            "price_1QnSNQIC8mU8ubEvfggFA6l7" => SubscriptionPlan.Pro,
-            "price_1QnSPRIC8mU8ubEvQmB2U0BK" => SubscriptionPlan.ProYearly,
-            "price_1QnSNnIC8mU8ubEvjvSxX0dV" => SubscriptionPlan.Ultimate,
-            "price_1QnSQ8IC8mU8ubEv3nwoEmeq" => SubscriptionPlan.UltimateYearly,
-            _ => throw new ArgumentException($"Invalid plan type: {plan}", nameof(plan))
+            SubscriptionPlan.Pro or SubscriptionPlan.ProYearly => SubscriptionTier.Pro,
+            SubscriptionPlan.Ultimate or SubscriptionPlan.UltimateYearly => SubscriptionTier.Ultimate,
+            _ => SubscriptionTier.Free
         };
     }
-    
-    private static SubscriptionStatus MapSubscriptionStatus(string status)
-    {
-        if (string.IsNullOrWhiteSpace(status)) throw new ArgumentNullException(nameof(status));
-        
-        return status switch
-        {
-            "active" => SubscriptionStatus.Active,
-            "canceled" => SubscriptionStatus.Canceled,
-            "incomplete" => SubscriptionStatus.Unknown,
-            "incomplete_expired" => SubscriptionStatus.Unknown,
-            "past_due" => SubscriptionStatus.PastDue,
-            "trialing" => SubscriptionStatus.Unknown,
-            "unpaid" => SubscriptionStatus.Unknown,
-            _ => SubscriptionStatus.Unknown
-        };
-    }
-    
 }

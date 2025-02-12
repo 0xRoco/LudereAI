@@ -3,6 +3,7 @@ using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Models.Configs;
 using Microsoft.AspNetCore.Mvc;
 using LudereAI.Web.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LudereAI.Web.Controllers;
 
@@ -24,6 +25,7 @@ public class HomeController : Controller
     {
         return View();
     }
+    
     
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

@@ -5,5 +5,10 @@ public enum SubscriptionStatus
     Unknown,
     Active,
     PastDue,
-    Canceled,
+    Cancelled,
+    Incomplete,
+    IncompleteExpired,
+    Trialing,
+    Unpaid,
+    Paused,
 }

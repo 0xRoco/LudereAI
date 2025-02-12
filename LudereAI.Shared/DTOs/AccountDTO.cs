@@ -18,6 +18,6 @@ public class AccountDTO
     public string FullName => $"{FirstName} {LastName}".Trim();
     public bool IsSubscribed => Tier is SubscriptionTier.Pro or SubscriptionTier.Ultimate;
     
-    public SubscriptionDTO? Subscription { get; set; }
+    public UserSubscriptionDTO? Subscription { get; set; }
     public IEnumerable<ConversationDTO> Conversations { get; set; }
 }

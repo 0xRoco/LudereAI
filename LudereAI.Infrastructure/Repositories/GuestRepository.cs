@@ -39,7 +39,7 @@ public class GuestRepository : IGuestRepository
 
     public async Task<bool> Update(GuestAccount guestAccount)
     {
-        _context.Guests.Update(guestAccount);
+        _context.Guests.Entry(guestAccount).State = EntityState.Modified;
         return await _context.SaveChangesAsync() > 0;
     }
 
@@ -48,7 +48,7 @@ public class GuestRepository : IGuestRepository
         var guest = await _context.Guests.FindAsync(id);
         if (guest == null) return false;
 
-        _context.Guests.Remove(guest);
+        _context.Guests.Entry(guest).State = EntityState.Deleted;
         return await _context.SaveChangesAsync() > 0;
     }
 

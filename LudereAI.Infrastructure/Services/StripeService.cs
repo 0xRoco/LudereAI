@@ -67,11 +67,33 @@ public class StripeService : IStripeService
             {
                 { "AccountId", account.Id },
                 { "Username", account.Username },
+            },
+            SubscriptionData = new SessionSubscriptionDataOptions()
+            {
+                Metadata = new Dictionary<string, string>
+                {
+                    { "AccountId", account.Id },
+                    { "Username", account.Username }
+                }
             }
         };
 
         var session = await _sessionService.CreateAsync(options);
         return session;
+    }
+
+    public async Task<string> CreateCustomerPortalSession(string customerId)
+    {
+        var options = new Stripe.BillingPortal.SessionCreateOptions()
+        {
+            Customer = customerId,
+            ReturnUrl = "https://ludereai.com/account",
+        };
+
+        var service = new Stripe.BillingPortal.SessionService();
+        var sessions = await service.CreateAsync(options);
+        
+        return sessions.Url;
     }
 
     public async Task SyncAllAccounts()

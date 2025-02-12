@@ -9,6 +9,7 @@ namespace LudereAI.Application.Interfaces.Services;
 public interface IStripeService
 {
     Task<Session?> CreateCheckoutSession(AccountDTO dto, string priceId, SubscriptionPlan subscriptionPlan);
+    Task<string> CreateCustomerPortalSession(string customerId);
     Task SyncAllAccounts();
     Task<string> CreateOrSyncAccount(Account account);
 }

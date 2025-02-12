@@ -20,7 +20,7 @@ public class DomainMappingProfile : Profile
         CreateMap<Message, MessageDTO>();
         CreateMap<MessageDTO, Message>();
         
-        CreateMap<Subscription, SubscriptionDTO>();
-        CreateMap<SubscriptionDTO, Subscription>();
+        CreateMap<UserSubscription, UserSubscriptionDTO>();
+        CreateMap<UserSubscriptionDTO, UserSubscription>();
     }
 }

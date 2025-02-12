@@ -21,13 +21,12 @@ public class StripeController : ControllerBase
 
     public StripeController(ILogger<StripeController> logger,
         ISubscriptionService subscriptionService,
-        SubscriptionService stripeSubscriptionService,
-        IOptions<StripeConfig> stripeConfig)
+        IOptions<StripeConfig> stripeConfig, SubscriptionService stripeSubscriptionService)
     {
         _logger = logger;
         _subscriptionService = subscriptionService;
-        _stripeSubscriptionService = stripeSubscriptionService;
         _stripeConfig = stripeConfig;
+        _stripeSubscriptionService = stripeSubscriptionService;
     }
 
     [HttpPost("webhook")]
@@ -63,95 +62,40 @@ public class StripeController : ControllerBase
     {
         switch (stripeEvent.Type)
         {
-            case EventTypes.CheckoutSessionCompleted:
-                await HandleCheckoutSessionCompleted(stripeEvent);
-                break;
-            case EventTypes.InvoicePaymentSucceeded:
-                await HandleInvoicePaymentSucceeded(stripeEvent);
-                break;
-            case EventTypes.InvoicePaymentFailed:
-                await HandleInvoicePaymentFailed(stripeEvent);
-                break;
+                case EventTypes.CheckoutSessionCompleted:
+                    if (stripeEvent.Data.Object is Session session)
+                    {
+                        if (session.PaymentStatus != "paid") return;
+                        var sub = await _stripeSubscriptionService.GetAsync(session.SubscriptionId);
+                        await _subscriptionService.CreateSubscription(sub);
+                    }
+                    break;
             
-            case EventTypes.CustomerSubscriptionUpdated:
-                await HandleCustomerSubscriptionUpdated(stripeEvent);
-                break;
-            
-            case EventTypes.CustomerSubscriptionDeleted:
-                await HandleCustomerSubscriptionDeleted(stripeEvent);
-                break;
+                case EventTypes.CustomerSubscriptionCreated:
+                    //if (stripeEvent.Data.Object is Subscription newSubscription) await _subscriptionService.CreateSubscription(newSubscription);
+                    break;
+                case EventTypes.CustomerSubscriptionUpdated:
+                    if (stripeEvent.Data.Object is Subscription updatedSubscription) await _subscriptionService.UpdateSubscription(updatedSubscription);
+                    break;
+
+                case EventTypes.CustomerSubscriptionDeleted:
+                    if (stripeEvent.Data.Object is Subscription deletedSubscription)
+                        await _subscriptionService.HandleSubscriptionCanceled(deletedSubscription);
+                    break;
+
+                // Payment failure handling
+                case EventTypes.InvoicePaymentFailed:
+                    if (stripeEvent.Data.Object is Invoice failedInvoice) await _subscriptionService.HandlePaymentFailure(failedInvoice);
+                    break;
+
+                // Trial ending notification (optional but common)
+                case EventTypes.CustomerSubscriptionTrialWillEnd:
+                    if (stripeEvent.Data.Object is Subscription trialEndingSub) await _subscriptionService.HandleTrialEnding(trialEndingSub);
+                    break;
             
             default:
                 _logger.LogWarning("Unhandled event type {EventType}", stripeEvent.Type);
                 break;
         }
     }
-    
-    private async Task HandleCheckoutSessionCompleted(Event stripeEvent)
-    {
-        var session = stripeEvent.Data.Object as Session ?? throw new InvalidOperationException("Invalid session object");
-        
-        if (session.PaymentStatus != "paid")
-        {
-            _logger.LogWarning("Invalid payment status {PaymentStatus}", session.PaymentStatus);
-            return;
-        }
-
-        var subscription = await _stripeSubscriptionService.GetAsync(session.SubscriptionId);
-        
-        var priceId = subscription.Items.Data.FirstOrDefault()?.Price.Id ?? "";
-        
-        
-        
-        await _subscriptionService.ActivateSubscription(
-            session.ClientReferenceId, 
-            session.SubscriptionId, 
-            priceId, 
-            subscription.CurrentPeriodStart, 
-            subscription.CurrentPeriodEnd,
-            subscription.Status);
-    }
-    
-    private async Task HandleInvoicePaymentSucceeded(Event stripeEvent)
-    {
-        var invoice = stripeEvent.Data.Object as Invoice ?? throw new InvalidOperationException("Invalid invoice object");
-        
-        var subscription = await _stripeSubscriptionService.GetAsync(invoice.SubscriptionId);
-        
-        var priceId = subscription.Items.Data.FirstOrDefault()?.Price.Id ?? "";
-        
-        await _subscriptionService.RenewSubscription(
-            subscription.Id, 
-            subscription.CurrentPeriodEnd,
-            priceId,
-            subscription.Status);
-    }
-    
-    private async Task HandleInvoicePaymentFailed(Event stripeEvent)
-    {
-        var invoice = stripeEvent.Data.Object as Invoice ?? throw new InvalidOperationException("Invalid invoice object");
-        
-        await _subscriptionService.HandleFailedPayment(invoice.SubscriptionId, invoice.PeriodEnd);
-    }
-    
-    private async Task HandleCustomerSubscriptionUpdated(Event stripeEvent)
-    {
-        var subscription = stripeEvent.Data.Object as Subscription ?? throw new InvalidOperationException("Invalid subscription object");
-        
-        var priceId = subscription.Items.Data.FirstOrDefault()?.Price.Id ?? "";
-        
-        await _subscriptionService.UpdateSubscription(
-            subscription.Id, 
-            subscription.Status, 
-            priceId, 
-            subscription.CurrentPeriodEnd);
-    }
-    
-    private async Task HandleCustomerSubscriptionDeleted(Event stripeEvent)
-    {
-        var subscription = stripeEvent.Data.Object as Subscription ?? throw new InvalidOperationException("Invalid subscription object");
-        
-        await _subscriptionService.CancelSubscription(subscription.Id, subscription.EndedAt ?? DateTime.UtcNow);
-    }
-
 }

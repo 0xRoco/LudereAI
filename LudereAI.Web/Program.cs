@@ -1,41 +1,140 @@
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Infrastructure.Services;
+using LudereAI.Web.Core;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddHttpClient("LudereAI", client =>
+try
 {
-    client.BaseAddress = new Uri(
-        builder.Environment.IsDevelopment()
-            ? "https://localhost:9099/api/"
-            : "https://api.ludereai.com");
-});
-builder.Services.AddTransient<IAPIClient, APIClient>();
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+    // Configure core services
+    ConfigureSentry(builder);
+    ConfigureServices(builder);
+    
+    var app = builder.Build();
+    
+    // Configure logging
+    ConfigureLogging(app, args);
+    
+    // Configure middleware pipeline
+    ConfigureMiddleware(app);
+    
+    await app.RunAsync();
+}
+catch (Exception ex)
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    Log.Fatal(ex, "Application start-up failed");
+    throw;
+}
+finally
+{
+    Log.CloseAndFlush();
+}
+return;
+
+void ConfigureSentry(WebApplicationBuilder builder)
+{
+    if (builder.Environment.IsDevelopment()) return;
+
+    builder.WebHost.UseSentry(o =>
+    {
+        o.Dsn = builder.Configuration["Sentry:Dsn"];
+        o.Environment = builder.Environment.EnvironmentName;
+        o.TracesSampleRate = 0.2;
+        o.MinimumEventLevel = LogLevel.Error;
+        o.MinimumBreadcrumbLevel = LogLevel.Information;
+        o.SendDefaultPii = true;
+        o.AttachStacktrace = true;
+    });
 }
 
-app.UseHttpsRedirection();
-app.UseRouting();
+void ConfigureServices(WebApplicationBuilder builder)
+{
+    builder.Services.AddControllersWithViews();
+    
+    ConfigureAuthentication(builder);
+    ConfigureHttpClient(builder);
+    RegisterDependencies(builder);
+    
+    builder.Services.AddOptions();
+    builder.Services.AddHttpContextAccessor();
+    
+    Log.Information("Services registered");
+}
 
-app.UseAuthorization();
+void ConfigureAuthentication(WebApplicationBuilder builder)
+{
+    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+        {
+            options.LoginPath = "/Login";
+            options.LogoutPath = "/Logout";
+        });
+    
+    Log.Information("Authentication configured");
+}
 
-app.MapStaticAssets();
+void ConfigureHttpClient(WebApplicationBuilder builder)
+{
+    builder.Services.AddHttpClient("LudereAI", client =>
+    {
+        var env = builder.Environment.EnvironmentName;
+        client.BaseAddress = env == Environments.Development
+            ? new Uri("https://localhost:9099/")
+            : new Uri("https://api.ludereai.com");
+    }).AddHttpMessageHandler<BearerTokenHandler>();
+    
+    builder.Services.AddTransient<BearerTokenHandler>();
+    
+    Log.Information("HTTP client configured");
+}
 
-app.MapControllerRoute(
-        name: "default",
-        pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+void RegisterDependencies(WebApplicationBuilder builder)
+{
+    builder.Services.AddTransient<IAPIClient, APIClient>();
+    
+    Log.Information("Dependencies registered");
+}
 
+void ConfigureMiddleware(WebApplication app)
+{
+    if (!app.Environment.IsDevelopment())
+    {
+        app.UseExceptionHandler("/Home/Error");
+        app.UseHsts();
+    }
 
-app.Run();
+    app.UseHttpsRedirection();
+    app.UseRouting();
+    app.UseSentryTracing();
+    app.UseMiddleware<TokenAuthenticationMiddleware>();
+    app.UseAuthentication();
+    app.UseAuthorization();
+    
+    app.MapStaticAssets();
+    app.MapControllerRoute(
+            name: "default",
+            pattern: "{controller=Home}/{action=Index}/{id?}")
+        .WithStaticAssets();
+    
+    Log.Information("Middleware pipeline configured");
+}
+
+void ConfigureLogging(WebApplication app, string[] args)
+{
+    Log.Information("Logging started at {Now}", DateTime.UtcNow.ToString("u"));
+    Log.Information("Log directory: {Directory}", "$LogDirectory$");
+    Log.Information("Command line arguments: [ {Args} ]", string.Join(" ", args));
+    Log.Information("Environment: {Environment}", app.Environment.EnvironmentName);
+    
+    if (app.Environment.IsDevelopment())
+    {
+        Log.Warning("Development environment detected. Using development Web URL: {URL}", "https://localhost:8088/");
+        Log.Debug("Sentry is disabled in development environment");
+    }
+    else
+    {
+        Log.Information("Production environment detected. Using production Web URL: {URL}", "https://dev.LudereAI.com/");
+    }
+}

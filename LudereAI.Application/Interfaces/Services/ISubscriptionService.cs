@@ -1,15 +1,23 @@
 ﻿using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
+using Stripe;
 
 namespace LudereAI.Application.Interfaces.Services;
 
 public interface ISubscriptionService
 {
-    Task<SubscriptionDTO?> GetSubscription(string subscriptionId);
-    Task<SubscriptionDTO?> GetSubscriptionByAccountId(string accountId);
-    Task ActivateSubscription(string accountId, string subscriptionId, string priceId, DateTime startDate, DateTime endDate, string status = "");
-    Task CancelSubscription(string subscriptionId, DateTime cancelDate);
-    Task UpdateSubscription(string subscriptionId, string status, string priceId, DateTime currentPeriodEnd);
-    Task RenewSubscription(string subscriptionId, DateTime newEndDate,string priceId, string status = "");
-    Task HandleFailedPayment(string subscriptionId, DateTime failureDate);
+    Task<UserSubscriptionDTO?> GetSubscription(string subscriptionId);
+    Task<UserSubscriptionDTO?> GetSubscriptionByAccountId(string accountId);
+    
+    Task CreateSubscription(Subscription subscription);
+    Task UpdateSubscription(Subscription subscription);
+    Task HandleSubscriptionCanceled(Subscription subscription);
+    Task HandlePaymentFailure(Invoice invoice);
+    Task HandleTrialEnding(Subscription subscription);
+    
+    Task<bool> HasActiveSubscription(string accountId);
+    Task<bool> IsTrialing(string accountId);
+    
+    Task SyncSubscription(string subscriptionId);
+    
 }

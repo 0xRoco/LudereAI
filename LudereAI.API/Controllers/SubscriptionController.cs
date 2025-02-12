@@ -41,25 +41,25 @@ public class SubscriptionController : ControllerBase
     }
 
     [HttpGet("me")]
-    public async Task<ActionResult<APIResult<SubscriptionDTO>>> GetCurrentSubscription()
+    public async Task<ActionResult<APIResult<UserSubscriptionDTO>>> GetCurrentSubscription()
     {
         var accountId = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (string.IsNullOrWhiteSpace(accountId))
         {
             _logger.LogWarning("Invalid token received for subscription attempt");
-            return BadRequest(APIResult<SubscriptionDTO>.Error(HttpStatusCode.BadRequest, "Invalid token"));
+            return BadRequest(APIResult<UserSubscriptionDTO>.Error(HttpStatusCode.BadRequest, "Invalid token"));
         }
 
         var account = await _accountService.GetAccount(accountId);
         if (account == null)
         {
             _logger.LogWarning("Account not found for ID {AccountId}", accountId);
-            return NotFound(APIResult<SubscriptionDTO>.Error(HttpStatusCode.NotFound, "Account not found"));
+            return NotFound(APIResult<UserSubscriptionDTO>.Error(HttpStatusCode.NotFound, "Account not found"));
         }
         
         var subscription = await _subscriptionService.GetSubscriptionByAccountId(account.Id);
 
-        return Ok(APIResult<SubscriptionDTO>.Success(data: subscription));
+        return Ok(APIResult<UserSubscriptionDTO>.Success(data: subscription));
     }
     
     [HttpGet("plans"), AllowAnonymous]

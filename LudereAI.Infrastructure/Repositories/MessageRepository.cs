@@ -33,18 +33,7 @@ public class MessageRepository(DatabaseContext context) : IMessageRepository
         var msg = await context.Messages.FirstOrDefaultAsync(m => m.Id == message.Id);
         if (msg == null) return false;
         
-        msg.Content = message.Content;
-        msg.Role = message.Role;
-        
-        var local = context.Set<Message>().Local.FirstOrDefault(e => e.Id == message.Id);
-
-        if (local != null)
-        {
-            context.Entry(local).State = EntityState.Detached;
-        }
-        
-        
-        context.Messages.Update(msg);
+        context.Messages.Entry(message).State = EntityState.Modified;
         await context.SaveChangesAsync();
         return true;
     }
@@ -54,7 +43,7 @@ public class MessageRepository(DatabaseContext context) : IMessageRepository
         var msg = await context.Messages.FirstOrDefaultAsync(m => m.Id == messageId);
         if (msg == null) return false;
         
-        context.Messages.Remove(msg);
+        context.Messages.Entry(msg).State = EntityState.Deleted;
         await context.SaveChangesAsync();
         return true;
     }

@@ -17,7 +17,7 @@
         FontWeight="Regular"
         FontSize="14"
         TextOptions.TextFormattingMode="Ideal"
-        Title="LubereAI - Chat"
+        Title="LudereAI - Chat"
         Height="800" Width="1200">
 
     <Window.Resources>
@@ -124,8 +124,8 @@
                                     Margin="52,0,0,16">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="✨ {0} ({1})">
-                                            <Binding Path="CurrentAccount.Subscription.SubscriptionPlan" Mode="TwoWay" />
-                                            <Binding Path="CurrentAccount.Subscription.Status" Mode="TwoWay" />
+                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay" FallbackValue="Free" />
+                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName" Mode="TwoWay"  FallbackValue=""/>
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>

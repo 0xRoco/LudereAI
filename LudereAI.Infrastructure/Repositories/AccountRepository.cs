@@ -76,16 +76,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         {
             if (await Get(account.Id) == null) return false;
             
-            var local = context.Set<Account>()
-                .Local
-                .FirstOrDefault(entry => entry.Id.Equals(account.Id));
-            
-            if (local != null)
-            {
-                context.Entry(local).State = EntityState.Detached;
-            }
-            
-            context.Accounts.Update(account);
+            context.Accounts.Entry(account).State = EntityState.Modified;
             await context.SaveChangesAsync();
             return true;
         }
@@ -101,7 +92,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         var account = await Get(accountId);
         if (account == null) return false;
 
-        context.Accounts.Remove(account);
+        context.Accounts.Entry(account).State = EntityState.Deleted;
         return await context.SaveChangesAsync() > 0;
     }
 
@@ -114,7 +105,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         return await Update(account);
     }
 
-    private async Task<(IEnumerable<Conversation> conversations, Subscription? subscription)> GetAccountData(string accountId)
+    private async Task<(IEnumerable<Conversation> conversations, UserSubscription? subscription)> GetAccountData(string accountId)
     {
         var conversations = await conversationRepository.GetConversationsByAccountId(accountId);
         var subscription = await subscriptionRepository.GetByAccountId(accountId);
