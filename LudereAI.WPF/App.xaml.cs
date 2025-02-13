@@ -22,6 +22,7 @@ public partial class App : Application
     public IHost? Host;
 
     private const string DevApiUrl = "https://localhost:9099/";
+    private const string StagApiUrl = "https://api-staging.ludereai.com/";
     private const string ProdApiUrl = "https://api.ludereai.com/";
     private readonly string _environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Production;
     private readonly LoggingLevelSwitch _loggingLevelSwitch = new();
@@ -103,6 +104,10 @@ public partial class App : Application
             Log.Warning("Development environment detected. Using development API URL: {URL}", DevApiUrl);
             Log.Debug("Sentry is disabled in development environment");
         }
+        else if (_environment == Environments.Staging)
+        {
+            Log.Information("Staging environment detected. Using staging API URL: {URL}", StagApiUrl);
+        }
         else
         {
             Log.Information("Production environment detected. Using production API URL: {URL}", ProdApiUrl);
@@ -146,10 +151,18 @@ public partial class App : Application
         // API Client
         services.AddHttpClient("LudereAI", client =>
         {
-            client.BaseAddress = new Uri(
-                _environment == Environments.Development
-                    ? DevApiUrl 
-                    : ProdApiUrl);
+            if (_environment == Environments.Development)
+            {
+                client.BaseAddress = new Uri(DevApiUrl);
+            }
+            else if (_environment == Environments.Staging)
+            {
+                client.BaseAddress = new Uri(StagApiUrl);
+            }
+            else
+            {
+                client.BaseAddress = new Uri(ProdApiUrl);
+            }
         });
 
         // Services

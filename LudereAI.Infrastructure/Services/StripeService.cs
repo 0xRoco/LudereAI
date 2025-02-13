@@ -82,12 +82,27 @@ public class StripeService : IStripeService
         return session;
     }
 
-    public async Task<string> CreateCustomerPortalSession(string customerId)
+    public async Task<string?> CreateCustomerPortalSession(string accountId)
     {
+        var account = await _accountRepository.Get(accountId);
+        if (account == null)
+        {
+            _logger.LogWarning("Account not found for ID {AccountId}", accountId);
+            return null;
+        }
+        
+        var customerId = account.StripeCustomerId;
+        if (string.IsNullOrWhiteSpace(customerId))
+        {
+            _logger.LogWarning("Account {AccountId} does not have a Stripe customer ID", accountId);
+            return null;
+        }
+        
+        
         var options = new Stripe.BillingPortal.SessionCreateOptions()
         {
             Customer = customerId,
-            ReturnUrl = "https://ludereai.com/account",
+            ReturnUrl = $"{_stripeConfig.Domain}/account",
         };
 
         var service = new Stripe.BillingPortal.SessionService();

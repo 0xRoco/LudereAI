@@ -48,7 +48,7 @@ public class AuthController : Controller
         
         if (result?.Data?.Account is null)
         {
-            ModelState.AddModelError(string.Empty, "Invalid login attempt");
+            ModelState.AddModelError(string.Empty, result?.Message ?? "Invalid login attempt");
             return View(model);
         }
 
@@ -61,7 +61,7 @@ public class AuthController : Controller
         return RedirectToAction("Index", "Home");
     }
     
-    
+    [HttpGet]
     public IActionResult SignUp()
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -69,7 +69,43 @@ public class AuthController : Controller
             return RedirectToAction("Index", "Home");
         }
         
-        return View();
+        return View(new SignUpViewModel());
+    }
+    
+    
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SignUp(SignUpViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ModelState.AddModelError(string.Empty, "Invalid sign up attempt");
+            return View(model);
+        }
+        
+        if (model.Password != model.ConfirmPassword)
+        {
+            ModelState.AddModelError("Password", "Passwords do not match");
+            return View(model);
+        }
+        
+        var result = await _apiClient.PostAsync<string>("Auth/SignUp", new SignUpDTO
+        {
+            FirstName = model.FirstName,
+            LastName = model.LastName,
+            Username = model.Username,
+            Password = model.Password,
+            Email = model.Email,
+            DeviceId = "",
+        });
+        
+        var success = result?.IsSuccess ?? false;
+
+        if (success) return RedirectToAction("Login");
+        
+        
+        ModelState.AddModelError(string.Empty, result?.Message ?? "Invalid sign up attempt");
+        return View(model);
     }
     
     

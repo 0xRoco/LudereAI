@@ -107,6 +107,30 @@ public class SubscriptionController : ControllerBase
                 APIResult<string>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
     }
+    
+    [HttpGet("CustomerPortal")]
+    public async Task<ActionResult<APIResult<string>>> CustomerPortal()
+    {
+        var account = await ValidateAndGetAccount();
+        if (account.Result != null) return account.Result;
+        
+        if (account.Account == null)
+        {
+            _logger.LogWarning("Account not found for ID {AccountId}", account.Account!.Id);
+            return NotFound(APIResult<string>.Error(HttpStatusCode.NotFound, "Account not found"));
+        }
+
+        var sessionUrl = await _stripeService.CreateCustomerPortalSession(account.Account.Id);
+        if (string.IsNullOrWhiteSpace(sessionUrl))
+        {
+            _logger.LogWarning("Failed to create customer portal session for account: {AccountId}", account.Account!.Id);
+            return StatusCode((int)HttpStatusCode.InternalServerError,
+                APIResult<string>.Error(HttpStatusCode.ServiceUnavailable, "Payment service unavailable"));
+        }
+
+        _logger.LogInformation("Successfully created customer portal session for account: {AccountId}", account.Account!.Id);
+        return Ok(APIResult<string>.Success(data: sessionUrl));
+    }
 
     private async Task<(AccountDTO? Account, ActionResult<APIResult<string>>? Result)> ValidateAndGetAccount()
     {

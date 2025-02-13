@@ -11,4 +11,5 @@ public class StripeConfig
     public string UltimateYearlyId { get; set; }
     public string SuccessUrl { get; set; }
     public string CancelUrl { get; set; }
+    public string Domain { get; set; }
 }

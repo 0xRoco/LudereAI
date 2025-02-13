@@ -1,6 +1,6 @@
 ﻿@model PricingPlanViewModel
 
-<div class="col-md-6 col-lg-3 mb-4" data-aos="fade-up" data-aos-delay="@Model.AnimationDelay">
+<div class="col-lg-@Model.ColumnWidth mb-4" data-aos="fade-up" data-aos-delay="@Model.AnimationDelay">
     <div class="pricing-card @(Model.IsShine ? "shine" : "") text-center">
         @if (!string.IsNullOrEmpty(Model.Badge))
         {
@@ -19,9 +19,35 @@
         <ul class="list-unstyled">
             @foreach (var feature in Model.Features)
             {
-                <li>✔ @feature</li>
+                <li><i class="fas fa-check text-success"></i> @feature</li>
             }
         </ul>
-        <a href="@Model.CtaLink" class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3">@Model.CtaText</a>
+
+        @if (Model.IsFormSubmit)
+        {
+            <form asp-controller="@Model.FormController"
+                  asp-action="@Model.FormAction"
+                  method="@Model.FormMethod">
+
+                @foreach (var param in Model.FormParameters)
+                {
+                    <input type="hidden" name="@param.Key" value="@param.Value" />
+                }
+
+                <button type="submit"
+                        class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+                        @(Model.IsDisabled ? "disabled" : "")>
+                    @Model.CtaText
+                </button>
+            </form>
+        }
+        else
+        {
+            <a href="@Model.CtaLink"
+               class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+               @(Model.IsDisabled ? "disabled" : "")>
+                @Model.CtaText
+            </a>
+        }
     </div>
 </div>

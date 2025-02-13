@@ -35,8 +35,6 @@ return;
 
 void ConfigureSentry(WebApplicationBuilder builder)
 {
-    if (builder.Environment.IsDevelopment()) return;
-
     builder.WebHost.UseSentry(o =>
     {
         o.Dsn = builder.Configuration["Sentry:Dsn"];
@@ -65,8 +63,13 @@ void ConfigureServices(WebApplicationBuilder builder)
 
 void ConfigureAuthentication(WebApplicationBuilder builder)
 {
-    builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-        .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    builder.Services.AddAuthentication(options =>
+        {
+            options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        })
+        .AddCookie(options =>
         {
             options.LoginPath = "/Login";
             options.LogoutPath = "/Logout";
@@ -80,9 +83,18 @@ void ConfigureHttpClient(WebApplicationBuilder builder)
     builder.Services.AddHttpClient("LudereAI", client =>
     {
         var env = builder.Environment.EnvironmentName;
-        client.BaseAddress = env == Environments.Development
-            ? new Uri("https://localhost:9099/")
-            : new Uri("https://api.ludereai.com");
+        if (env == "Development")
+        {
+            client.BaseAddress = new Uri("https://localhost:9099/");
+        }
+        else if (env == "Staging")
+        {
+            client.BaseAddress = new Uri("https://api-staging.LudereAI.com/");
+        }
+        else
+        {
+            client.BaseAddress = new Uri("https://api.LudereAI.com/");
+        }
     }).AddHttpMessageHandler<BearerTokenHandler>();
     
     builder.Services.AddTransient<BearerTokenHandler>();
@@ -132,9 +144,12 @@ void ConfigureLogging(WebApplication app, string[] args)
     {
         Log.Warning("Development environment detected. Using development Web URL: {URL}", "https://localhost:8088/");
         Log.Debug("Sentry is disabled in development environment");
+    }else if (app.Environment.IsStaging())
+    {
+        Log.Information("Staging environment detected. Using staging Web URL: {URL}", "https://staging.LudereAI.com/");
     }
     else
     {
-        Log.Information("Production environment detected. Using production Web URL: {URL}", "https://dev.LudereAI.com/");
+        Log.Information("Production environment detected. Using production Web URL: {URL}", "https://LudereAI.com/");
     }
 }

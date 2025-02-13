@@ -18,7 +18,17 @@
         <div class="col-md-6">
             <div class="pricing-card text-center p-4">
                 <h2 class="mt-4 mb-4">Login</h2>
-
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        <ul class="mb-0">
+                            @foreach(var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
                 <form method="post" asp-action="Login">
                     <div class="mb-4">
                         <label for="username" class="form-label">Username</label>

@@ -80,7 +80,7 @@
 
 <footer class="text-center py-3" data-aos="fade-up">
     <div class="container">
-        <p class="mb-0">&copy; 2025 LudereAI. All rights reserved.</p>
+        <p class="mb-0">&copy; @DateTime.UtcNow.Year LudereAI. All rights reserved.</p>
     </div>
 </footer>
 
@@ -93,17 +93,6 @@
     AOS.init({
         duration: 800,
         once: true
-    });
-
-    Sentry.onLoad(function() {
-        Sentry.init({
-            integrations: [
-                Sentry.replayIntegration(),
-            ],
-
-            replaysSessionSampleRate: 0.1,
-            replaysOnErrorSampleRate: 1.0,
-        });
     });
 </script>
 @await RenderSectionAsync("Scripts", required: false)

@@ -228,6 +228,9 @@ void ConfigureLogging(WebApplication app, string[] args)
     {
         Log.Warning("Development environment detected. Using development API URL: {URL}", "https://localhost:9099/scalar/");
         Log.Debug("Sentry is disabled in development environment");
+    }else if (app.Environment.IsStaging())
+    {
+        Log.Information("Staging environment detected. Using staging API URL: {URL}", "https://api-staging.LudereAI.com/");
     }
     else
     {
@@ -246,22 +249,18 @@ async Task EnsureDatabaseAsync(WebApplication app)
 
 void ConfigureMiddleware(WebApplication app)
 {
-    if (app.Environment.IsDevelopment())
+    app.MapOpenApi();
+    app.MapScalarApiReference(options =>
     {
-        Log.Information("API URL: {Url}", "https://localhost:9099/scalar/");
-        app.MapOpenApi();
-        app.MapScalarApiReference(options =>
+        options.WithHttpBearerAuthentication(bearerOptions =>
         {
-            options.WithHttpBearerAuthentication(bearerOptions =>
-            {
-                bearerOptions.Token = "Bearer";
-            });
-            options.Authentication = new ScalarAuthenticationOptions
-            {
-                PreferredSecurityScheme = "Bearer"
-            };
+            bearerOptions.Token = "Bearer";
         });
-    }
+        options.Authentication = new ScalarAuthenticationOptions
+        {
+            PreferredSecurityScheme = "Bearer"
+        };
+    });
 
     app.UseHttpsRedirection();
     app.UseSentryTracing();
