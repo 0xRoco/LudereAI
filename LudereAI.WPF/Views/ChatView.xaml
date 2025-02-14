@@ -183,12 +183,12 @@
                                                              BorderThickness="1.5"
                                                              BorderBrush="{DynamicResource MaterialDesignDivider}">
                                             <StackPanel Margin="16,12">
-                                                <TextBlock Text="{Binding Id, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                <TextBlock Text="{Binding GameContext, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                            TextTrimming="CharacterEllipsis"
                                                            Style="{StaticResource MaterialDesignBody1TextBlock}"
                                                            FontWeight="Medium" />
                                                 <TextBlock
-                                                    Text="{Binding CreatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    Text="{Binding UpdatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                     Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                                     Margin="0,4,0,0"
                                                     Opacity="0.7" />

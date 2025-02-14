@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 try
 {
+    Console.Title = "LudereAI Web";
     // Configure core services
     ConfigureSentry(builder);
     ConfigureServices(builder);

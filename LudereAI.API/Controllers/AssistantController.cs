@@ -3,7 +3,6 @@ using System.Security.Claims;
 using LudereAI.API.Core;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
-using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Chat;
 using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
@@ -42,14 +41,15 @@ public class AssistantController : ControllerBase
         {
             if (!requestDto.IsMessageValid())
             {
-                _logger.LogWarning("Empty message received in CreateMessage");
                 return BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Message cannot be empty"));
             }
 
             var validationResult = await ValidateAndGetAccountId();
-            if (validationResult.Result != null) return validationResult.Result;
+            if (validationResult.Result != null || string.IsNullOrWhiteSpace(validationResult.AccountId))
+                return validationResult.Result
+                       ?? Unauthorized(APIResult<MessageDTO>.Error(HttpStatusCode.Unauthorized, "Invalid user"));
             
-            if (!await _accountUsageService.CanSendMessage(validationResult.AccountId!))
+            if (!await _accountUsageService.CanSendMessage(validationResult.AccountId))
             {
                 return BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Daily message limit reached", new MessageDTO
                 {
@@ -60,7 +60,7 @@ public class AssistantController : ControllerBase
 
             if (!string.IsNullOrWhiteSpace(requestDto.Screenshot))
             {
-                if (!await _accountUsageService.CanAnalyseScreenshot(validationResult.AccountId!))
+                if (!await _accountUsageService.CanAnalyseScreenshot(validationResult.AccountId))
                 {
                     return BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Daily screenshot analysis limit reached", new MessageDTO()
                     {
@@ -70,7 +70,7 @@ public class AssistantController : ControllerBase
                 }
             }
 
-            var conversation = await GetOrCreateConversation(requestDto.ConversationId, validationResult.AccountId!);
+            var conversation = await GetOrCreateConversation(requestDto.ConversationId, validationResult.AccountId, requestDto.GameContext);
             if (conversation.Result != null) return conversation.Result;
 
             var response = await _openAIService.SendMessageAsync(conversation.Conversation!, requestDto);
@@ -118,9 +118,9 @@ public class AssistantController : ControllerBase
         return (null, accountId);
     }
 
-    private async Task<(ActionResult? Result, Domain.Models.Chat.Conversation? Conversation)> GetOrCreateConversation(string conversationId, string accountId)
+    private async Task<(ActionResult? Result, Conversation? Conversation)> GetOrCreateConversation(string conversationId, string accountId, string gameContext)
     {
-        var conversation = await _conversationRepository.GetConversationAsync(conversationId);
+        var conversation = await _conversationRepository.Get(conversationId);
         
         _logger.LogDebug("Conversation: {conversation}", conversation?.ToJson());
     
@@ -128,15 +128,22 @@ public class AssistantController : ControllerBase
         {
             conversation = new Conversation
             {
-                AccountId = accountId
+                AccountId = accountId,
+                GameContext = gameContext
             };
-            await _conversationRepository.CreateConversationAsync(conversation);
+            await _conversationRepository.Create(conversation);
             return (null, conversation);
         }
 
         if (conversation.AccountId != accountId)
         {
             return (Unauthorized(APIResult<MessageDTO>.Error(HttpStatusCode.Unauthorized, "Invalid user")), null);
+        }
+
+        if (conversation.GameContext != gameContext)
+        {
+            return (BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, 
+                "Active conversation game context does not match the request")), null);
         }
 
         return (null, conversation);

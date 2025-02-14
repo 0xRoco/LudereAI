@@ -81,11 +81,34 @@ public class OpenAIService : IOpenAIService
         }
     }
 
-    /*public async IAsyncEnumerable<AIResponse> StreamlineMessageAsync(Conversation conversation, AssistantRequestDTO requestDto)
+    public async IAsyncEnumerable<AIResponse> StreamlineMessageAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
-        var messages = BuildMessageHistory(conversation, requestDto);
+        ArgumentNullException.ThrowIfNull(conversation);
+        ArgumentNullException.ThrowIfNull(requestDto);
 
-        var streamingAsync = _chat.CompleteChatStreamingAsync(messages);
+        var account = await _accountService.GetAccount(conversation.AccountId);
+        if (account == null) throw new Exception("Account not found");
+
+
+        var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
+        if (file != null && !string.IsNullOrWhiteSpace(file.Url))
+        {
+            requestDto.Screenshot = file.Url;
+        }
+        
+        
+        var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
+        var chat = _chatClientFactory.CreateChatClient();
+        var options = new ChatCompletionOptions
+        {
+            EndUserId = conversation.AccountId,
+            MaxOutputTokenCount = 1048,
+            StoredOutputEnabled = true,
+            Temperature = 0.4f,
+            TopP = 0.8f
+        };
+        
+        var streamingAsync = chat.CompleteChatStreamingAsync(messages, options);
         await foreach (var completion in streamingAsync)
         {
             if (completion.ContentUpdate.Count <= 0) continue;
@@ -97,7 +120,7 @@ public class OpenAIService : IOpenAIService
                 Message = response.Text
             };
         }
-    }*/
+    }
 
     private async Task<string> ProcessRequestAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {

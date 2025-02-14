@@ -102,6 +102,11 @@ public partial class ChatViewModel : ObservableObject
     private async Task SendMessage()
     {
         if (!CanSendMessage) return;
+        if (CurrentConversation != null && CurrentConversation.GameContext != GameViewModel.CurrentGame)
+        {
+            AddSystemMessage("An active conversation is limited to only a single game, please start a new conversation.");
+            return;
+        }
 
         var message = CurrentMessage.Trim();
         CurrentMessage = string.Empty;

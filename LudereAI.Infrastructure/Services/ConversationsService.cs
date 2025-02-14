@@ -28,7 +28,7 @@ public class ConversationsService : IConversationsService
 
     public async Task<IEnumerable<ConversationDTO>> GetConversationsByUser(string userId)
     {
-        var conversations = await _conversationRepository.GetConversationsByAccountId(userId);
+        var conversations = await _conversationRepository.GetByAccountId(userId);
         var dtos = _mapper.Map<IEnumerable<ConversationDTO>>(conversations);
 
         foreach (var dto in dtos)
@@ -42,7 +42,7 @@ public class ConversationsService : IConversationsService
 
     public async Task<ConversationDTO?> GetConversation(string id)
     {
-        var conversation = await _conversationRepository.GetConversationAsync(id);
+        var conversation = await _conversationRepository.Get(id);
         
         if (conversation != null)
         {

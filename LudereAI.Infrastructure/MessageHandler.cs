@@ -14,15 +14,17 @@ public class MessageHandler : IMessageHandler
 {
     private readonly IFileStorageService _fileStorageService;
     private readonly IMessageRepository _messageRepository;
+    private readonly IConversationRepository _conversationRepository;
     private readonly IInstructionLoader _instructionLoader;
     private const int MaxMessageHistory = 6;
     private const int MaxScreenshotHistory = 0;
 
-    public MessageHandler(IFileStorageService fileStorageService, IMessageRepository messageRepository, IInstructionLoader instructionLoader)
+    public MessageHandler(IFileStorageService fileStorageService, IMessageRepository messageRepository, IInstructionLoader instructionLoader, IConversationRepository conversationRepository)
     {
         _fileStorageService = fileStorageService;
         _messageRepository = messageRepository;
         _instructionLoader = instructionLoader;
+        _conversationRepository = conversationRepository;
     }
 
     public async Task<StoredFile?> HandleScreenshot(AssistantRequestDTO request, Conversation conversation)
@@ -110,6 +112,13 @@ public class MessageHandler : IMessageHandler
         
         await _messageRepository.CreateAsync(userMessage);
         await _messageRepository.CreateAsync(assistantMessage);
+        
+        var conversation = await _conversationRepository.Get(response.ConversationId);
+        if (conversation == null)
+            return;
+        
+        conversation.UpdatedAt = DateTime.UtcNow;
+        await _conversationRepository.Update(conversation);
     }
     
     private static ChatMessage CreateChatMessage(string message, MessageRole role, string screenshot = "")

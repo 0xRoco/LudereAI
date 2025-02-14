@@ -107,7 +107,7 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
 
     private async Task<(IEnumerable<Conversation> conversations, UserSubscription? subscription)> GetAccountData(string accountId)
     {
-        var conversations = await conversationRepository.GetConversationsByAccountId(accountId);
+        var conversations = await conversationRepository.GetByAccountId(accountId);
         var subscription = await subscriptionRepository.GetByAccountId(accountId);
 
         return (conversations, subscription);
