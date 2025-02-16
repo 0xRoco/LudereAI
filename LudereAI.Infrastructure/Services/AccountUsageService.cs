@@ -66,21 +66,15 @@ public class AccountUsageService : IAccountUsageService
         return usage.ScreenshotCount < limit;
     }
 
-    public async Task IncrementMessageCount(string accountId)
+    public async Task IncrementUsage(string accountId, bool isMessage, bool isScreenshot)
     {
         var today = DateTime.UtcNow.Date;
         var usage = await GetOrCreateDailyUsage(accountId, today);
-        
-        usage.MessageCount++;
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task IncrementScreenshotCount(string accountId)
-    {
-        var today = DateTime.UtcNow.Date;
-        var usage = await GetOrCreateDailyUsage(accountId, today);
-        
-        usage.ScreenshotCount++;
+        if (isMessage)
+            usage.MessageCount++;
+        if (isScreenshot)
+            usage.ScreenshotCount++;
+        _context.AccountUsages.Entry(usage).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
 
@@ -91,6 +85,7 @@ public class AccountUsageService : IAccountUsageService
         
         usage.MessageCount = 0;
         usage.ScreenshotCount = 0;
+        _context.AccountUsages.Entry(usage).State = EntityState.Modified;
         await _context.SaveChangesAsync();
     }
 

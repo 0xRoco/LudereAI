@@ -71,14 +71,11 @@ public class AssistantController : ControllerBase
             }
 
             var conversation = await GetOrCreateConversation(requestDto.ConversationId, validationResult.AccountId, requestDto.GameContext);
-            if (conversation.Result != null) return conversation.Result;
+            if (conversation.Result != null || conversation.Conversation == null) return conversation.Result ?? BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Invalid conversation"));
 
-            var response = await _openAIService.SendMessageAsync(conversation.Conversation!, requestDto);
-            await _accountUsageService.IncrementMessageCount(validationResult.AccountId!);
-            if (!string.IsNullOrWhiteSpace(requestDto.Screenshot))
-            {
-                await _accountUsageService.IncrementScreenshotCount(validationResult.AccountId!);
-            }
+            var response = await _openAIService.SendMessageAsync(conversation.Conversation, requestDto);
+            await _accountUsageService.IncrementUsage(validationResult.AccountId, isMessage: true, isScreenshot: !string.IsNullOrWhiteSpace(requestDto.Screenshot));
+            
             _logger.LogInformation("Successfully processed message for conversation {ConversationId}", conversation.Conversation!.Id);
 
             var message = new MessageDTO

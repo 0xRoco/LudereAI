@@ -6,6 +6,4 @@ public class AccountUsage : BaseEntity
     public DateTime Date { get; set; }
     public int MessageCount { get; set; }
     public int ScreenshotCount { get; set; }
-    
-    public Account Account { get; set; }
 }

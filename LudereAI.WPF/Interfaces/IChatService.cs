@@ -11,6 +11,6 @@ public interface IChatService
         Success,
         Error
     }
-    Task<Result<MessageDTO, ChatRequestResult>> SendMessage(ChatRequest request);
-    Task<IEnumerable<ConversationDTO>> GetConversations();
+    Task<Result<Message, ChatRequestResult>> SendMessage(ChatRequest request);
+    Task<IEnumerable<Conversation>> GetConversations();
 }

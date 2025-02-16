@@ -33,7 +33,6 @@ public class MessageHandler : IMessageHandler
             return null;
 
         var storedFile = await _fileStorageService.UploadFileAsync(request.Screenshot, conversation);
-        request.Screenshot = storedFile.Url;
         return storedFile;
     }
 
@@ -92,7 +91,7 @@ public class MessageHandler : IMessageHandler
             Role = MessageRole.User,
         };
         
-        if (!string.IsNullOrWhiteSpace(request.Screenshot))
+        if (!string.IsNullOrWhiteSpace(request.Screenshot) && Uri.TryCreate(request.Screenshot, UriKind.Absolute, out _))
         {
             userMessage.Screenshot = new Screenshot
             {
@@ -125,13 +124,19 @@ public class MessageHandler : IMessageHandler
     {
         return role switch
         {
-            MessageRole.User => (string.IsNullOrWhiteSpace(screenshot) ? 
-                new UserChatMessage(message) :
-                new UserChatMessage(new List<ChatMessageContentPart>
+            MessageRole.User when string.IsNullOrWhiteSpace(screenshot) => new UserChatMessage(message),
+            MessageRole.User when Uri.TryCreate(screenshot, UriKind.Absolute, out var link) => new UserChatMessage(
+                new List<ChatMessageContentPart>
                 {
                     ChatMessageContentPart.CreateTextPart(message),
-                    ChatMessageContentPart.CreateImagePart(new Uri(screenshot), "high")
-                })),
+                    ChatMessageContentPart.CreateImagePart(link, ChatImageDetailLevel.Auto)
+                }),
+            MessageRole.User => new UserChatMessage(new List<ChatMessageContentPart>
+            {
+                ChatMessageContentPart.CreateTextPart(message),
+                ChatMessageContentPart.CreateImagePart(BinaryData.FromBytes(Convert.FromBase64String(screenshot)),
+                    "image/jpeg")
+            }),
             MessageRole.Assistant => new AssistantChatMessage(message),
             MessageRole.System => new SystemChatMessage(message),
             _ => throw new ArgumentOutOfRangeException(nameof(role), role, "Unsupported message role")

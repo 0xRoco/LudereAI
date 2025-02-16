@@ -2,6 +2,7 @@
 using System.Windows;
 using System.Windows.Threading;
 using LudereAI.WPF.Interfaces;
+using LudereAI.WPF.Mappers;
 using LudereAI.WPF.Services;
 using LudereAI.WPF.ViewModels;
 using LudereAI.WPF.Views;
@@ -165,6 +166,8 @@ public partial class App : Application
             }
         });
 
+        services.AddAutoMapper(typeof(ModelsMappingProfile));
+        
         // Services
         services.AddSingleton<IConnectivityService, ConnectivityService>();
         services.AddSingleton<IUpdateService, UpdateService>();

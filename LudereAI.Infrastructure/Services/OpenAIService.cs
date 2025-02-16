@@ -7,6 +7,7 @@ using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Chat;
 using LudereAI.Shared.DTOs;
 using Microsoft.Extensions.Logging;
+using OpenAI.Audio;
 using OpenAI.Chat;
 
 #pragma warning disable OPENAI001
@@ -20,6 +21,8 @@ public class OpenAIService : IOpenAIService
     private readonly IMessageHandler _messageHandler;
     private readonly IAudioService _audioGenerator;
     private readonly IAccountService _accountService;
+    
+    private bool _IsOpenAIConfigured;
 
     public OpenAIService(ILogger<IOpenAIService> logger,
         IChatClientFactory chatClientFactory,
@@ -33,10 +36,7 @@ public class OpenAIService : IOpenAIService
         _audioGenerator = audioGenerator;
         _accountService = accountService;
     }
-
-    private static readonly Uri DeepSeekEndpoint = new("https://api.deepseek.com");
-
-
+    
     public async Task<AIResponse> SendMessageAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
         try
@@ -49,19 +49,18 @@ public class OpenAIService : IOpenAIService
 
 
             var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
-            if (file != null && !string.IsNullOrWhiteSpace(file.Url))
+            if (file != null && !string.IsNullOrWhiteSpace(file.Url) && _IsOpenAIConfigured)
             {
                 requestDto.Screenshot = file.Url;
             }
+            
 
             var aiMessage = await ProcessRequestAsync(conversation, requestDto);
 
             byte[] audio = [];
 
-            if (account.IsSubscribed)
-            {
-                audio = await _audioGenerator.GenerateAudio(aiMessage);
-            }
+            var voice = await _chatClientFactory.CreateAudioClient().GenerateSpeechAsync(aiMessage, new GeneratedSpeechVoice("voice-en-us-ryan-high"));
+            audio = voice.Value.ToArray();
 
             var aiResponse = new AIResponse()
             {
@@ -80,7 +79,7 @@ public class OpenAIService : IOpenAIService
             throw;
         }
     }
-
+    
     public async IAsyncEnumerable<AIResponse> StreamlineMessageAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
         ArgumentNullException.ThrowIfNull(conversation);
@@ -98,7 +97,7 @@ public class OpenAIService : IOpenAIService
         
         
         var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
-        var chat = _chatClientFactory.CreateChatClient();
+        var chat = _chatClientFactory.CreateGeminiClient();
         var options = new ChatCompletionOptions
         {
             EndUserId = conversation.AccountId,
@@ -125,15 +124,14 @@ public class OpenAIService : IOpenAIService
     private async Task<string> ProcessRequestAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
         var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
-        var chat = _chatClientFactory.CreateChatClient();
+        var chat = _chatClientFactory.CreateGeminiClient();
 
         try
         {
             var options = new ChatCompletionOptions
             {
                 EndUserId = conversation.AccountId,
-                MaxOutputTokenCount = 1048,
-                StoredOutputEnabled = true,
+                MaxOutputTokenCount = 512,
                 Temperature = 0.4f,
                 TopP = 0.8f
             };

@@ -28,7 +28,7 @@ public class AudioPlaybackService : IAudioPlaybackService, IDisposable
         
         StopAudioAsync();
         using var memoryStream = new MemoryStream(audio);
-        _waveStream = new Mp3FileReader(memoryStream);
+        _waveStream = new WaveFileReader(memoryStream);
         _wavePlayer = new WaveOutEvent();
         _wavePlayer.Init(_waveStream);
         _wavePlayer.Play();

@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Windows;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -50,7 +51,6 @@ public partial class ChatViewModel : ObservableObject
         
         
         Conversations = [];
-        Messages = [];
         Windows = [];
         
         RefreshProcesses();
@@ -67,12 +67,10 @@ public partial class ChatViewModel : ObservableObject
     
     [ObservableProperty] private AccountDTO _currentAccount;
 
-    [ObservableProperty] private ObservableCollection<ConversationDTO> _conversations;
+    [ObservableProperty] private ObservableCollection<Conversation> _conversations;
 
-    [ObservableProperty] private ConversationDTO? _currentConversation;
-
-    [ObservableProperty] private ObservableCollection<MessageDTO> _messages;
-
+    [ObservableProperty] private Conversation? _currentConversation = new();
+    
     [ObservableProperty] private ObservableCollection<WindowInfo> _windows;
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
@@ -92,8 +90,7 @@ public partial class ChatViewModel : ObservableObject
     [RelayCommand]
     private void NewChat()
     {
-        CurrentConversation = null;
-        Messages.Clear();
+        CurrentConversation = new Conversation();
         CurrentMessage = string.Empty;
         OnMessageUpdated.Invoke();
     }
@@ -102,7 +99,7 @@ public partial class ChatViewModel : ObservableObject
     private async Task SendMessage()
     {
         if (!CanSendMessage) return;
-        if (CurrentConversation != null && CurrentConversation.GameContext != GameViewModel.CurrentGame)
+        if (CurrentConversation != null && !string.IsNullOrWhiteSpace(CurrentConversation.GameContext) && CurrentConversation.GameContext != GameViewModel.CurrentGame)
         {
             AddSystemMessage("An active conversation is limited to only a single game, please start a new conversation.");
             return;
@@ -110,7 +107,7 @@ public partial class ChatViewModel : ObservableObject
 
         var message = CurrentMessage.Trim();
         CurrentMessage = string.Empty;
-
+        
         await ProcessMessage(message);
     }
     
@@ -119,6 +116,9 @@ public partial class ChatViewModel : ObservableObject
 
     [RelayCommand]
     private async Task Logout() => await _authService.LogoutAsync();
+
+    [RelayCommand]
+    private void ManageSubscription() => Process.Start (new ProcessStartInfo("https://staging.LudereAI.com/Account") { UseShellExecute = true });
 
 
     [RelayCommand]
@@ -182,7 +182,7 @@ public partial class ChatViewModel : ObservableObject
                 CurrentConversation = Conversations.FirstOrDefault(c => c.Id == response.ConversationId);
                 if (CurrentConversation != null)
                 {
-                    Messages = new ObservableCollection<MessageDTO>(CurrentConversation.Messages);
+                   //Nothing
                 }
                 else
                 {
@@ -211,7 +211,7 @@ public partial class ChatViewModel : ObservableObject
         try
         {
             var conversationsAsync = await _chatService.GetConversations();
-            Conversations = new ObservableCollection<ConversationDTO>(conversationsAsync);
+            Conversations = new ObservableCollection<Conversation>(conversationsAsync);
         }
         catch (Exception ex)
         {
@@ -219,15 +219,15 @@ public partial class ChatViewModel : ObservableObject
         }
     }
 
-    partial void OnCurrentConversationChanged(ConversationDTO? value)
+    partial void OnCurrentConversationChanged(Conversation? value)
     {
         if (value == null) return;
         
-        Messages = new ObservableCollection<MessageDTO>(value.Messages);
+        CurrentConversation = value;
         OnMessageUpdated.Invoke();
     }
 
-    partial void OnConversationsChanged(ObservableCollection<ConversationDTO> value)
+    partial void OnConversationsChanged(ObservableCollection<Conversation> value)
     {
         if (CurrentConversation == null && value.Count > 0)
         {
@@ -236,7 +236,7 @@ public partial class ChatViewModel : ObservableObject
     }
 
     private void AddMessage(string content, MessageRole role) =>
-        Messages.Add(new MessageDTO { Content = content, Role = role });
+        CurrentConversation?.AddMessage(new Message { Content = content, Role = role });
 
     private void AddSystemMessage(string content) =>
         AddMessage(content, MessageRole.System);

@@ -1,8 +1,11 @@
-﻿using OpenAI.Chat;
+﻿using OpenAI.Audio;
+using OpenAI.Chat;
 
 namespace LudereAI.Application.Interfaces;
 
 public interface IChatClientFactory
 {
-    ChatClient CreateChatClient();
+    ChatClient CreateOpenAIClient();
+    ChatClient CreateGeminiClient();
+    AudioClient CreateAudioClient();
 }

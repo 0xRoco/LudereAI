@@ -85,7 +85,7 @@
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=SidebarToggle}" Value="False">
+                                <DataTrigger Binding="{Binding IsChecked, ElementName=SidebarToggle}" Value="true">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                 </DataTrigger>
                             </Style.Triggers>
@@ -103,35 +103,33 @@
                         <materialDesign:Card Grid.Row="0" Margin="20" UniformCornerRadius="16">
                             <StackPanel Margin="20">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <Border Width="40" Height="40" CornerRadius="20"
-                                            Background="{DynamicResource PrimaryHueMidBrush}">
+                                    <Border Width="40" Height="40" CornerRadius="12">
                                         <materialDesign:PackIcon Kind="Account"
                                                                  Width="24"
                                                                  Height="24"
-                                                                 Foreground="White"
                                                                  HorizontalAlignment="Center"
                                                                  VerticalAlignment="Center" />
                                     </Border>
-                                    <TextBlock Text="{Binding CurrentAccount.Username, FallbackValue=$Username$, Mode=TwoWay}"
+                                    <TextBlock 
+                                               Text="{Binding CurrentAccount.Username, FallbackValue=$Username$, Mode=TwoWay}"
                                                Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                               Margin="12,0,0,0"
                                                VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <TextBlock
+                                <TextBlock TextAlignment="Center"
                                     Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}}"
                                     Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                    Margin="52,0,0,16">
+                                    Margin="0,0,0,16">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="✨ {0} ({1})">
-                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay" FallbackValue="Free" />
-                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName" Mode="TwoWay"  FallbackValue=""/>
+                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay" FallbackValue="$Plan$" />
+                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName" Mode="TwoWay"  FallbackValue="$Status$"/>
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
                                 
                                 <!-- Subscription Buttons -->
-                                <Expander Header="Subscription Options"
+                                <!--<Expander Header="Subscription Options"
                                           Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
                                           Margin="0,8,0,0">
                                     <StackPanel Margin="8">
@@ -152,7 +150,7 @@
                                             <TextBlock Text="Ultimate Yearly" />
                                         </Button>
                                     </StackPanel>
-                                </Expander>
+                                </Expander>-->
 
                                 <!-- New Chat Button -->
                                 <Button Command="{Binding NewChatCommand}"
@@ -200,18 +198,33 @@
                         </materialDesign:Card>
 
                         <!-- Logout Button -->
-                        <Button Grid.Row="2"
-                                Margin="20"
-                                Command="{Binding LogoutCommand}"
+                        <StackPanel Grid.Row="2">
+                            <Button
+                                Margin="20 5"
+                                Command="{Binding ManageSubscriptionCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Height="44"
+                                Height="35"
                                 materialDesign:ButtonAssist.CornerRadius="8"
                                 BorderThickness="1.5">
-                            <StackPanel Orientation="Horizontal">
-                                <materialDesign:PackIcon Kind="Logout" Margin="0,0,8,0" />
-                                <TextBlock Text="Logout" FontWeight="Medium" />
-                            </StackPanel>
-                        </Button>
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="ExternalLink" Margin="0,0,8,0" />
+                                    <TextBlock Text="Manage Subscription" FontWeight="Medium" />
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button
+                                    Margin="20 5"
+                                    Command="{Binding LogoutCommand}"
+                                    Style="{StaticResource MaterialDesignOutlinedButton}"
+                                    Height="35"
+                                    materialDesign:ButtonAssist.CornerRadius="8"
+                                    BorderThickness="1.5">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Logout" Margin="0,0,8,0" />
+                                    <TextBlock Text="Logout" FontWeight="Medium" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </Grid>
                 </Grid>
             </Grid>
@@ -265,7 +278,7 @@
                           x:Name="ChatScroll"
                           VerticalScrollBarVisibility="Auto"
                           Margin="0,0,0,24">
-                <ItemsControl ItemsSource="{Binding Messages, Mode=TwoWay}">
+                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, Mode=TwoWay}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:Card Style="{StaticResource MessageBubbleStyle}"

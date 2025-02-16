@@ -4,6 +4,7 @@ using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Mappers;
+using LudereAI.Domain.Models.AI;
 using LudereAI.Domain.Models.Configs;
 using LudereAI.Domain.Models.Features;
 using LudereAI.Domain.Models.Tiers;
@@ -159,8 +160,8 @@ void ConfigureOptions(WebApplicationBuilder builder)
         builder.Configuration.GetSection("FeatureFlags"));
     builder.Services.Configure<TierLimitsConfig>(
         builder.Configuration.GetSection("TierLimits"));
-    builder.Services.Configure<OpenAIConfig>(
-        builder.Configuration.GetSection("OpenAI"));
+    builder.Services.Configure<AIConfig>(
+        builder.Configuration.GetSection("AI"));
     builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
     builder.Services.Configure<ElevenLabsConfig>(builder.Configuration.GetSection("ElevenLabs"));
     
