@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Home - Waitlist";
+}
+
+<header class="site-header">
+    <div class="hero-section text-center text-white" data-aos="zoom-in">
+        <div class="overlay"></div>
+        <div class="container d-flex flex-column justify-content-center align-items-center content" style="height: 100%;">
+            <h1 class="display-1 fw-bold">AI-Powered Context-Aware Assistant</h1>
+            <p class="lead">Get real-time AI insights, voice interactions, and more—before anyone else.</p>
+            <a href="#waitlistForm" class="btn btn-light btn-lg btn-pulse">Join the Waitlist</a>
+        </div>
+    </div>
+</header>
+
+<!-- Waitlist Signup Section -->
+<section id="waitlistForm" class="py-5" data-aos="zoom-in">
+    <div class="container text-center">
+        <h2 class="mb-4">Join the Waitlist</h2>
+        <p class="lead">Be the first to experience LudereAI. Sign up below, and we’ll let you know when it’s ready!</p>
+        <form class="row justify-content-center mt-4" method="post" action="/Waitlist/Join">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <input type="email" class="form-control" name="Email" placeholder="Enter your email" required />
+                    <button class="btn btn-primary" type="submit">Join Waitlist</button>
+                </div>
+            </div>
+        </form>
+        <p class="small">We respect your privacy. Unsubscribe at any time.</p>
+    </div>
+</section>
+
+<div class="container py-5">
+    <!-- Features Section -->
+    <section id="features" class="py-5" data-aos="fade-up">
+        <div class="container text-center">
+            <h2 class="mb-4">Features</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="100">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-eye fa-3x mb-3 feature-icon"></i>
+                        <h4>Context Aware</h4>
+                        <p>Sees the game through your eyes.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="200">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-microphone-alt fa-3x mb-3 feature-icon"></i>
+                        <h4>Voice Interaction</h4>
+                        <p>Talk to your AI assistant in real time.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="300">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-chart-line fa-3x mb-3 feature-icon"></i>
+                        <h4>Game Analysis</h4>
+                        <p>Get insights based on your gameplay.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="400">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-chess fa-3x mb-3 feature-icon"></i>
+                        <h4>Strategy Suggestions</h4>
+                        <p>Receive optimized strategies for competitive play.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="500">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-info fa-3x mb-3 feature-icon"></i>
+                        <h4>lorem ipsum dolor</h4>
+                        <p>lorem ipsum dolor sit amet consectetur adipiscing elit amet</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="600">
+                    <div class="feature-card p-4">
+                        <i class="fas fa-info fa-3x mb-3 feature-icon"></i>
+                        <h4>lorem ipsum dolor</h4>
+                        <p>lorem ipsum dolor sit amet consectetur adipiscing elit amet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Screenshots & Demo Section -->
+    <section id="screenshots" class="screenshots-section py-5" data-aos="fade-up">
+        <div class="container text-center">
+            <h2 class="mb-4">Screenshots & Demos</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" data-aos="fade-right">
+                    <img src="https://placehold.co/500x300?text=Screenshot+1" alt="Screenshot 1"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
+                </div>
+                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                    <img src="https://placehold.co/500x300?text=Screenshot+2" alt="Screenshot 2"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
+                </div>
+                <div class="col-md-4 mb-4" data-aos="fade-left" data-aos-delay="200">
+                    <img src="https://placehold.co/500x300?text=Screenshot+3" alt="Screenshot 3"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
+                </div>
+            </div>
+            <div class="ratio ratio-16x9">
+                <iframe src="https://www.youtube.com/embed/dQw4w9WgXcQ" title="Product Demo" allowfullscreen></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal for Expanded Screenshot -->
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-body p-0">
+                    <img src="" id="modalImage" class="img-fluid w-100" alt="Expanded Screenshot">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <!-- (Optional) Pricing & FAQ sections can stay or be removed if not relevant yet -->
+    <section id="faq" class="py-5" data-aos="fade-up">
+        <div class="container">
+            <h2 class="text-center mb-5">Frequently Asked Questions</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion custom-accordion" id="faqAccordion">
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="100">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <i class="fas fa-rocket me-2 text-primary"></i>
+                                    How do I join the waitlist?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Simply enter your email above, and we’ll notify you when LudereAI is ready!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="200">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <i class="fas fa-shield-alt me-2 text-primary"></i>
+                                    Is this AI safe to use in competitive games?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Yes! LudereAI is purely a companion that never interacts with the game in a way that would be considered cheating.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="300">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <i class="fas fa-gamepad me-2 text-primary"></i>
+                                    Does this work with all games?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    LudereAI supports a wide range of PC games. We’re constantly expanding our database to cover more titles.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="400">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <i class="fas fa-tv me-2 text-primary"></i>
+                                    When will I get access?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    We’ll send you an email once we open up early access. Stay tuned!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>

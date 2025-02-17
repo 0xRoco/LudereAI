@@ -75,6 +75,13 @@ void ConfigureAuthentication(WebApplicationBuilder builder)
             options.LoginPath = "/Login";
             options.LogoutPath = "/Logout";
         });
+
+    builder.Services.AddAuthorizationBuilder()
+        .AddPolicy("RequireAdmin", policy =>
+        {
+            policy.RequireAuthenticatedUser();
+            policy.RequireRole("Admin");
+        });
     
     Log.Information("Authentication configured");
 }
@@ -122,6 +129,7 @@ void ConfigureMiddleware(WebApplication app)
     app.UseRouting();
     app.UseSentryTracing();
     app.UseMiddleware<TokenAuthenticationMiddleware>();
+    app.UseMiddleware<WaitlistMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
     

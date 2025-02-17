@@ -14,6 +14,23 @@ namespace LudereAI.API.Controllers;
 public class AccountsController(ILogger<AccountsController> logger,
     IAccountService accountService) : ControllerBase
 {
+    [HttpGet]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<IEnumerable<AccountDTO>>> GetAllAccounts()
+    {
+        try
+        {
+            var accounts = await accountService.GetAccounts();
+            
+            return Ok(APIResult<IEnumerable<AccountDTO>>.Success(data: accounts));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Error getting all accounts");
+            return StatusCode(StatusCodes.Status500InternalServerError, 
+                APIResult<IEnumerable<AccountDTO>>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
+        }
+    }
     
     [HttpGet("{id}")]
     [Authorize(Roles = "Admin")]

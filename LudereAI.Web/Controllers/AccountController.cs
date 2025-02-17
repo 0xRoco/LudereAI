@@ -1,6 +1,5 @@
 ﻿using LudereAI.Application.Interfaces.Services;
 using LudereAI.Shared.DTOs;
-using LudereAI.Shared.Enums;
 using LudereAI.Web.Models;
 using Microsoft.AspNetCore.Mvc;
 

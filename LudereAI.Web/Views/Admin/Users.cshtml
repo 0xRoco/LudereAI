@@ -1,0 +1,51 @@
+﻿@{
+    ViewData["Title"] = "User Management";
+}
+
+
+<div class="container-fluid px-4">
+<h1 class="mt-4">User Management</h1>
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="fas fa-users me-1"></i>
+        Users
+    </div>
+    <div class="card-body">
+        <table class="table table-bordered table-hover" id="usersTable">
+            <thead>
+            <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Created</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>Username</td>
+                <td>Email</td>
+                <td>
+                                <span class="badge bg-success">
+                                    Active
+                                </span>
+                </td>
+                <td>@DateTime.UtcNow.ToString("g")</td>
+                <td>@string.Join(", ", "User, Admin")</td>
+                <td>
+                    <a href="@Url.Action("Edit", new { id = 123 })" class="btn btn-primary btn-sm">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <form method="post" action="@Url.Action("ToggleStatus", new { id = 123})" style="display: inline;">
+                        <button type="submit" class="btn btn-success btn-sm">
+                            <i class="fas fa-ban"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>

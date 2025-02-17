@@ -16,7 +16,7 @@ public class MessageHandler : IMessageHandler
     private readonly IMessageRepository _messageRepository;
     private readonly IConversationRepository _conversationRepository;
     private readonly IInstructionLoader _instructionLoader;
-    private const int MaxMessageHistory = 6;
+    private const int MaxMessageHistory = 20;
     private const int MaxScreenshotHistory = 0;
 
     public MessageHandler(IFileStorageService fileStorageService, IMessageRepository messageRepository, IInstructionLoader instructionLoader, IConversationRepository conversationRepository)

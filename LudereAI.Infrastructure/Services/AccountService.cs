@@ -11,23 +11,26 @@ public class AccountService : IAccountService
 {
     private readonly ILogger<IAccountService> _logger;
     private readonly IAccountRepository _accountRepository;
-    private readonly ISecurityService _securityService;
     private readonly IStripeService _stripeService;
     private readonly IAccountFactory _accountFactory;
     private readonly IMapper _mapper;
 
     public AccountService(ILogger<IAccountService> logger,
         IAccountRepository accountRepository,
-        ISecurityService securityService,
         IStripeService stripeService,
         IMapper mapper, IAccountFactory accountFactory)
     {
         _logger = logger;
         _accountRepository = accountRepository;
-        _securityService = securityService;
         _stripeService = stripeService;
         _mapper = mapper;
         _accountFactory = accountFactory;
+    }
+
+    public async Task<IEnumerable<AccountDTO>> GetAccounts()
+    {
+        var accounts = await _accountRepository.GetAll();
+        return _mapper.Map<IEnumerable<AccountDTO>>(accounts);
     }
 
     public async Task<AccountDTO?> GetAccount(string id)

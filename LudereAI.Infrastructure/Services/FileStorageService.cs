@@ -11,7 +11,7 @@ public class FileStorageService : IFileStorageService
     private readonly IMinioClient _minioClient;
     private readonly string _bucketName;
     private const string BaseUrl = "https://cdn.mdnite.dev";
-    private const string Directory = "screenshots";
+    private const string Directory = "ugc";
     private const string FileExtension = ".jpg";
     private const string ContentType = "image/jpeg";
 

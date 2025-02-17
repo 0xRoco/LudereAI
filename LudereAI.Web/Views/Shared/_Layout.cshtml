@@ -1,74 +1,84 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@ViewData["Title"] - LudereAI</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" />
+    <meta name="description" content="LudereAI - Context-Aware AI-Powered Gaming Assistant for PC"/>
+    <meta name="keywords" content="AI, context aware, gaming, artificial intelligence, interactive experiences, LudereAI"/>
+    <meta name="author" content="LudereAI"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css" />
-    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/aos/2.3.4/aos.css"/>
+    <link rel="stylesheet" href="~/css/site.css"/>
     @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
 <header class="site-header">
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top navbar-custom" data-aos="fade-down">
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top  navbar-custom" data-aos="fade-down">
         <div class="container">
             <a class="navbar-brand" href="/">LudereAI</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="/#features">Features</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/#pricing">Pricing</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Download">Download</a></li>
+            @if (false)
+            {
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                    <ul class="navbar-nav align-items-center">
+                        <li class="nav-item"><a class="nav-link" href="/#features">Features</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/#pricing">Pricing</a></li>
+                        <li class="nav-item"><a class="nav-link" asp-controller="Download" asp-action="Index">Download</a></li>
 
-                    @if (User.Identity is { IsAuthenticated: true })
-                    {
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user-circle me-1"></i>
-                                @User.Identity.Name
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="/Account">
+                        @if (User.Identity is { IsAuthenticated: true })
+                        {
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                                   data-bs-toggle="dropdown" aria-expanded="false">
+                                    <i class="fas fa-user-circle me-1"></i>
+                                    @User.Identity.Name
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">
                                         <i class="fas fa-columns me-2"></i>Dashboard
                                     </a></li>
-                                <li><a class="dropdown-item" href="/Account">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">
                                         <i class="fas fa-user-cog me-2"></i>Profile Settings
                                     </a></li>
-                                <li><a class="dropdown-item" href="/Account">
+                                    <li><a class="dropdown-item" asp-controller="Account" asp-action="Index">
                                         <i class="fas fa-credit-card me-2"></i>Subscription
                                     </a></li>
-                                <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form class="form-inline" method="post" asp-controller="Auth" asp-action="Logout">
-                                        <button type="submit" class="dropdown-item text-danger">
-                                            <i class="fas fa-sign-out-alt me-2"></i>Logout
-                                        </button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item"><a class="nav-link" href="/Login">Login</a></li>
-                        <li class="nav-item ms-2">
-                            <a class="nav-link btn btn-primary text-white px-3" href="/SignUp">
-                                <i class="fas fa-user-plus me-1"></i>Sign Up
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </div>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <form class="form-inline" method="post" asp-controller="Auth"
+                                              asp-action="Logout">
+                                            <button type="submit" class="dropdown-item text-danger">
+                                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a></li>
+                            <li class="nav-item ms-2">
+                                <a class="nav-link btn btn-primary text-white px-3" asp-controller="Auth" asp-action="SignUp">
+                                    <i class="fas fa-user-plus me-1"></i>Sign Up
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
         </div>
     </nav>
 </header>
+
 <main role="main" class="">
     <div class="preview-banner ">
         <i class="fas fa-tools"></i> This site is currently in preview. Some features may not work as expected.
@@ -78,7 +88,7 @@
     @RenderBody()
 </main>
 
-<footer class="text-center py-3" data-aos="fade-up">
+<footer class="text-center  py-3" data-aos="fade-up">
     <div class="container">
         <p class="mb-0">&copy; @DateTime.UtcNow.Year LudereAI. All rights reserved.</p>
     </div>
@@ -94,6 +104,7 @@
         duration: 800,
         once: true
     });
+
 </script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>

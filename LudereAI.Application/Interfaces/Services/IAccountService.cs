@@ -4,6 +4,7 @@ namespace LudereAI.Application.Interfaces.Services;
 
 public interface IAccountService
 {
+    Task<IEnumerable<AccountDTO>> GetAccounts();
     Task<AccountDTO?> GetAccount(string id);
     Task<AccountDTO?> GetAccountByUsername(string username);
     Task<AccountDTO?> GetAccountByEmail(string email);
