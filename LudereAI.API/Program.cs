@@ -178,7 +178,7 @@ void ConfigureDatabase(WebApplicationBuilder builder)
             
             if (builder.Environment.IsDevelopment())
                 options.EnableSensitiveDataLogging();
-        });
+        }, ServiceLifetime.Transient);
     
     Log.Information("Database configured");
 }
@@ -196,6 +196,7 @@ void RegisterDependencies(WebApplicationBuilder builder)
     builder.Services.AddTransient<IAuthService, AuthService>();
     builder.Services.AddTransient<ISecurityService, SecurityService>();
     builder.Services.AddTransient<IOpenAIService, OpenAIService>();
+    builder.Services.AddTransient<IAuditService, AuditService>();
 
     // Business Services
     builder.Services.AddTransient<IAccountService, AccountService>();

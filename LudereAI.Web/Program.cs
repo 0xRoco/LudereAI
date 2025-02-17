@@ -1,6 +1,9 @@
+using LudereAI.Application.Interfaces.Gateways;
 using LudereAI.Application.Interfaces.Services;
+using LudereAI.Infrastructure.Gateways;
 using LudereAI.Infrastructure.Services;
 using LudereAI.Web.Core;
+using LudereAI.Web.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Serilog;
 
@@ -54,6 +57,7 @@ void ConfigureServices(WebApplicationBuilder builder)
     
     ConfigureAuthentication(builder);
     ConfigureHttpClient(builder);
+    ConfigureOptions(builder);
     RegisterDependencies(builder);
     
     builder.Services.AddOptions();
@@ -110,9 +114,18 @@ void ConfigureHttpClient(WebApplicationBuilder builder)
     Log.Information("HTTP client configured");
 }
 
+void ConfigureOptions(WebApplicationBuilder builder)
+{
+    builder.Services.Configure<SystemConfig>(
+        builder.Configuration.GetSection("SystemConfig"));  
+    
+    Log.Information("Options configured");
+}
+
 void RegisterDependencies(WebApplicationBuilder builder)
 {
     builder.Services.AddTransient<IAPIClient, APIClient>();
+    builder.Services.AddTransient<IAuthGateway, AuthGateway>();
     
     Log.Information("Dependencies registered");
 }

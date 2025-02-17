@@ -138,7 +138,7 @@ public class OpenAIService : IOpenAIService
 
             var response = await chat.CompleteChatAsync(messages, options);
             LogTokenUsage(response.Value.Usage);
-            return response.Value.Content[0].Text;
+            return response.Value.Content[0].Text.Trim();
         }
         catch (Exception ex)
         {

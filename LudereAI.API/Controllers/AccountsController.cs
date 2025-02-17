@@ -11,22 +11,33 @@ namespace LudereAI.API.Controllers;
 
 
 [ApiController, Route("[controller]")]
-public class AccountsController(ILogger<AccountsController> logger,
-    IAccountService accountService) : ControllerBase
+public class AccountsController : ControllerBase
 {
+    private readonly ILogger<AccountsController> _logger;
+    private readonly IAccountService _accountService;
+    private readonly IAuditService _auditService;
+
+    public AccountsController(ILogger<AccountsController> logger,
+        IAccountService accountService, IAuditService auditService)
+    {
+        _logger = logger;
+        _accountService = accountService;
+        _auditService = auditService;
+    }
+
     [HttpGet]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<IEnumerable<AccountDTO>>> GetAllAccounts()
     {
         try
         {
-            var accounts = await accountService.GetAccounts();
+            var accounts = await _accountService.GetAccounts();
             
             return Ok(APIResult<IEnumerable<AccountDTO>>.Success(data: accounts));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting all accounts");
+            _logger.LogError(ex, "Error getting all accounts");
             return StatusCode(StatusCodes.Status500InternalServerError, 
                 APIResult<IEnumerable<AccountDTO>>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
@@ -38,16 +49,16 @@ public class AccountsController(ILogger<AccountsController> logger,
     {
         try
         {
-            var account = await accountService.GetAccount(id);
+            var account = await _accountService.GetAccount(id);
             
             if (account != null) return Ok(APIResult<AccountDTO>.Success(data: account));
             
-            logger.LogWarning("Account not found for id {AccountId}", id);
+            _logger.LogWarning("Account not found for id {AccountId}", id);
             return NotFound(APIResult<AccountDTO>.Error(HttpStatusCode.NotFound, "Account not found"));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting account for id {AccountId}", id);
+            _logger.LogError(ex, "Error getting account for id {AccountId}", id);
             return StatusCode(StatusCodes.Status500InternalServerError, 
                 APIResult<AccountDTO>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
@@ -67,16 +78,21 @@ public class AccountsController(ILogger<AccountsController> logger,
         try
         {
             
-            var account = await accountService.GetAccount(accountId);
-            
-            if (account != null) return Ok(APIResult<AccountDTO>.Success(data: account));
+            var account = await _accountService.GetAccount(accountId);
+
+            if (account != null)
+            {
+                await _auditService.Log(account.Id, "GetCurrentAccount", "Account retrieved", 
+                    ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+                return Ok(APIResult<AccountDTO>.Success(data: account));
+            }
             
             return NotFound(APIResult<AccountDTO>.Error(HttpStatusCode.NotFound, "Account not found"));
 
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error getting account for id {AccountId}", accountId);
+            _logger.LogError(ex, "Error getting account for id {AccountId}", accountId);
             return StatusCode(StatusCodes.Status500InternalServerError, 
                 APIResult<AccountDTO>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }

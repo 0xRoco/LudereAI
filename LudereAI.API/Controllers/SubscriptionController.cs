@@ -22,6 +22,7 @@ public class SubscriptionController : ControllerBase
     private readonly IStripeService _stripeService;
     private readonly ISubscriptionService _subscriptionService;
     private readonly IOptions<StripeConfig> _stripeConfig;
+    private readonly IAuditService _auditService;
 
     private readonly string _plansInfoPath;
 
@@ -29,14 +30,15 @@ public class SubscriptionController : ControllerBase
         IAccountService accountService,
         IStripeService stripeService,
         ISubscriptionService subscriptionService,
-        IOptions<StripeConfig> stripeConfig)
+        IOptions<StripeConfig> stripeConfig, IAuditService auditService)
     {
         _logger = logger;
         _accountService = accountService;
         _stripeService = stripeService;
         _subscriptionService = subscriptionService;
         _stripeConfig = stripeConfig;
-        
+        _auditService = auditService;
+
         _plansInfoPath = Path.Combine(AppContext.BaseDirectory, "plans-info.json");
     }
 
@@ -58,7 +60,9 @@ public class SubscriptionController : ControllerBase
         }
         
         var subscription = await _subscriptionService.GetSubscriptionByAccountId(account.Id);
-
+        
+        await _auditService.Log(account.Id, "Subscription.GetSubscription", "User requested subscription info", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+        
         return Ok(APIResult<UserSubscriptionDTO>.Success(data: subscription));
     }
     
@@ -81,18 +85,24 @@ public class SubscriptionController : ControllerBase
         {
             var account = await ValidateAndGetAccount();
             if (account.Result != null) return account.Result;
+            
+            await _auditService.Log(account.Account!.Id, "Subscription.Subscribe", "User requested subscription", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
 
             var validationResult = await ValidateSubscriptionEligibility(account.Account!);
             if (validationResult != null) return validationResult;
 
             var priceId = GetPriceIdForPlan(dto.SubscriptionPlan);
-            if (string.IsNullOrWhiteSpace(priceId))
-            {
-                _logger.LogWarning("Invalid plan type received {PlanType}", dto.SubscriptionPlan);
-                return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid plan type"));
-            }
 
-            return await CreateStripeCheckoutSession(account.Account!, priceId, dto.SubscriptionPlan);
+            if (!string.IsNullOrWhiteSpace(priceId))
+            {
+                await _auditService.Log(account.Account!.Id, "Subscription.CreateSession", "User requested subscription session", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+                
+                return await CreateStripeCheckoutSession(account.Account!, priceId, dto.SubscriptionPlan);
+            }
+            
+            _logger.LogWarning("Invalid plan type received {PlanType}", dto.SubscriptionPlan);
+            return BadRequest(APIResult<string>.Error(HttpStatusCode.BadRequest, "Invalid plan type"));
+
         }
         catch (StripeException ex)
         {
@@ -121,6 +131,7 @@ public class SubscriptionController : ControllerBase
         }
 
         var sessionUrl = await _stripeService.CreateCustomerPortalSession(account.Account.Id);
+        
         if (string.IsNullOrWhiteSpace(sessionUrl))
         {
             _logger.LogWarning("Failed to create customer portal session for account: {AccountId}", account.Account!.Id);
@@ -129,6 +140,7 @@ public class SubscriptionController : ControllerBase
         }
 
         _logger.LogInformation("Successfully created customer portal session for account: {AccountId}", account.Account!.Id);
+        await _auditService.Log(account.Account!.Id, "Subscription.CustomerPortal", "User requested customer portal", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
         return Ok(APIResult<string>.Success(data: sessionUrl));
     }
 

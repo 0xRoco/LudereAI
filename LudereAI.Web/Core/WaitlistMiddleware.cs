@@ -1,8 +1,11 @@
-﻿namespace LudereAI.Web.Core;
+﻿using LudereAI.Web.Models;
+using Microsoft.Extensions.Options;
 
-public class WaitlistMiddleware(RequestDelegate next, ILogger<TokenAuthenticationMiddleware> logger)
+namespace LudereAI.Web.Core;
+
+public class WaitlistMiddleware(RequestDelegate next, ILogger<TokenAuthenticationMiddleware> logger, IOptions<SystemConfig> options)
 {
-    private bool _isWaitlistActive;
+    private readonly SystemConfig _config = options.Value;
     
     private readonly List<string> _allowedPaths = new()
     {
@@ -13,7 +16,7 @@ public class WaitlistMiddleware(RequestDelegate next, ILogger<TokenAuthenticatio
     
     public async Task Invoke(HttpContext context)
     {
-        if (context.User.Identity?.IsAuthenticated == true || !_isWaitlistActive)
+        if (context.User.Identity?.IsAuthenticated == true || !_config.GeneralSettings.IsWaitlistActive)
         {
             await next(context);
             return;

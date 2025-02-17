@@ -20,17 +20,19 @@ public class AssistantController : ControllerBase
     private readonly IConversationRepository _conversationRepository;
     private readonly IAccountRepository _accountRepository;
     private readonly IAccountUsageService _accountUsageService;
+    private readonly IAuditService _auditService;
 
     public AssistantController(ILogger<AssistantController> logger,
         IOpenAIService openAIService, 
         IConversationRepository conversationRepository, 
-        IAccountRepository accountRepository, IAccountUsageService accountUsageService)
+        IAccountRepository accountRepository, IAccountUsageService accountUsageService, IAuditService auditService)
     {
         _logger = logger;
         _openAIService = openAIService;
         _conversationRepository = conversationRepository;
         _accountRepository = accountRepository;
         _accountUsageService = accountUsageService;
+        _auditService = auditService;
     }
 
     [RequireFeature("Assistant.Enabled")]
@@ -75,6 +77,7 @@ public class AssistantController : ControllerBase
 
             var response = await _openAIService.SendMessageAsync(conversation.Conversation, requestDto);
             await _accountUsageService.IncrementUsage(validationResult.AccountId, isMessage: true, isScreenshot: !string.IsNullOrWhiteSpace(requestDto.Screenshot));
+            await _auditService.Log(validationResult.AccountId, "SendMessage","Message sent to assistant", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
             
             _logger.LogInformation("Successfully processed message for conversation {ConversationId}", conversation.Conversation!.Id);
 

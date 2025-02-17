@@ -49,5 +49,11 @@ public sealed class DatabaseContext : DbContext
             .WithOne(s => s.Message)
             .HasForeignKey<Screenshot>(m => m.MessageId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<AuditLog>()
+            .HasOne(a => a.Account)
+            .WithMany()
+            .HasForeignKey(a => a.AccountId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

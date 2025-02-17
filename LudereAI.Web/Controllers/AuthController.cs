@@ -1,4 +1,5 @@
 ﻿using System.Security.Claims;
+using LudereAI.Application.Interfaces.Gateways;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Shared.DTOs;
 using LudereAI.Web.Models;
@@ -13,11 +14,11 @@ namespace LudereAI.Web.Controllers;
 public class AuthController : Controller
 {
     
-    private readonly IAPIClient _apiClient;
+    private readonly IAuthGateway _authGateway;
 
-    public AuthController(IAPIClient apiClient)
+    public AuthController(IAuthGateway authGateway)
     {
-        _apiClient = apiClient;
+        _authGateway = authGateway;
     }
 
     [HttpGet]
@@ -40,19 +41,19 @@ public class AuthController : Controller
             return View(model);
         }
         
-        var result = await _apiClient.PostAsync<LoginResponseDTO>("Auth/Login", new LoginDTO
+        var result = await _authGateway.LoginAsync(new LoginDTO
         {
             Username = model.Username,
             Password = model.Password
         });
         
-        if (result?.Data?.Account is null)
+        if (result.Value == null || string.IsNullOrWhiteSpace(result.Value.Token))
         {
-            ModelState.AddModelError(string.Empty, result?.Message ?? "Invalid login attempt");
+            ModelState.AddModelError(string.Empty, result.Message);
             return View(model);
         }
 
-        var response = result.Data;
+        var response = result.Value;
         var account = response.Account;
         
         SetAuthCookie(response.Token, DateTimeOffset.UtcNow.AddHours(3));
@@ -88,23 +89,25 @@ public class AuthController : Controller
             ModelState.AddModelError("Password", "Passwords do not match");
             return View(model);
         }
-        
-        var result = await _apiClient.PostAsync<string>("Auth/SignUp", new SignUpDTO
+
+        var dto = new SignUpDTO
         {
             FirstName = model.FirstName,
             LastName = model.LastName,
             Username = model.Username,
-            Password = model.Password,
             Email = model.Email,
-            DeviceId = "",
-        });
-        
-        var success = result?.IsSuccess ?? false;
+            Password = model.Password,
+            DeviceId = ""
+        };
+
+        var result = await _authGateway.SignUpAsync(dto);
+
+        var success = result is { IsSuccessful: true, Value: true };
 
         if (success) return RedirectToAction("Login");
         
         
-        ModelState.AddModelError(string.Empty, result?.Message ?? "Invalid sign up attempt");
+        ModelState.AddModelError(string.Empty, result.Message);
         return View(model);
     }
     
