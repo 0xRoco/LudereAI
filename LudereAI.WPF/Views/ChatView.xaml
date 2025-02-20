@@ -51,6 +51,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
 
         <!-- Sidebar -->
@@ -203,7 +204,7 @@
                                 Margin="20 5"
                                 Command="{Binding ManageSubscriptionCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Height="35"
+                                Height="30"
                                 materialDesign:ButtonAssist.CornerRadius="8"
                                 BorderThickness="1.5">
                                 <StackPanel Orientation="Horizontal">
@@ -213,10 +214,23 @@
                             </Button>
                             
                             <Button
+                                Margin="20 5"
+                                Command="{Binding SettingsCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Height="30"
+                                materialDesign:ButtonAssist.CornerRadius="8"
+                                BorderThickness="1.5">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="Settings" Margin="0,0,8,0" />
+                                    <TextBlock Text="Settings" FontWeight="Medium" />
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button
                                     Margin="20 5"
                                     Command="{Binding LogoutCommand}"
                                     Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Height="35"
+                                    Height="30"
                                     materialDesign:ButtonAssist.CornerRadius="8"
                                     BorderThickness="1.5">
                                 <StackPanel Orientation="Horizontal">
@@ -233,48 +247,13 @@
         <!-- Main Chat Area -->
         <Grid Grid.Column="1" Margin="24">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <!-- Game Context Bar -->
-            <materialDesign:Card Grid.Row="0" Margin="0,0,0,24" UniformCornerRadius="12">
-                <Grid Margin="20,12">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox Grid.Column="0"
-                             materialDesign:HintAssist.Hint="Game Context"
-                             Text="{Binding GameViewModel.CurrentGame, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
-                             Height="48"
-                             Margin="0,0,16,0" />
-
-                    <ComboBox Grid.Column="1"
-                              materialDesign:HintAssist.Hint="Windows"
-                              ItemsSource="{Binding Windows, Mode=TwoWay}"
-                              SelectedItem="{Binding SelectedWindow, UpdateSourceTrigger=PropertyChanged}"
-                              Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                              materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
-                              Height="48"
-                              Margin="0,0,16,0" />
-
-                    <Button Grid.Column="2"
-                            Command="{Binding RefreshProcessesCommand}"
-                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}">
-                        <materialDesign:PackIcon Kind="Refresh" />
-                    </Button>
-                </Grid>
-            </materialDesign:Card>
-
             <!-- Messages -->
-            <ScrollViewer Grid.Row="1"
+            <ScrollViewer Grid.Row="0"
                           x:Name="ChatScroll"
                           VerticalScrollBarVisibility="Auto"
                           Margin="0,0,0,24">
@@ -301,7 +280,7 @@
             </ScrollViewer>
 
             <!-- Thinking Indicator -->
-            <materialDesign:Card Grid.Row="2"
+            <materialDesign:Card Grid.Row="1"
                                  Style="{StaticResource MessageBubbleStyle}"
                                  Margin="8,0,8,16"
                                  Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -318,7 +297,7 @@
             </materialDesign:Card>
 
             <!-- Input Area -->
-            <materialDesign:Card Grid.Row="3" UniformCornerRadius="16">
+            <materialDesign:Card Grid.Row="2" UniformCornerRadius="16">
                 <Grid Margin="20,12">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -357,6 +336,120 @@
                 </Grid>
             </materialDesign:Card>
         </Grid>
+        
+                <materialDesign:Card Grid.Column="2"
+                            UniformCornerRadius="0"
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Effect="{DynamicResource MaterialDesignShadowDepth3}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Toggle Button -->
+                <ToggleButton x:Name="RightSidebarToggle"
+                            Style="{StaticResource MaterialDesignActionToggleButton}"
+                            Height="48"
+                            Width="48"
+                            Margin="8"
+                            HorizontalAlignment="Right">
+                    <ToggleButton.Content>
+                        <materialDesign:PackIcon Kind="ChevronLeft" Width="24" Height="24" />
+                    </ToggleButton.Content>
+                    <materialDesign:ToggleButtonAssist.OnContent>
+                        <materialDesign:PackIcon Kind="ChevronRight" Width="24" Height="24" />
+                    </materialDesign:ToggleButtonAssist.OnContent>
+                </ToggleButton>
+
+                <!-- Expandable Content -->
+                <Grid Grid.Row="1" Width="320">
+                    <Grid.Style>
+                        <Style TargetType="Grid">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsChecked, ElementName=RightSidebarToggle}" Value="true">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Grid.Style>
+
+                    <StackPanel Margin="20">
+                        <!-- Predicted Game Info Section -->
+                        <materialDesign:Card UniformCornerRadius="16" Margin="0,0,0,20">
+                            <StackPanel Margin="20">
+                                <TextBlock Text="Predicted Game Info"
+                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                         Margin="0,0,0,16"/>
+                                
+                                <StackPanel Margin="0,0,0,8">
+                                    <TextBlock Text="Game Name"
+                                             Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                             Opacity="0.7"/>
+                                    <TextBlock Text="{Binding PredicatedWindow.Title, FallbackValue=Not Detected}"
+                                             Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                                </StackPanel>
+
+                                <StackPanel Margin="0,0,0,16">
+                                    <TextBlock Text="Process"
+                                             Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                             Opacity="0.7"/>
+                                    <TextBlock Text="{Binding PredicatedWindow.ProcessName, FallbackValue=Not Detected}"
+                                             Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                                </StackPanel>
+                                
+                                <Button Command="{Binding PredictGameCommand}"
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        HorizontalAlignment="Left"
+                                        Margin="0,0,0,16">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Radar" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Rescan"/>
+                                    </StackPanel>
+                                </Button>
+
+                                <!-- Override Toggle -->
+                                <CheckBox Content="Override Predictions"
+                                         IsChecked="{Binding IsOverrideEnabled}"
+                                         Style="{StaticResource MaterialDesignCheckBox}"/>
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <!-- Manual Override Section -->
+                        <materialDesign:Card UniformCornerRadius="16"
+                                          Visibility="{Binding IsOverrideEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Margin="20">
+                                <TextBlock Text="Manual Override"
+                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                         Margin="0,0,0,16"/>
+
+                                <TextBox materialDesign:HintAssist.Hint="Game Context"
+                                        Text="{Binding GameViewModel.CurrentGame, UpdateSourceTrigger=PropertyChanged}"
+                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                        materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                        Margin="0,0,0,16"/>
+
+                                <ComboBox materialDesign:HintAssist.Hint="Windows"
+                                         ItemsSource="{Binding Windows}"
+                                         SelectedItem="{Binding SelectedWindow}"
+                                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                         materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                         Margin="0,0,0,16"/>
+
+                                <Button Command="{Binding RefreshProcessesCommand}"
+                                        Style="{StaticResource MaterialDesignFlatButton}"
+                                        HorizontalAlignment="Right">
+                                    <StackPanel Orientation="Horizontal">
+                                        <materialDesign:PackIcon Kind="Refresh" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Refresh"/>
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </materialDesign:Card>
     </Grid>
 
 </Window>

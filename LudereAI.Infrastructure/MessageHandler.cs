@@ -1,4 +1,5 @@
-﻿using LudereAI.Application.Interfaces;
+﻿using System.Text.RegularExpressions;
+using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Models;
@@ -6,25 +7,29 @@ using LudereAI.Domain.Models.Chat;
 using LudereAI.Domain.Models.Media;
 using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
+using Microsoft.Extensions.Logging;
 using OpenAI.Chat;
 
 namespace LudereAI.Infrastructure;
 
 public class MessageHandler : IMessageHandler
 {
+    private readonly ILogger<IMessageHandler> _logger;
     private readonly IFileStorageService _fileStorageService;
     private readonly IMessageRepository _messageRepository;
     private readonly IConversationRepository _conversationRepository;
     private readonly IInstructionLoader _instructionLoader;
     private const int MaxMessageHistory = 20;
     private const int MaxScreenshotHistory = 0;
+    private bool _isOpenAI;
 
-    public MessageHandler(IFileStorageService fileStorageService, IMessageRepository messageRepository, IInstructionLoader instructionLoader, IConversationRepository conversationRepository)
+    public MessageHandler(IFileStorageService fileStorageService, IMessageRepository messageRepository, IInstructionLoader instructionLoader, IConversationRepository conversationRepository, ILogger<IMessageHandler> logger)
     {
         _fileStorageService = fileStorageService;
         _messageRepository = messageRepository;
         _instructionLoader = instructionLoader;
         _conversationRepository = conversationRepository;
+        _logger = logger;
     }
 
     public async Task<StoredFile?> HandleScreenshot(AssistantRequestDTO request, Conversation conversation)
@@ -59,7 +64,7 @@ public class MessageHandler : IMessageHandler
                 // ReSharper disable once ConditionIsAlwaysTrueOrFalse
                 if (screenshotCount < MaxScreenshotHistory)
                 {
-                    messages.Add(CreateChatMessage(msg.Content, msg.Role, msg.Screenshot.Url));
+                    messages.Add(await CreateChatMessage(msg.Content, msg.Role, msg.Screenshot.Url));
                     screenshotCount++;
                 }
                 else
@@ -69,13 +74,13 @@ public class MessageHandler : IMessageHandler
             }
             else
             {
-                messages.Add(CreateChatMessage(msg.Content, msg.Role));
+                messages.Add(await CreateChatMessage(msg.Content, msg.Role));
             }
         }
 
-        messages.Add(!string.IsNullOrWhiteSpace(request.Screenshot)
+        messages.Add(await (!string.IsNullOrWhiteSpace(request.Screenshot)
             ? CreateChatMessage(request.Message, MessageRole.User, request.Screenshot)
-            : CreateChatMessage(request.Message, MessageRole.User));
+            : CreateChatMessage(request.Message, MessageRole.User)));
         
         return messages;
     }
@@ -120,13 +125,13 @@ public class MessageHandler : IMessageHandler
         await _conversationRepository.Update(conversation);
     }
     
-    private static ChatMessage CreateChatMessage(string message, MessageRole role, string screenshot = "")
+    private async Task<ChatMessage> CreateChatMessage(string message, MessageRole role, string screenshot = "")
     {
         return role switch
         {
             MessageRole.User when string.IsNullOrWhiteSpace(screenshot) => new UserChatMessage(message),
-            MessageRole.User when Uri.TryCreate(screenshot, UriKind.Absolute, out var link) => new UserChatMessage(
-                new List<ChatMessageContentPart>
+            MessageRole.User when _isOpenAI && Uri.TryCreate(screenshot, UriKind.Absolute, out var link) => new
+                UserChatMessage(new List<ChatMessageContentPart>
                 {
                     ChatMessageContentPart.CreateTextPart(message),
                     ChatMessageContentPart.CreateImagePart(link, ChatImageDetailLevel.Auto)
@@ -134,12 +139,18 @@ public class MessageHandler : IMessageHandler
             MessageRole.User => new UserChatMessage(new List<ChatMessageContentPart>
             {
                 ChatMessageContentPart.CreateTextPart(message),
-                ChatMessageContentPart.CreateImagePart(BinaryData.FromBytes(Convert.FromBase64String(screenshot)),
+                ChatMessageContentPart.CreateImagePart(BinaryData.FromBytes(await GetBytesFromImageUrl(screenshot)),
                     "image/jpeg")
             }),
             MessageRole.Assistant => new AssistantChatMessage(message),
             MessageRole.System => new SystemChatMessage(message),
             _ => throw new ArgumentOutOfRangeException(nameof(role), role, "Unsupported message role")
         };
+    }
+
+    private async Task<byte[]> GetBytesFromImageUrl(string url)
+    {
+        using var httpClient = new HttpClient();
+        return await httpClient.GetByteArrayAsync(url);
     }
 }

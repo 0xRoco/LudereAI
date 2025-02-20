@@ -1,10 +1,8 @@
-﻿using ElevenLabs;
-using ElevenLabs.Models;
-using ElevenLabs.TextToSpeech;
-using LudereAI.Application.Interfaces;
+﻿using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Models;
 using LudereAI.Domain.Models.Chat;
+using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
 using Microsoft.Extensions.Logging;
 using OpenAI.Audio;
@@ -21,9 +19,6 @@ public class OpenAIService : IOpenAIService
     private readonly IMessageHandler _messageHandler;
     private readonly IAudioService _audioGenerator;
     private readonly IAccountService _accountService;
-    
-    private bool _IsOpenAIConfigured;
-
     public OpenAIService(ILogger<IOpenAIService> logger,
         IChatClientFactory chatClientFactory,
         IMessageHandler messageHandler,
@@ -49,7 +44,7 @@ public class OpenAIService : IOpenAIService
 
 
             var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
-            if (file != null && !string.IsNullOrWhiteSpace(file.Url) && _IsOpenAIConfigured)
+            if (file != null && !string.IsNullOrWhiteSpace(file.Url))
             {
                 requestDto.Screenshot = file.Url;
             }
@@ -121,6 +116,31 @@ public class OpenAIService : IOpenAIService
         }
     }
 
+    public async Task<ProcessInfoDTO> PredictGame(List<ProcessInfoDTO> processes)
+    {
+        var messages = new List<ChatMessage>
+        {
+            new SystemChatMessage("Scan the provided processes and predict which is 99% most likely to be a game and return it and replace the Title with the actual game name. if no game is found return empty json object. do not use markdown or any formatting."),
+            new UserChatMessage(processes.ToJson())
+        };
+        
+        var options = new ChatCompletionOptions
+        {
+            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat("ProcessInfoDTO", BinaryData.FromObjectAsJson(new ProcessInfoDTO())),
+        };
+        
+        var chat = _chatClientFactory.CreateGeminiClient();
+        
+        var response = await chat.CompleteChatAsync(messages);
+        LogTokenUsage(response.Value.Usage);
+        
+        _logger.LogInformation("Predicted game: {Prediction}", response.Value.Content[0].Text.Trim());
+        
+        _logger.LogInformation("Predicted game: {Prediction}", response.Value.Content[0].Text.Trim());
+        
+        return response.Value.Content[0].Text.Trim().FromJson<ProcessInfoDTO>() ?? new ProcessInfoDTO();
+    }
+
     private async Task<string> ProcessRequestAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
         var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
@@ -132,8 +152,8 @@ public class OpenAIService : IOpenAIService
             {
                 EndUserId = conversation.AccountId,
                 MaxOutputTokenCount = 512,
-                Temperature = 0.4f,
-                TopP = 0.8f
+                Temperature = 0.45f,
+                TopP = 0.35f
             };
 
             var response = await chat.CompleteChatAsync(messages, options);

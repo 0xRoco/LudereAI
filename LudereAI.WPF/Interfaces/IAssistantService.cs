@@ -8,4 +8,5 @@ public interface IAssistantService
 {
     Task<Result<MessageDTO?, AssistantService.AssistantRequestResult>> SendMessage(AssistantRequestDTO requestDto);
     Task<IEnumerable<ConversationDTO>> GetConversationsAsync();
+    Task<ProcessInfoDTO?> PredictGame(List<ProcessInfoDTO> processes);
 }

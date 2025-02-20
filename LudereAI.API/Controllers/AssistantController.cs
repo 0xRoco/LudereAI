@@ -99,6 +99,24 @@ public class AssistantController : ControllerBase
                 APIResult<MessageDTO>.Error(HttpStatusCode.InternalServerError, "An unexpected error occurred"));
         }
     }
+
+    [RequireFeature("Assistant.GamePredictionEnabled")]
+    [HttpPost("PredictGame")]
+    public async Task<ActionResult<APIResult<ProcessInfoDTO>>> PredictGame([FromBody] List<ProcessInfoDTO> dtos)
+    {
+        if (dtos.Count == 0)
+        {
+            return BadRequest(APIResult<ProcessInfoDTO>.Error(HttpStatusCode.BadRequest, "No processes provided"));
+        }
+        
+        var validationResult = await ValidateAndGetAccountId();
+        if (validationResult.Result != null || string.IsNullOrWhiteSpace(validationResult.AccountId))
+            return validationResult.Result
+                   ?? Unauthorized(APIResult<MessageDTO>.Error(HttpStatusCode.Unauthorized, "Invalid user"));
+        
+        var response = await _openAIService.PredictGame(dtos);
+        return Ok(APIResult<ProcessInfoDTO>.Success(data: response));
+    }
     
     
     private async Task<(ActionResult? Result, string? AccountId)> ValidateAndGetAccountId()

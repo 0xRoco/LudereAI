@@ -56,4 +56,25 @@ public class AssistantService(ILogger<IAssistantService> logger, IAPIClient apiC
             return Array.Empty<ConversationDTO>();
         }
     }
+
+    public async Task<ProcessInfoDTO?> PredictGame(List<ProcessInfoDTO> processes)
+    {
+        try
+        {
+            var result = await apiClient.PostAsync<ProcessInfoDTO>("assistant/predictGame", processes);
+            
+            if (result is { IsSuccess: true, Data: not null})
+            {
+                return result.Data;
+            }
+            
+            logger.LogWarning("Failed to predict game from assistant: {Message}", result?.Message);
+            return null;
+        }
+        catch (Exception e)
+        {
+            logger.LogError(e, "Failed to predict game from assistant");
+            return null;
+        }
+    }
 }

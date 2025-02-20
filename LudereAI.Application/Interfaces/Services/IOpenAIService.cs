@@ -8,4 +8,5 @@ public interface IOpenAIService
 {
     Task<AIResponse> SendMessageAsync(Conversation conversation, AssistantRequestDTO requestDto); 
     IAsyncEnumerable<AIResponse> StreamlineMessageAsync(Conversation conversation, AssistantRequestDTO requestDto);
+    Task<ProcessInfoDTO> PredictGame(List<ProcessInfoDTO> processes);
 }

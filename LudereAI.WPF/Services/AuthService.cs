@@ -69,7 +69,7 @@ public class AuthService(ILogger<IAuthService> logger,
         try
         {
             dto.DeviceId = GetDeviceId();
-            var result = await apiClient.PostAsync<string>("Auth/SignUp", dto);
+            var result = await apiClient.PostAsync<bool>("Auth/SignUp", dto);
             if (result?.IsSuccess == true)
             {
                 logger.LogInformation("User signed up successfully");
@@ -90,7 +90,7 @@ public class AuthService(ILogger<IAuthService> logger,
     {
         try
         {
-            //await apiClient.PostAsync<bool>("Auth/Logout", new {});
+            await apiClient.PostAsync<bool>("Auth/Logout", new {});
 
             await gameService.StopScanning();
             sessionService.RemoveCurrentAccount();

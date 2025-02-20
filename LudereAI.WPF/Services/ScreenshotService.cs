@@ -4,6 +4,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
+using LudereAI.Shared;
 using LudereAI.WPF.Infrastructure;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Models;
@@ -51,7 +52,6 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
             }
             return true;
         }), IntPtr.Zero);
-
         return windows;
     }
 

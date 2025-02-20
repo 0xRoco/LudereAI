@@ -13,6 +13,7 @@ namespace LudereAI.WPF.ViewModels;
 
 public partial class ChatViewModel : ObservableObject
 {
+    private readonly IAssistantService _assistantService;
     private readonly IChatService _chatService;
     private readonly ISubscriptionService _subscriptionService;
     private readonly IAuthService _authService;
@@ -29,7 +30,7 @@ public partial class ChatViewModel : ObservableObject
         IAuthService authService, 
         IAudioPlaybackService audioPlaybackService, 
         ISubscriptionService subscriptionService, 
-        IChatService chatService)
+        IChatService chatService, IAssistantService assistantService)
     {
         _logger = logger;
         _screenshotService = screenshotService;
@@ -37,15 +38,16 @@ public partial class ChatViewModel : ObservableObject
         _audioPlaybackService = audioPlaybackService;
         _subscriptionService = subscriptionService;
         _chatService = chatService;
-        
-        _gameViewModel = gameViewModel;
+        _assistantService = assistantService;
 
+        _gameViewModel = gameViewModel;
+        
         if (sessionService.CurrentAccount != null)
         {
             CurrentAccount = sessionService.CurrentAccount;
         }
         else
-        {
+        { 
             _authService.LogoutAsync();
         }
         
@@ -53,9 +55,9 @@ public partial class ChatViewModel : ObservableObject
         Conversations = [];
         Windows = [];
         
-        RefreshProcesses();
-
-        _ = RefreshConversationsAsync();
+        //_overlayService.Initialize();
+        
+        _ =  RefreshConversationsAsync();
     }
 
     // Observable properties
@@ -75,6 +77,11 @@ public partial class ChatViewModel : ObservableObject
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
     private WindowInfo? _selectedWindow;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private WindowInfo? _predicatedWindow;
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private bool _isOverrideEnabled;
 
 
     [ObservableProperty] private GameViewModel _gameViewModel;
@@ -82,7 +89,7 @@ public partial class ChatViewModel : ObservableObject
     public event Action OnMessageUpdated;
 
     public bool CanSendMessage =>
-        !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && SelectedWindow != null;
+        !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? SelectedWindow != null : PredicatedWindow != null);
 
     public bool CanWriteMessage => !IsAssistantThinking;
     public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: false, Tier: not SubscriptionTier.Guest};
@@ -99,7 +106,7 @@ public partial class ChatViewModel : ObservableObject
     private async Task SendMessage()
     {
         if (!CanSendMessage) return;
-        if (CurrentConversation != null && !string.IsNullOrWhiteSpace(CurrentConversation.GameContext) && CurrentConversation.GameContext != GameViewModel.CurrentGame)
+        if (!string.IsNullOrWhiteSpace(CurrentConversation?.GameContext) && CurrentConversation?.GameContext != (IsOverrideEnabled ? GameViewModel.CurrentGame : PredicatedWindow?.Title))
         {
             AddSystemMessage("An active conversation is limited to only a single game, please start a new conversation.");
             return;
@@ -110,9 +117,29 @@ public partial class ChatViewModel : ObservableObject
         
         await ProcessMessage(message);
     }
-    
+
     [RelayCommand]
     private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_screenshotService.GetWindowedProcessesAsync());
+    
+    [RelayCommand]
+    private async Task PredictGame()
+    {
+        RefreshProcesses();
+        
+        var processes = Windows.Select(w => new ProcessInfoDTO
+        {
+            ProcessId = w.ProcessId,
+            ProcessName= w.ProcessName,
+            Title = w.Title
+        }).ToList();
+        
+        var predicatedProcess = await _assistantService.PredictGame(processes);
+        
+        if (predicatedProcess != null)
+        {
+            PredicatedWindow = Windows.FirstOrDefault(w => w.ProcessId == predicatedProcess.ProcessId);
+        }
+    }
 
     [RelayCommand]
     private async Task Logout() => await _authService.LogoutAsync();
@@ -168,8 +195,8 @@ public partial class ChatViewModel : ObservableObject
             {
                 Message = message,
                 ConversationId = CurrentConversation?.Id,
-                GameContext = GameViewModel.CurrentGame,
-                Window = SelectedWindow
+                GameContext = IsOverrideEnabled ? GameViewModel.CurrentGame : PredicatedWindow?.Title,
+                Window = IsOverrideEnabled ? SelectedWindow : PredicatedWindow
             });
             
             
