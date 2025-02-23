@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:local="clr-namespace:LudereAI.WPF"
+             xmlns:converters="clr-namespace:LudereAI.WPF.Converters"
              xmlns:infrastructure="clr-namespace:LudereAI.WPF.Infrastructure">
     <Application.Resources>
         <ResourceDictionary>
@@ -18,6 +19,23 @@
                         <ControlTemplate TargetType="{x:Type infrastructure:ViewLocator}">
                             <ContentPresenter Content="{TemplateBinding Content}"/>
                         </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+            
+            <converters:MessageBackgroundConverter x:Key="MessageBackgroundConverter" />
+            <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            
+            <Style TargetType="materialDesign:Card" x:Key="MessageBubbleStyle">
+                <Setter Property="Margin" Value="8 4" />
+                <Setter Property="Padding" Value="16 12" />
+                <Setter Property="MaxWidth" Value="600" />
+                <Setter Property="HorizontalAlignment"
+                        Value="{Binding Role, Converter={StaticResource MessageAlignmentConverter}}" />
+                <Setter Property="Effect">
+                    <Setter.Value>
+                        <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15" />
                     </Setter.Value>
                 </Setter>
             </Style>

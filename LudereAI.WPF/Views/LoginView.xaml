@@ -6,37 +6,37 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
              Background="{DynamicResource MaterialDesignBackground}"
              Foreground="{DynamicResource MaterialDesignBody}"
              FontFamily="{DynamicResource MaterialDesignFont}"
-             d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
              Width="400" Height="500">
-    
-    <materialDesign:Card Margin="32" UniformCornerRadius="15" 
-                        Background="{DynamicResource MaterialDesignBackground}"
-                        materialDesign:ElevationAssist.Elevation="Dp3">
-        <Grid>
+
+    <materialDesign:Card Margin="32" UniformCornerRadius="15"
+                         Background="{DynamicResource MaterialDesignBackground}"
+                         materialDesign:ElevationAssist.Elevation="Dp3">
+        <Grid VerticalAlignment="Center">
             <Grid.RowDefinitions>
-                <RowDefinition Height="100" />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
             <!-- Header Section -->
             <StackPanel Grid.Row="0" VerticalAlignment="Center">
-                <TextBlock Text="Welcome Back" 
-                         FontSize="28" FontWeight="Medium"
-                         HorizontalAlignment="Center"/>
-                <TextBlock Text="Please sign in to continue" 
-                         FontSize="14" Opacity="0.7"
-                         Margin="0,8,0,0"
-                         HorizontalAlignment="Center"/>
+                <TextBlock Text="Welcome Back"
+                           FontSize="28" FontWeight="Medium"
+                           HorizontalAlignment="Center" />
+                <TextBlock Text="Please sign in to continue"
+                           FontSize="14" Opacity="0.7"
+                           Margin="0,8,0,0"
+                           HorizontalAlignment="Center" />
             </StackPanel>
 
             <!-- Login Form -->
             <StackPanel Grid.Row="1" Margin="32,0">
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0,16"
-                         materialDesign:HintAssist.Hint="Username or Email"
+                         materialDesign:HintAssist.Hint="Username"
                          materialDesign:TextFieldAssist.HasClearButton="True"
                          Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
@@ -45,34 +45,37 @@
                 </TextBox>
 
                 <PasswordBox Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
-                            Margin="0,0,0,24"
-                            materialDesign:HintAssist.Hint="Password"
-                            materialDesign:TextFieldAssist.HasClearButton="True"
-                            PasswordChanged="PasswordBox_OnPasswordChanged">
+                             Margin="0,0,0,24"
+                             materialDesign:HintAssist.Hint="Password"
+                             materialDesign:TextFieldAssist.HasClearButton="True"
+                             PasswordChanged="PasswordBox_OnPasswordChanged">
                     <PasswordBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
                     </PasswordBox.InputBindings>
                 </PasswordBox>
 
                 <CheckBox Style="{StaticResource MaterialDesignCheckBox}"
-                         IsChecked="{Binding RememberMe, UpdateSourceTrigger=PropertyChanged}"
-                         Content="Remember me"
-                         Margin="0,0,0,24"/>
+                          IsChecked="{Binding RememberMe, UpdateSourceTrigger=PropertyChanged}"
+                          Content="Remember me"
+                          Margin="0,0,0,24" />
 
-                <Button IsEnabled="{Binding CanLogin}" 
-                    Style="{StaticResource MaterialDesignFlatButton}"
-                    Height="50"
-                    materialDesign:ButtonAssist.CornerRadius="25"
-                    Content="SIGN IN"
-                    Command="{Binding LoginCommand}"/>
+                <Button IsEnabled="{Binding CanLogin}"
+                        Style="{StaticResource MaterialDesignFlatButton}"
+                        Height="50"
+                        materialDesign:ButtonAssist.CornerRadius="25"
+                        Content="SIGN IN"
+                        Command="{Binding LoginCommand}" />
 
-                <StackPanel Orientation="Horizontal" 
-                          HorizontalAlignment="Center"
-                          Margin="0,24,0,0">
-                    <TextBlock 
-                             VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal"
+                            HorizontalAlignment="Center"
+                            Margin="0,24,0,0">
+                    <TextBlock
+                        VerticalAlignment="Center">
                         <Run Text="Don't have an account? "></Run>
-                        <Hyperlink FontWeight="Bold" TextDecorations="{x:Null}" Command="{Binding ShowSignUpViewCommand}">Sign Up Now!</Hyperlink>
+                        <Hyperlink FontWeight="Bold" TextDecorations="{x:Null}"
+                                   Command="{Binding ShowSignUpViewCommand}">
+                            Sign Up Now!
+                        </Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </StackPanel>

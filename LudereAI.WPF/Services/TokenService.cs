@@ -20,7 +20,7 @@ public class TokenService(ILogger<ITokenService> logger,
     {
         try
         {
-            var token = sessionService.Token;
+            var token = await sessionService.GetToken();
             if (!sessionService.IsAuthenticated || string.IsNullOrEmpty(token))
             {
                 return null;
@@ -31,8 +31,9 @@ public class TokenService(ILogger<ITokenService> logger,
             var response = await _httpClient.GetAsync("Auth/ValidateToken");
             var result = await response.Content.ReadFromJsonAsync<APIResult<AccountDTO>>();
 
-            if (result?.IsSuccess == true)
+            if (result is { IsSuccess: true, Data: not null })
             {
+                sessionService.SetCurrentAccount(result.Data);
                 return result.Data;
             }
 

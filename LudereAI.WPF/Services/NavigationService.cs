@@ -9,7 +9,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 {
     private readonly List<Window> _windows = new();
 
-    public void ShowWindow<T>(bool isMainWindow = true) where T : Window
+    public void ShowWindow<T>(bool isMainWindow = true, bool showDialog = false) where T : Window
     {
         var window = serviceProvider.GetRequiredService<T>();
         
@@ -27,9 +27,13 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         {
             Application.Current.MainWindow = window;
         }
+        
+        logger.LogInformation("Window {window} opened (MainWindow: {isMainWindow}, Dialog: {isDialog})", window.GetType().Name, isMainWindow, showDialog);
 
-        window.Show();
-        logger.LogInformation("Window {window} opened", window.GetType().Name);
+        if (showDialog)
+            window.ShowDialog();
+        else
+            window.Show();
     }
 
     public void CloseWindow<T>() where T : Window

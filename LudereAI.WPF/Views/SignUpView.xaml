@@ -6,22 +6,20 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
              mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance viewModels:SignUpViewModel}"
              Background="{DynamicResource MaterialDesignBackground}"
              Foreground="{DynamicResource MaterialDesignBody}"
              FontFamily="{DynamicResource MaterialDesignFont}"
-             d:DataContext="{d:DesignInstance viewModels:SignUpViewModel}"
              Width="500" Height="600">
 
    <materialDesign:Card Margin="32" UniformCornerRadius="15" 
-                        Background="{DynamicResource MaterialDesignBackground}"
                         materialDesign:ElevationAssist.Elevation="Dp3">
-        <Grid>
+        <Grid VerticalAlignment="Center">
             <Grid.RowDefinitions>
-                <RowDefinition Height="100" />
-                <RowDefinition />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
-            <!-- Header Section -->
             <StackPanel Grid.Row="0" VerticalAlignment="Center">
                 <TextBlock Text="Create Account" 
                          FontSize="28" FontWeight="Medium"
@@ -32,9 +30,7 @@
                          HorizontalAlignment="Center"/>
             </StackPanel>
 
-            <!-- Sign Up Form -->
             <StackPanel Grid.Row="1" Margin="32,0">
-                <!-- Name Fields -->
                 <Grid Margin="0,16">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -70,8 +66,12 @@
                             Margin="0,0,0,24"
                             materialDesign:HintAssist.Hint="Password"
                             materialDesign:TextFieldAssist.HasClearButton="True"
-                            PasswordChanged="PasswordBox_OnPasswordChanged" />
+                            materialDesign:PasswordBoxAssist.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}" />
 
+                <CheckBox Content="I agree to the Terms of Service and Privacy Policy"
+                          IsChecked="{Binding TermsAccepted, UpdateSourceTrigger=PropertyChanged}"
+                          Margin="0,0,0,16"/>
+                
                 <Button IsEnabled="{Binding CanSignUp}" 
                     Style="{StaticResource MaterialDesignFlatButton}"
                     Height="50"
@@ -86,8 +86,8 @@
                     </TextBlock>
                     
                     <TextBlock TextAlignment="Center" Margin="0,8,0,0">
-                        <Run Text="Or continue as a guest " />
-                        <Hyperlink FontWeight="Bold" TextDecorations="{x:Null}" Command="{Binding ShowOnBoardingViewCommand}">Continue</Hyperlink>
+                        <Run Text="Return to" />
+                        <Hyperlink FontWeight="Bold" TextDecorations="{x:Null}" Command="{Binding ShowOnBoardingViewCommand}">Onboarding</Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </StackPanel>

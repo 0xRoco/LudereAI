@@ -32,8 +32,8 @@ public partial class App : Application
     public App()
     {
         
-        _environment = Environments.Staging;
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _environment);
+        /*_environment = Environments.Staging;
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _environment);*/
         
         Directory.CreateDirectory(_logDirectory);
         _loggingLevelSwitch.MinimumLevel = _environment == Environments.Development ? LogEventLevel.Debug : LogEventLevel.Information;
@@ -199,6 +199,7 @@ public partial class App : Application
         services.AddTransient<LoginView>();
         services.AddTransient<SignUpView>();
         services.AddTransient<ChatView>();
+        services.AddTransient<SettingsView>();
     }
 
     protected override async void OnExit(ExitEventArgs e)

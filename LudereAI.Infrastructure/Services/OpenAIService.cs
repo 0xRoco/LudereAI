@@ -120,21 +120,21 @@ public class OpenAIService : IOpenAIService
     {
         var messages = new List<ChatMessage>
         {
-            new SystemChatMessage("Scan the provided processes and predict which is 99% most likely to be a game and return it and replace the Title with the actual game name. if no game is found return empty json object. do not use markdown or any formatting."),
+            new SystemChatMessage("Scan the provided processes and predict which is 99% most likely to be the process of a game then replace the Title field with the full name of the game return the object. " +
+                                  "if no game is found return empty json object. do not use markdown or any formatting. " +
+                                  "do not include the process name in the title field. " +
+                                  "do not select a process that is not a game." +
+                                  "do not select a process that belongs to a game launcher." +
+                                  "do not select a process that is similar to a browser or other non-game application."),
             new UserChatMessage(processes.ToJson())
         };
         
-        var options = new ChatCompletionOptions
-        {
-            ResponseFormat = ChatResponseFormat.CreateJsonSchemaFormat("ProcessInfoDTO", BinaryData.FromObjectAsJson(new ProcessInfoDTO())),
-        };
+        _logger.LogInformation("Predicting game from processes: {Processes}", processes.ToJson());
         
         var chat = _chatClientFactory.CreateGeminiClient();
         
         var response = await chat.CompleteChatAsync(messages);
         LogTokenUsage(response.Value.Usage);
-        
-        _logger.LogInformation("Predicted game: {Prediction}", response.Value.Content[0].Text.Trim());
         
         _logger.LogInformation("Predicted game: {Prediction}", response.Value.Content[0].Text.Trim());
         

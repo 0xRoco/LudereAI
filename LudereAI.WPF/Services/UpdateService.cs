@@ -132,7 +132,7 @@ public class UpdateService : IUpdateService
 
                 if (hash != _cachedUpdateInfo.Hash)
                 {
-                    throw new Exception("Downloaded file hash does not match expected hash");
+                    throw new Exception($"Downloaded file hash does not match expected hash: {_cachedUpdateInfo.Hash} != {hash}");
                 }
             }
 

@@ -13,16 +13,18 @@ public partial class SignUpViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     private readonly AuthViewModel _authViewModel;
 
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSignUp))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
     private string _firstName;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSignUp))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
     private string _lastName;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSignUp))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
     private string _username;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSignUp))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
     private string _email;
-    [ObservableProperty, NotifyPropertyChangedFor(nameof(CanSignUp))]
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
     private string _password;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSignUp))]
+    private bool _termsAccepted;
 
     public SignUpViewModel(ILogger<SignUpViewModel> logger, IAuthService authService, INavigationService navigationService, AuthViewModel authViewModel)
     {
@@ -36,7 +38,8 @@ public partial class SignUpViewModel : ObservableObject
                              && !string.IsNullOrWhiteSpace(LastName) 
                              && !string.IsNullOrWhiteSpace(Username) 
                              && !string.IsNullOrWhiteSpace(Email) 
-                             && !string.IsNullOrWhiteSpace(Password);
+                             && !string.IsNullOrWhiteSpace(Password)
+                             && TermsAccepted;
     
     [RelayCommand]
     private async Task SignUp()

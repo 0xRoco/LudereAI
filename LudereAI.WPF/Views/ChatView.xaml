@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:converters="clr-namespace:LudereAI.WPF.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:ChatViewModel}"
         Background="{DynamicResource MaterialDesignBackground}"
@@ -19,34 +18,6 @@
         TextOptions.TextFormattingMode="Ideal"
         Title="LudereAI - Chat"
         Height="800" Width="1200">
-
-    <Window.Resources>
-        <converters:MessageBackgroundConverter x:Key="MessageBackgroundConverter" />
-        <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
-        <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-
-        <Style TargetType="materialDesign:Card" x:Key="MessageBubbleStyle">
-            <Setter Property="Margin" Value="8 4" />
-            <Setter Property="Padding" Value="16 12" />
-            <Setter Property="MaxWidth" Value="600" />
-            <Setter Property="HorizontalAlignment"
-                    Value="{Binding Role, Converter={StaticResource MessageAlignmentConverter}}" />
-            <Setter Property="Effect">
-                <Setter.Value>
-                    <DropShadowEffect BlurRadius="10" ShadowDepth="2" Opacity="0.15" />
-                </Setter.Value>
-            </Setter>
-        </Style>
-        
-        <Style x:Key="SidebarButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
-            <Setter Property="Margin" Value="0,8,0,0" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="HorizontalAlignment" Value="Stretch" />
-            <Setter Property="BorderThickness" Value="1" />
-        </Style>
-
-    </Window.Resources>
-
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -204,6 +175,7 @@
                                 Margin="20 5"
                                 Command="{Binding ManageSubscriptionCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Height="30"
                                 materialDesign:ButtonAssist.CornerRadius="8"
                                 BorderThickness="1.5">
@@ -215,7 +187,7 @@
                             
                             <Button
                                 Margin="20 5"
-                                Command="{Binding SettingsCommand}"
+                                Command="{Binding OpenSettingsCommand}"
                                 Style="{StaticResource MaterialDesignOutlinedButton}"
                                 Height="30"
                                 materialDesign:ButtonAssist.CornerRadius="8"
@@ -257,7 +229,7 @@
                           x:Name="ChatScroll"
                           VerticalScrollBarVisibility="Auto"
                           Margin="0,0,0,24">
-                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, Mode=TwoWay}">
+                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, Mode=TwoWay, FallbackValue=null}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:Card Style="{StaticResource MessageBubbleStyle}"
@@ -400,7 +372,6 @@
                                 
                                 <Button Command="{Binding PredictGameCommand}"
                                         Style="{StaticResource MaterialDesignFlatButton}"
-                                        HorizontalAlignment="Left"
                                         Margin="0,0,0,16">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Radar" Margin="0,0,8,0"/>
@@ -409,7 +380,7 @@
                                 </Button>
 
                                 <!-- Override Toggle -->
-                                <CheckBox Content="Override Predictions"
+                                <CheckBox Content="Override Prediction"
                                          IsChecked="{Binding IsOverrideEnabled}"
                                          Style="{StaticResource MaterialDesignCheckBox}"/>
                             </StackPanel>
@@ -423,7 +394,7 @@
                                          Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                          Margin="0,0,0,16"/>
 
-                                <TextBox materialDesign:HintAssist.Hint="Game Context"
+                                <TextBox materialDesign:HintAssist.Hint="Game Name"
                                         Text="{Binding GameViewModel.CurrentGame, UpdateSourceTrigger=PropertyChanged}"
                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                         materialDesign:TextFieldAssist.TextFieldCornerRadius="8"

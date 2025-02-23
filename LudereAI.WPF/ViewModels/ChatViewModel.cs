@@ -7,19 +7,21 @@ using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Models;
+using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
 
 namespace LudereAI.WPF.ViewModels;
 
 public partial class ChatViewModel : ObservableObject
 {
+    private readonly ILogger<ChatViewModel> _logger;
     private readonly IAssistantService _assistantService;
     private readonly IChatService _chatService;
     private readonly ISubscriptionService _subscriptionService;
     private readonly IAuthService _authService;
     private readonly IScreenshotService _screenshotService;
     private readonly IAudioPlaybackService _audioPlaybackService;
-    private readonly ILogger<ChatViewModel> _logger;
+    private readonly INavigationService _navigationService;
     
 
     public ChatViewModel(
@@ -30,7 +32,7 @@ public partial class ChatViewModel : ObservableObject
         IAuthService authService, 
         IAudioPlaybackService audioPlaybackService, 
         ISubscriptionService subscriptionService, 
-        IChatService chatService, IAssistantService assistantService)
+        IChatService chatService, IAssistantService assistantService, INavigationService navigationService)
     {
         _logger = logger;
         _screenshotService = screenshotService;
@@ -39,6 +41,7 @@ public partial class ChatViewModel : ObservableObject
         _subscriptionService = subscriptionService;
         _chatService = chatService;
         _assistantService = assistantService;
+        _navigationService = navigationService;
 
         _gameViewModel = gameViewModel;
         
@@ -137,8 +140,17 @@ public partial class ChatViewModel : ObservableObject
         
         if (predicatedProcess != null)
         {
-            PredicatedWindow = Windows.FirstOrDefault(w => w.ProcessId == predicatedProcess.ProcessId);
+            var process = Windows.FirstOrDefault(w => w.ProcessId == predicatedProcess.ProcessId);
+            if (process != null)
+            {
+                process.Title = predicatedProcess.Title;
+
+                PredicatedWindow = process;
+                return;
+            }
         }
+        
+        PredicatedWindow = null;
     }
 
     [RelayCommand]
@@ -146,6 +158,12 @@ public partial class ChatViewModel : ObservableObject
 
     [RelayCommand]
     private void ManageSubscription() => Process.Start (new ProcessStartInfo("https://staging.LudereAI.com/Account") { UseShellExecute = true });
+
+    [RelayCommand]
+    private void OpenSettings()
+    {
+        _navigationService.ShowWindow<SettingsView>(false, true);
+    }
 
 
     [RelayCommand]
