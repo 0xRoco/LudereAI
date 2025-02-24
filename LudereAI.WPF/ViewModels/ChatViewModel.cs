@@ -19,31 +19,27 @@ public partial class ChatViewModel : ObservableObject
     private readonly IChatService _chatService;
     private readonly ISubscriptionService _subscriptionService;
     private readonly IAuthService _authService;
-    private readonly IScreenshotService _screenshotService;
     private readonly IAudioPlaybackService _audioPlaybackService;
     private readonly INavigationService _navigationService;
+    private readonly IGameService _gameService;
     
 
     public ChatViewModel(
-        GameViewModel gameViewModel,
         ILogger<ChatViewModel> logger,
-        IScreenshotService screenshotService,
         ISessionService sessionService,
         IAuthService authService, 
         IAudioPlaybackService audioPlaybackService, 
         ISubscriptionService subscriptionService, 
-        IChatService chatService, IAssistantService assistantService, INavigationService navigationService)
+        IChatService chatService, IAssistantService assistantService, INavigationService navigationService, IGameService gameService)
     {
         _logger = logger;
-        _screenshotService = screenshotService;
         _authService = authService;
         _audioPlaybackService = audioPlaybackService;
         _subscriptionService = subscriptionService;
         _chatService = chatService;
         _assistantService = assistantService;
         _navigationService = navigationService;
-
-        _gameViewModel = gameViewModel;
+        _gameService = gameService;
         
         if (sessionService.CurrentAccount != null)
         {
@@ -58,9 +54,12 @@ public partial class ChatViewModel : ObservableObject
         Conversations = [];
         Windows = [];
         
-        //_overlayService.Initialize();
+        _gameService.OnGameStarted += OnGameStarted;
+        _gameService.OnGameStopped += OnGameStopped;
         
         _ =  RefreshConversationsAsync();
+        
+        _ = _gameService.StartScanning();
     }
 
     // Observable properties
@@ -79,20 +78,19 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty] private ObservableCollection<WindowInfo> _windows;
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private WindowInfo? _selectedWindow;
+    private WindowInfo? _manualWindow;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private string _manualGameName = string.Empty;
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
     private WindowInfo? _predicatedWindow;
 
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
     private bool _isOverrideEnabled;
-
-
-    [ObservableProperty] private GameViewModel _gameViewModel;
     
     public event Action OnMessageUpdated;
 
     public bool CanSendMessage =>
-        !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? SelectedWindow != null : PredicatedWindow != null);
+        !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
 
     public bool CanWriteMessage => !IsAssistantThinking;
     public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: false, Tier: not SubscriptionTier.Guest};
@@ -109,7 +107,7 @@ public partial class ChatViewModel : ObservableObject
     private async Task SendMessage()
     {
         if (!CanSendMessage) return;
-        if (!string.IsNullOrWhiteSpace(CurrentConversation?.GameContext) && CurrentConversation?.GameContext != (IsOverrideEnabled ? GameViewModel.CurrentGame : PredicatedWindow?.Title))
+        if (!string.IsNullOrWhiteSpace(CurrentConversation?.GameContext) && CurrentConversation?.GameContext != (IsOverrideEnabled ? ManualGameName : PredicatedWindow?.Title))
         {
             AddSystemMessage("An active conversation is limited to only a single game, please start a new conversation.");
             return;
@@ -122,7 +120,7 @@ public partial class ChatViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_screenshotService.GetWindowedProcessesAsync());
+    private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_gameService.GetWindowedProcessesAsync());
     
     [RelayCommand]
     private async Task PredictGame()
@@ -213,8 +211,8 @@ public partial class ChatViewModel : ObservableObject
             {
                 Message = message,
                 ConversationId = CurrentConversation?.Id,
-                GameContext = IsOverrideEnabled ? GameViewModel.CurrentGame : PredicatedWindow?.Title,
-                Window = IsOverrideEnabled ? SelectedWindow : PredicatedWindow
+                GameContext = IsOverrideEnabled ? ManualGameName : PredicatedWindow?.Title,
+                Window = IsOverrideEnabled ? ManualWindow : PredicatedWindow
             });
             
             
@@ -285,4 +283,16 @@ public partial class ChatViewModel : ObservableObject
 
     private void AddSystemMessage(string content) =>
         AddMessage(content, MessageRole.System);
+    
+    private void OnGameStarted(WindowInfo gameWindow)
+    {
+        PredicatedWindow = gameWindow;
+        AddSystemMessage($"Game detected: {gameWindow.Title}");
+    }
+
+    private void OnGameStopped(WindowInfo gameWindow)
+    {
+        AddSystemMessage($"Game closed: {gameWindow.Title}");
+        PredicatedWindow = null;
+    }
 }

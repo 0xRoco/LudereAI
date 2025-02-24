@@ -8,6 +8,7 @@ public class PricingPlanViewModel
     public string PriceInterval { get; set; }
     public List<string> Features { get; set; }
     public string CtaText { get; set; }
+    public bool ShowCTAButton { get; set; }
     
     // Link properties
     public string CtaLink { get; set; }

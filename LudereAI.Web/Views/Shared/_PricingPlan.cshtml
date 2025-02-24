@@ -22,32 +22,35 @@
                 <li><i class="fas fa-check text-success"></i> @feature</li>
             }
         </ul>
-
-        @if (Model.IsFormSubmit)
+        
+        @if (Model.ShowCTAButton)
         {
-            <form asp-controller="@Model.FormController"
-                  asp-action="@Model.FormAction"
-                  method="@Model.FormMethod">
+            @if (Model.IsFormSubmit)
+            {
+                <form asp-controller="@Model.FormController"
+                      asp-action="@Model.FormAction"
+                      method="@Model.FormMethod">
 
-                @foreach (var param in Model.FormParameters)
-                {
-                    <input type="hidden" name="@param.Key" value="@param.Value" />
-                }
+                    @foreach (var param in Model.FormParameters)
+                    {
+                        <input type="hidden" name="@param.Key" value="@param.Value" />
+                    }
 
-                <button type="submit"
-                        class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
-                        @(Model.IsDisabled ? "disabled" : "")>
+                    <button type="submit"
+                            class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+                            @(Model.IsDisabled ? "disabled" : "")>
+                        @Model.CtaText
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a href="@Model.CtaLink"
+                   class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+                   @(Model.IsDisabled ? "disabled" : "")>
                     @Model.CtaText
-                </button>
-            </form>
-        }
-        else
-        {
-            <a href="@Model.CtaLink"
-               class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
-               @(Model.IsDisabled ? "disabled" : "")>
-                @Model.CtaText
-            </a>
+                </a>
+            }
         }
     </div>
 </div>

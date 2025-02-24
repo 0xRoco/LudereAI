@@ -14,14 +14,16 @@ namespace LudereAI.WPF.Services;
 public class UpdateService : IUpdateService
 {
     private readonly ILogger<IUpdateService> _logger;
+    private readonly ISettingsService _settingsService;
     private readonly IAPIClient _apiClient;
     private UpdateInfoDTO? _cachedUpdateInfo;
     private readonly string _updateDirectory;
 
-    public UpdateService(ILogger<IUpdateService> logger, IAPIClient apiClient)
+    public UpdateService(ILogger<IUpdateService> logger, IAPIClient apiClient, ISettingsService settingsService)
     {
         _logger = logger;
         _apiClient = apiClient;
+        _settingsService = settingsService;
         _updateDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "LudereAI", "Updates");
     }
@@ -30,6 +32,8 @@ public class UpdateService : IUpdateService
     {
         try
         {
+            if (!_settingsService.LoadSettings().General.AutoCheckForUpdates) return;
+            
             if (await IsUpdateAvailableAsync())
             {
                 _logger.LogInformation("Update available {Version} Critical: {IsCritical}", 

@@ -234,6 +234,11 @@ header.hero {
   border-radius: 8px;
 }
 
+.modal-xxl {
+  max-width: 50%;
+}
+
+
 .clickable-screenshot {
   position: relative;
 }

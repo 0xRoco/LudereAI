@@ -11,6 +11,9 @@ public interface IChatService
         Success,
         Error
     }
+    
+    void SetAutoCaptureScreenshots(bool enabled);
+    
     Task<Result<Message, ChatRequestResult>> SendMessage(ChatRequest request);
     Task<IEnumerable<Conversation>> GetConversations();
 }

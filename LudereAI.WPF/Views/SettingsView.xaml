@@ -4,7 +4,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
         mc:Ignorable="d"
+        d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
         Background="{DynamicResource MaterialDesignBackground}"
         Foreground="{DynamicResource MaterialDesignBody}"
         FontFamily="{DynamicResource MaterialDesignFont}"
@@ -19,6 +21,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
         <TextBlock Text="Settings" HorizontalAlignment="Center"
@@ -41,9 +44,10 @@
                                 <TextBlock Text="Language"
                                          Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                                          Margin="0 0 0 8"/>
-                                <ComboBox materialDesign:HintAssist.Hint="Select language"
-                                        Margin="0 8 0 0">
-                                    <ComboBoxItem Content="English"/>
+                                <ComboBox materialDesign:HintAssist.Hint="Select language" 
+                                          ItemsSource="{Binding Languages}"
+                                          SelectedItem="{Binding Settings.General.Language}"
+                                          Margin="0 8 0 0">
                                 </ComboBox>
                             </StackPanel>
                         </materialDesign:Card>
@@ -54,10 +58,9 @@
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                                            Margin="0 0 0 8"/>
                                 <ComboBox materialDesign:HintAssist.Hint="Select theme"
-                                          Margin="0 8 0 0">
-                                    <ComboBoxItem Content="Light"/>
-                                    <ComboBoxItem Content="Dark"/>
-                                    <ComboBoxItem Content="System"/>
+                                            ItemsSource="{Binding Themes}"
+                                            SelectedItem="{Binding Settings.General.Theme}"
+                                            Margin="0 8 0 0">
                                 </ComboBox>
                             </StackPanel>
                         </materialDesign:Card>
@@ -72,7 +75,7 @@
                                 <CheckBox Content="Minimize to System Tray" 
                                           IsChecked="{Binding Settings.General.MinimizeToTray}" Margin="0 0 0 8"/>
                                 <CheckBox Content="Check for Updates Automatically" 
-                                          IsChecked="{Binding Settings.General.AutoCheckUpdates}" Margin="0 0 0 8"/>
+                                          IsChecked="{Binding Settings.General.AutoCheckForUpdates}" Margin="0 0 0 8"/>
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
@@ -94,14 +97,20 @@
                                 </TextBlock>
                                 
                                 <CheckBox Content="Auto-detect running games"
+                                            IsChecked="{Binding Settings.GameIntegration.Enabled}"
+                                          Margin="0 0 0 8"/>
+                                
+                                <CheckBox Content="Auto-capture screenshots"
+                                          IsChecked="{Binding Settings.GameIntegration.AutoCaptureScreenshots}"
                                           Margin="0 0 0 8"/>
                                 
                                 <DockPanel Margin="0,8">
                                     <TextBlock Text="Scan interval (seconds)"/>
-                                    <ComboBox Style="{StaticResource MaterialDesignComboBox}"
-                                              Width="120"
-                                              ItemsSource="{Binding ScanIntervals}"
-                                              SelectedItem="{Binding SelectedScanInterval}"/>
+                                    <TextBox Style="{StaticResource MaterialDesignTextBox}"
+                                             HorizontalAlignment="Left"
+                                             Width="120"
+                                             Margin="8 0 0 0"
+                                             Text="{Binding Settings.GameIntegration.ScanInterval}"/>
                                 </DockPanel>
                             </StackPanel>
                         </materialDesign:Card>
@@ -119,8 +128,10 @@
                         <materialDesign:Card Padding="16">
                             <StackPanel>
                                 <CheckBox Content="Allow anonymous data collection"
+                                          IsChecked="{Binding Settings.Privacy.AllowUsageStatistics}"
                                           Margin="0 0 0 8"/>
                                 <CheckBox Content="Allow storage of captured screenshots for analysis and model training"
+                                            IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
                                           Margin="0 0 0 8"/>
                             </StackPanel>
                         </materialDesign:Card>
@@ -142,5 +153,20 @@
                 </ScrollViewer>
             </TabItem>
         </TabControl>
+        
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0 0 8 0"
+                    Height="40"
+                    Width="80"
+                    Content="Save"
+                    Command="{Binding SaveCommand}"/>
+            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
+                    Margin="0 0 8 0"
+                    Height="40"
+                    Width="80"
+                    Content="Cancel"
+                    Command="{Binding LoadCommand}"/>
+        </StackPanel>
     </Grid>
 </Window>

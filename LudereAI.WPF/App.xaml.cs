@@ -128,6 +128,9 @@ public partial class App : Application
         var connectivityService = Host.Services.GetRequiredService<IConnectivityService>();
         var navigationService = Host.Services.GetRequiredService<INavigationService>();
         var updateService = Host.Services.GetRequiredService<IUpdateService>();
+        var settingsService = Host.Services.GetRequiredService<ISettingsService>();
+        
+        settingsService.ApplySettings(settingsService.LoadSettings());
         
         connectivityService.OnConnectivityChanged += async (sender, IsConnected) =>
         {
@@ -174,13 +177,14 @@ public partial class App : Application
         
         // Services
         services.AddSingleton<IConnectivityService, ConnectivityService>();
+        services.AddSingleton<ISettingsService, SettingsService>();
         services.AddSingleton<IUpdateService, UpdateService>();
         services.AddSingleton<IAPIClient, APIClient>();
         services.AddSingleton<IAuthService, AuthService>();
         services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<ISessionService, SessionService>();
         services.AddSingleton<IAssistantService, AssistantService>();
-        services.AddSingleton<IGameService, SteamGameService>();
+        services.AddSingleton<IGameService, GameService>();
         services.AddSingleton<IScreenshotService, ScreenshotService>();
         services.AddSingleton<INavigationService, NavigationService>();
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
@@ -192,7 +196,7 @@ public partial class App : Application
         services.AddTransient<LoginViewModel>();
         services.AddTransient<SignUpViewModel>();
         services.AddTransient<ChatViewModel>();
-        services.AddTransient<GameViewModel>();
+        services.AddTransient<SettingsViewModel>();
 
         // Views
         services.AddTransient<AuthView>();

@@ -395,14 +395,14 @@
                                          Margin="0,0,0,16"/>
 
                                 <TextBox materialDesign:HintAssist.Hint="Game Name"
-                                        Text="{Binding GameViewModel.CurrentGame, UpdateSourceTrigger=PropertyChanged}"
+                                        Text="{Binding ManualGameName, UpdateSourceTrigger=PropertyChanged}"
                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                         materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
                                         Margin="0,0,0,16"/>
 
                                 <ComboBox materialDesign:HintAssist.Hint="Windows"
                                          ItemsSource="{Binding Windows}"
-                                         SelectedItem="{Binding SelectedWindow}"
+                                         SelectedItem="{Binding ManualWindow}"
                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                          materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
                                          Margin="0,0,0,16"/>

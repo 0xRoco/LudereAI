@@ -13,14 +13,16 @@ public class ChatService : IChatService
     private IMapper _mapper;
     private readonly IAssistantService _assistantService;
     private readonly IScreenshotService _screenshotService;
-
+    private bool _autoCaptureScreenshots;
+    
+    public void SetAutoCaptureScreenshots(bool enabled) => _autoCaptureScreenshots = enabled;
+    
     public ChatService(ILogger<IChatService> logger, IAssistantService assistantService, IScreenshotService screenshotService, IMapper mapper)
     {
         _logger = logger;
         _assistantService = assistantService;
         _screenshotService = screenshotService;
-        _mapper = mapper;
-    }
+        _mapper = mapper; }
 
     public async Task<Result<Message, IChatService.ChatRequestResult>> SendMessage(ChatRequest request)
     {
@@ -34,11 +36,12 @@ public class ChatService : IChatService
         }
 
         var screenshotBase64 = "";
-        if (request.Window != null)
+        
+        if (_autoCaptureScreenshots && request.Window != null)
         {
             screenshotBase64 = _screenshotService.GetBase64Screenshot(request.Window.Handle);
         }
-
+        
 
         var assistantRequest = new AssistantRequestDTO
         {

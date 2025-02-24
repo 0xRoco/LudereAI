@@ -19,41 +19,6 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
     private const int TargetHeight = 768;
     private const long MaxScreenshotSize = 1024 * 1024; // 1 MB
     private const int DefaultScreenshotQuality = 75;
-    
-    public IEnumerable<WindowInfo> GetWindowedProcessesAsync()
-    {
-        var windows = new List<WindowInfo>();
-        EnumWindows(((wnd, param) =>
-        {
-            if (!IsWindowVisible(wnd)) return true;
-            
-            var sb = new StringBuilder(256);
-            if (GetWindowText(wnd, sb, 256) > 0)
-            {
-                var title = sb.ToString();
-                if (string.IsNullOrWhiteSpace(title)) return true;
-                
-                GetWindowThreadProcessId(wnd, out var processId);
-                try
-                {
-                    using var process = Process.GetProcessById((int)processId);
-                    windows.Add(new WindowInfo
-                    {
-                        Handle = wnd,
-                        Title = title,
-                        ProcessName = process.ProcessName,
-                        ProcessId = process.Id
-                    });
-                }
-                catch (Exception ex)
-                {
-                    logger.LogError(ex, "Failed to get process by id {ProcessId}", processId);
-                }
-            }
-            return true;
-        }), IntPtr.Zero);
-        return windows;
-    }
 
     public Bitmap TakeScreenshot(IntPtr handle)
     {
@@ -198,20 +163,6 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
         return codecs.First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
     }
     
-    
-    [DllImport("user32.dll")]
-    private static extern bool EnumWindows(EnumWindowsProc enumProc, IntPtr lParam);
-
-    [DllImport("user32.dll")]
-    private static extern bool IsWindowVisible(IntPtr hWnd);
-
-    [DllImport("user32.dll")]
-    private static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
-    [DllImport("user32.dll")]
-    private static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
-    
-    private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
     
     [DllImport("user32.dll")]
     public static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
