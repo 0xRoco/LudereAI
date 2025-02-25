@@ -78,12 +78,12 @@
                     <img src="images/preview1.jpg" alt="LudereAI with Kingdom Come Deliverance II"
                          class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
                 </div>
-                <div class="col-md-4 mb-4" data-aos="fade-right">
-                    <img src="images/preview1.jpg" alt="Screenshot 1"
+                <div class="col-md-4 mb-4" data-aos="fade-up">
+                    <img src="images/preview1.jpg" alt="Screenshot 2"
                          class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
                 </div>
-                <div class="col-md-4 mb-4" data-aos="fade-right">
-                    <img src="images/preview1.jpg" alt="Screenshot 1"
+                <div class="col-md-4 mb-4" data-aos="fade-left">
+                    <img src="images/preview1.jpg" alt="Screenshot 3"
                          class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal" data-bs-target="#imageModal">
                 </div>
             </div>
@@ -103,7 +103,7 @@
             </div>
         </div>
     </div>
-
+    
 
     <section id="promotions" class="promotion-section my-5" data-aos="zoom-in" style="background: #007bff;">
         <div class="container text-center">
@@ -146,6 +146,7 @@
 <span class="badge bg-info">Popular</span>
 <span class="badge bg-danger">Most Popular</span>
 <span class="badge bg-warning text-dark">Recommended</span>
+<span class="badge bg-success">Best Value</span>
 *@
 
 
@@ -174,7 +175,7 @@
                                 Price = "Free",
                                 Features =
                                 [
-                                    "10 Messages Per Day",
+                                    "100 Messages Per Day",
                                     "3 Screenshots Per Day",
                                     "1 Session History",
                                     "Manual Screenshots"
@@ -261,23 +262,26 @@
                 <div class="tab-pane fade" id="yearly" role="tabpanel" aria-labelledby="yearly-tab">
                     <div class="row">
 
-                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        @if (User.Identity is { IsAuthenticated: false })
                         {
-                            Title = "Guest",
-                            Description = "For any new players willing to try",
-                            Price = "Free",
-                            Features =
-                            [
-                                "10 Messages Per Day",
-                                "3 Screenshots Per Day",
-                                "1 Session History",
-                                "Manual Screenshots"
-                            ],
-                            ShowCTAButton = true,
-                            CtaText = "Download Now",
-                            CtaLink = "/Download",
-                            AnimationDelay = 0
-                        })
+                            @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                            {
+                                Title = "Guest",
+                                Description = "For any new players willing to try",
+                                Price = "Free",
+                                Features =
+                                [
+                                    "100 Messages Per Day",
+                                    "3 Screenshots Per Day",
+                                    "1 Session History",
+                                    "Manual Screenshots"
+                                ],
+                                ShowCTAButton = true,
+                                CtaText = "Download Now",
+                                CtaLink = "/Download",
+                                AnimationDelay = 0
+                            })
+                        }
 
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
@@ -291,7 +295,7 @@
                                 "3 Sessions History",
                                 "Manual Screenshots"
                             ],
-                            ShowCTAButton = true,
+                            ShowCTAButton = User.Identity is { IsAuthenticated: false },
                             CtaText = "Get Started",
                             CtaLink = "/Signup",
                             AnimationDelay = 100

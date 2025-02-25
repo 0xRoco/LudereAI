@@ -1,5 +1,6 @@
 using LudereAI.Application.Interfaces.Gateways;
 using LudereAI.Application.Interfaces.Services;
+using LudereAI.Infrastructure;
 using LudereAI.Infrastructure.Gateways;
 using LudereAI.Infrastructure.Services;
 using LudereAI.Web.Core;
@@ -126,6 +127,7 @@ void RegisterDependencies(WebApplicationBuilder builder)
 {
     builder.Services.AddTransient<IAPIClient, APIClient>();
     builder.Services.AddTransient<IAuthGateway, AuthGateway>();
+    builder.Services.AddTransient<IWaitlistGateway, WaitlistGateway>();
     
     Log.Information("Dependencies registered");
 }
@@ -143,6 +145,7 @@ void ConfigureMiddleware(WebApplication app)
     app.UseSentryTracing();
     app.UseMiddleware<TokenAuthenticationMiddleware>();
     app.UseMiddleware<WaitlistMiddleware>();
+    app.UseMiddleware<CloudflareMiddleware>();
     app.UseAuthentication();
     app.UseAuthorization();
     

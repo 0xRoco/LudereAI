@@ -18,7 +18,7 @@ public class AccountController : Controller
 
     public async Task<IActionResult> Index()
     {
-        var result = await _apiClient.GetAsync<AccountDTO>("Accounts/me");
+        var result = await _apiClient.Get<AccountDTO>("Accounts/me");
         if (result?.Data is null || !result.IsSuccess)
         {
             return RedirectToAction("Login", "Auth");

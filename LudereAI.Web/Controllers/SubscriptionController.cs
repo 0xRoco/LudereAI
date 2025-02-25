@@ -24,7 +24,7 @@ public class SubscriptionController : Controller
             SubscriptionPlan = plan
         };
         
-        var result = await _apiClient.PostAsync<string>("Subscription/Subscribe", request);
+        var result = await _apiClient.Post<string>("Subscription/Subscribe", request);
         if (result is { IsSuccess: true, Data: not null })
         {
             var sessionUrl = result.Data;
@@ -37,7 +37,7 @@ public class SubscriptionController : Controller
     [HttpPost]
     public async Task<IActionResult> CustomerPortal()
     {
-        var result = await _apiClient.GetAsync<string>("Subscription/CustomerPortal");
+        var result = await _apiClient.Get<string>("Subscription/CustomerPortal");
         if (result is { IsSuccess: true, Data: not null })
         {
             var sessionUrl = result.Data;

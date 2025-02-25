@@ -21,7 +21,7 @@ public class AuthGateway : IAuthGateway
     {
         try
         {
-            var result = await _apiClient.PostAsync<LoginResponseDTO>("Auth/Login", dto);
+            var result = await _apiClient.Post<LoginResponseDTO>("Auth/Login", dto);
             if (result is { IsSuccess: true, Data: not null })
             {
                 _logger.LogInformation("User logged in successfully");
@@ -46,7 +46,7 @@ public class AuthGateway : IAuthGateway
     {
         try
         {
-            var result = await _apiClient.PostAsync<bool>("Auth/SignUp", dto);
+            var result = await _apiClient.Post<bool>("Auth/SignUp", dto);
             if (result is { IsSuccess: true, Data: true})
             {
                 _logger.LogInformation("User signed up successfully");

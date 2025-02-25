@@ -1,0 +1,37 @@
+﻿@model LudereAI.Web.Models.Waitlist.JoinedWaitlistViewModel
+@{
+    ViewData["Title"] = "Thank You for Joining";
+}
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="feature-card shadow">
+                <div class="card-body p-4 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h1 class="mb-3">Thank You!</h1>
+                    
+                    <p class="lead mb-2">
+                        You've successfully joined the LudereAI waitlist.
+                    </p>
+                    
+                    <div class="alert alert-info my-4">
+                        <p class="mb-0">Your current position: <strong>#@Model.Position</strong></p>
+                    </div>
+                    
+                    <p>
+                        We've sent a confirmation email to <strong>@Model.Email</strong>.
+                        We'll notify you when it's your turn to access LudereAI.
+                    </p>
+                    
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-outline-primary">Return to Home</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

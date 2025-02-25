@@ -22,7 +22,7 @@ public class APIClient : IAPIClient
     }
 
 
-    public async Task<APIResult<T>?> GetAsync<T>(string endpoint, bool auth = true)
+    public async Task<APIResult<T>?> Get<T>(string endpoint, bool auth = true)
     {
         try
         {
@@ -49,7 +49,7 @@ public class APIClient : IAPIClient
         }
     }
 
-    public async Task<APIResult<T>?> PostAsync<T>(string endpoint, object data, bool auth = true)
+    public async Task<APIResult<T>?> Post<T>(string endpoint, object data, bool auth = true)
     {
         try
         {
@@ -76,7 +76,7 @@ public class APIClient : IAPIClient
         }
     }
 
-    public async Task<APIResult<T>?> PutAsync<T>(string endpoint, object data, bool auth = true)
+    public async Task<APIResult<T>?> Put<T>(string endpoint, object data, bool auth = true)
     {
         try
         {
@@ -103,7 +103,7 @@ public class APIClient : IAPIClient
         }
     }
 
-    public async Task<APIResult<T>?> DeleteAsync<T>(string endpoint, bool auth = true)
+    public async Task<APIResult<T>?> Delete<T>(string endpoint, bool auth = true)
     {
         try
         {

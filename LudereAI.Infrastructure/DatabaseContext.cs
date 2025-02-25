@@ -18,6 +18,8 @@ public sealed class DatabaseContext : DbContext
     public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<AccountUsage> AccountUsages => Set<AccountUsage>();
     
+    public DbSet<WaitlistEntry> WaitlistEntries => Set<WaitlistEntry>();
+    
     
     public DatabaseContext(DbContextOptions<DatabaseContext> options, ILogger<DatabaseContext> logger) : base(options)
     {

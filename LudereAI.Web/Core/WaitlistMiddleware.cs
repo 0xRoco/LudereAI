@@ -12,6 +12,7 @@ public class WaitlistMiddleware(RequestDelegate next, ILogger<TokenAuthenticatio
         "/Waitlist",
         "/css",
         "/js",
+        "/images"
     };
     
     public async Task Invoke(HttpContext context)

@@ -206,6 +206,7 @@
                                                         //"1 Custom AI Persona",
                                                         "Priority Response Speed"
                                                     ],
+                                                    ShowCTAButton = true,
                                                     CtaText = "Start Trial",
                                                     AnimationDelay = 200,
                                                     Badge = "Recommended",
@@ -240,6 +241,7 @@
                                                         "Priority 24/7 Support",
                                                         "Early Access to New Features"
                                                     ],
+                                                    ShowCTAButton = true,
                                                     CtaText = "Subscribe",
                                                     AnimationDelay = 300,
                                                     Badge = "Most Popular",
@@ -277,6 +279,7 @@
                                                         //"1 Custom AI Persona",
                                                         "Priority Response Speed"
                                                     ],
+                                                    ShowCTAButton = true,
                                                     CtaText = "Start Trial",
                                                     AnimationDelay = 200,
                                                     Badge = "Recommended",
@@ -311,6 +314,7 @@
                                                         "Priority 24/7 Support",
                                                         "Early Access to New Features"
                                                     ],
+                                                    ShowCTAButton = true,
                                                     CtaText = "Subscribe",
                                                     AnimationDelay = 300,
                                                     Badge = "Most Popular",
@@ -339,8 +343,7 @@
                             <div class="card bg-primary text-white p-4 mb-4">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div>
-                                        <h4 class="mb-2">Current
-                                            Plan: @Model.Account.Subscription?.PlanFriendlyName</h4>
+                                        <h4 class="mb-2">Current Plan: @Model.Account.Subscription?.PlanFriendlyName</h4>
                                         <p class="mb-0">@Model.Account.Subscription?.FriendlyEndDate()</p>
                                     </div>
                                     <span

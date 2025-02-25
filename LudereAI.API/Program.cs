@@ -1,4 +1,6 @@
+using System.Net;
 using System.Text;
+using System.Threading.RateLimiting;
 using LudereAI.API.Core;
 using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Repositories;
@@ -110,6 +112,7 @@ void ConfigureServices(WebApplicationBuilder builder)
     });
     
     ConfigureAuthentication(builder);
+    ConfigureRateLimit(builder);
     ConfigureMinio(builder);
     ConfigureStripe(builder);
     ConfigureMapper(builder);
@@ -153,6 +156,34 @@ void ConfigureMinio(WebApplicationBuilder builder)
     Log.Information("Minio configured");
 }
 
+void ConfigureRateLimit(WebApplicationBuilder builder)
+{
+    builder.Services.AddRateLimiter(options =>
+    {
+        options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+        {
+            var path = context.Request.Path.Value ?? "";
+            
+            if (path.StartsWith("/waitlist/join", StringComparison.OrdinalIgnoreCase))
+            {
+                return RateLimitPartition.GetFixedWindowLimiter(
+                    partitionKey: context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+                    factory: _ => new FixedWindowRateLimiterOptions
+                    {
+                        Window = TimeSpan.FromMinutes(10),
+                        PermitLimit = 3,
+                        QueueLimit = 0,
+                    });
+            }
+            
+            
+            return RateLimitPartition.GetNoLimiter<string>("default");
+        });
+    });
+    
+    Log.Information("Rate limiting configured");
+}
+
 void ConfigureOptions(WebApplicationBuilder builder)
 {
     builder.Services.AddOptions();
@@ -164,6 +195,8 @@ void ConfigureOptions(WebApplicationBuilder builder)
         builder.Configuration.GetSection("AI"));
     builder.Services.Configure<StripeConfig>(builder.Configuration.GetSection("Stripe"));
     builder.Services.Configure<ElevenLabsConfig>(builder.Configuration.GetSection("ElevenLabs"));
+
+    builder.Services.Configure<EmailConfig>(builder.Configuration.GetSection("Email"));
     
     Log.Information("Options configured");
 }
@@ -191,12 +224,16 @@ void RegisterDependencies(WebApplicationBuilder builder)
     builder.Services.AddTransient<ISubscriptionRepository, SubscriptionRepository>();
     builder.Services.AddTransient<IConversationRepository, ConversationRepository>();
     builder.Services.AddTransient<IMessageRepository, MessageRepository>();
+    builder.Services.AddTransient<IWaitlistRepository, WaitlistRepository>();
 
     // Core Services
     builder.Services.AddTransient<IAuthService, AuthService>();
     builder.Services.AddTransient<ISecurityService, SecurityService>();
     builder.Services.AddTransient<IOpenAIService, OpenAIService>();
     builder.Services.AddTransient<IAuditService, AuditService>();
+    builder.Services.AddTransient<IWaitlistService, WaitlistService>();
+    builder.Services.AddTransient<IEmailService, EmailService>();
+    builder.Services.AddTransient<IEmailTemplateService, EmailTemplateService>();
 
     // Business Services
     builder.Services.AddTransient<IAccountService, AccountService>();
@@ -251,18 +288,21 @@ async Task EnsureDatabaseAsync(WebApplication app)
 
 void ConfigureMiddleware(WebApplication app)
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
+    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
     {
-        options.WithHttpBearerAuthentication(bearerOptions =>
+        app.MapOpenApi();
+        app.MapScalarApiReference(options =>
         {
-            bearerOptions.Token = "Bearer";
+            options.WithHttpBearerAuthentication(bearerOptions =>
+            {
+                bearerOptions.Token = "Bearer";
+            });
+            options.Authentication = new ScalarAuthenticationOptions
+            {
+                PreferredSecurityScheme = "Bearer"
+            };
         });
-        options.Authentication = new ScalarAuthenticationOptions
-        {
-            PreferredSecurityScheme = "Bearer"
-        };
-    });
+    }
 
     app.UseHttpsRedirection();
     app.UseSentryTracing();
@@ -270,6 +310,8 @@ void ConfigureMiddleware(WebApplication app)
     app.UseAuthentication();
     app.UseAuthorization();
     app.MapControllers();
+    app.UseRateLimiter();
+    app.UseMiddleware<CloudflareMiddleware>();
     
     Log.Information("Middleware pipeline configured");
 }

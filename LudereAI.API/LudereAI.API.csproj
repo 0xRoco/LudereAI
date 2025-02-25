@@ -48,6 +48,22 @@
       <Content Include="instructions.txt">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
+      <None Remove="Templates\waitlist-confirm.html" />
+      <Content Include="Templates\waitlist-confirm.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\waitlist-invite.html" />
+      <Content Include="Templates\waitlist-invite.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\signup-confirm.html" />
+      <Content Include="Templates\signup-confirm.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+      <None Remove="Templates\password-reset.html" />
+      <Content Include="Templates\password-reset.html">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>
