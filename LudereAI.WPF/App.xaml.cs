@@ -1,8 +1,10 @@
 ﻿using System.IO;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Mappers;
+using LudereAI.WPF.Models;
 using LudereAI.WPF.Services;
 using LudereAI.WPF.ViewModels;
 using LudereAI.WPF.Views;
@@ -32,8 +34,8 @@ public partial class App : Application
     public App()
     {
         
-        _environment = Environments.Staging;
-        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _environment);
+        /*_environment = Environments.Staging;
+        Environment.SetEnvironmentVariable("DOTNET_ENVIRONMENT", _environment);*/
         
         Directory.CreateDirectory(_logDirectory);
         _loggingLevelSwitch.MinimumLevel = _environment == Environments.Development ? LogEventLevel.Debug : LogEventLevel.Information;
@@ -148,7 +150,6 @@ public partial class App : Application
             await authService.LogoutAsync();
         };
 
-
         navigationService.ShowWindow<AuthView>();
         
         await connectivityService.StartConnectivityCheck();
@@ -190,12 +191,14 @@ public partial class App : Application
         services.AddSingleton<ISubscriptionService, SubscriptionService>();
         services.AddSingleton<IAudioPlaybackService, AudioPlaybackService>();
         services.AddSingleton<IChatService, ChatService>();
+        services.AddSingleton<IInputService, InputService>();
+        services.AddSingleton<IOverlayService, OverlayService>();
 
         // ViewModels
         services.AddSingleton<AuthViewModel>();
         services.AddTransient<LoginViewModel>();
         services.AddTransient<SignUpViewModel>();
-        services.AddTransient<ChatViewModel>();
+        services.AddSingleton<ChatViewModel>();
         services.AddTransient<SettingsViewModel>();
 
         // Views
@@ -204,6 +207,7 @@ public partial class App : Application
         services.AddTransient<SignUpView>();
         services.AddTransient<ChatView>();
         services.AddTransient<SettingsView>();
+        services.AddTransient<OverlayView>();
     }
 
     protected override async void OnExit(ExitEventArgs e)

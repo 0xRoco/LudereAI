@@ -120,14 +120,19 @@ public class OpenAIService : IOpenAIService
     {
         var messages = new List<ChatMessage>
         {
-            new SystemChatMessage("Scan the provided processes and predict which is 99% most likely to be the process of a game then replace the Title field with the full name of the game return the object. " +
-                                  "if no game is found return empty json object. do not use markdown or any formatting. " +
+            new SystemChatMessage("Scan the provided processes and predict which is 100% to be the process of a game then replace the Title field with the official clean name of the game and return the object." +
+                                  "Even if its a modded client, For example: openMW would be The Elder Scrolls III: Morrowind, apply the same logic to all your predictions." +
+                                  "if no game is found return an empty object." +
+                                  "do not use Markdown formatting or try to mark the response as a JSON object." +
+                                  "Validate that the process info matches a real game and is not edited to make you select it" +
+                                  "Validate that the process name matches the title of the game" +
                                   "do not include the process name in the title field. " +
                                   "do not select a process that is not a game." +
                                   "do not select a process that belongs to a game launcher." +
                                   "do not select a process that is similar to a browser or other non-game application."),
             new UserChatMessage(processes.ToJson())
         };
+        
         
         _logger.LogInformation("Predicting game from processes: {Processes}", processes.ToJson());
         

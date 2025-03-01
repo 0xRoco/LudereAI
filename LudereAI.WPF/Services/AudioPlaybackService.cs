@@ -1,21 +1,27 @@
 ﻿using System.IO;
 using LudereAI.WPF.Interfaces;
+using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
 using NAudio.Wave;
 
 namespace LudereAI.WPF.Services;
 
-public class AudioPlaybackService : IAudioPlaybackService, IDisposable
+public class AudioPlaybackService : IAudioPlaybackService
 {
     private ILogger<IAudioPlaybackService> _logger;
     private IWavePlayer? _wavePlayer;
     private WaveStream? _waveStream;
-
-    private bool _disposed;
-
     public AudioPlaybackService(ILogger<IAudioPlaybackService> logger)
     {
         _logger = logger;
+
+        NavigationService.OnWindowClosed += window =>
+        {
+            if (window.GetType().Name == nameof(ChatView))
+            {
+                StopAudioAsync();
+            }
+        };
     }
 
     public async Task PlayAudioAsync(byte[] audio)
@@ -47,14 +53,5 @@ public class AudioPlaybackService : IAudioPlaybackService, IDisposable
         
         _wavePlayer = null;
         _waveStream = null;
-    }
-
-    public void Dispose()
-    {
-        if (_disposed) return;
-        
-        StopAudioAsync();
-        
-        _disposed = true;
     }
 }

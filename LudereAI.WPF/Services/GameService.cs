@@ -77,7 +77,7 @@ public class GameService : IGameService
         _logger.LogInformation("Stopped game scanning");
     }
     
-    public IEnumerable<WindowInfo> GetWindowedProcessesAsync()
+    public IEnumerable<WindowInfo> GetWindowedProcesses()
     {
         var windows = new List<WindowInfo>();
         EnumWindows(((wnd, param) =>
@@ -123,7 +123,7 @@ public class GameService : IGameService
 
         if (_currentGame != null)
         {
-            var windows = GetWindowedProcessesAsync();
+            var windows = GetWindowedProcesses();
             var currentGameStillRunning = windows.Any(w => 
                 w.ProcessId == _currentGame.ProcessId && 
                 w.Title == _currentGame.Title);
@@ -151,7 +151,7 @@ public class GameService : IGameService
     {
         try
         {
-            var windows = GetWindowedProcessesAsync().ToList();
+            var windows = GetWindowedProcesses().ToList();
             var processes = windows.Select(w => new ProcessInfoDTO
             {
                 ProcessId = w.ProcessId,

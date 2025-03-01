@@ -3,23 +3,21 @@ using LudereAI.WPF.ViewModels;
 
 namespace LudereAI.WPF.Views;
 
-/// <summary>
-/// Interaction logic for MainWindow.xaml
-/// </summary>
-public partial class ChatView : Window
+public partial class OverlayView : Window
 {
     private readonly ChatViewModel _vm;
-    public ChatView(ChatViewModel vm)
+    
+    public OverlayView(ChatViewModel vm)
     {
         InitializeComponent();
+        
         DataContext = _vm = vm;
-
+        
         vm.OnMessageUpdated += MessagesOnCollectionChanged;
 
         MessageInput.Focus();
-        
-        vm.Init();
     }
+    
     private void MessagesOnCollectionChanged()
     {
         ChatScroll.ScrollToEnd();

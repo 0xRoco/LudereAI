@@ -47,12 +47,13 @@
       <Page Update="Views\LoginView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-      <Page Update="Views\OnBoardingView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
       <Page Update="Views\SignUpView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Enums\" />
     </ItemGroup>
 
 </Project>

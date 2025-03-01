@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.Shared.DTOs;
@@ -17,11 +18,15 @@ public partial class ChatViewModel : ObservableObject
     private readonly ILogger<ChatViewModel> _logger;
     private readonly IAssistantService _assistantService;
     private readonly IChatService _chatService;
-    private readonly ISubscriptionService _subscriptionService;
     private readonly IAuthService _authService;
     private readonly IAudioPlaybackService _audioPlaybackService;
     private readonly INavigationService _navigationService;
+    private readonly IOverlayService _overlayService;
     private readonly IGameService _gameService;
+    private readonly IInputService _inputService;
+    
+    private event Action<Conversation> OnConversationChanged; 
+    public event Action OnMessageUpdated;
     
 
     public ChatViewModel(
@@ -29,18 +34,21 @@ public partial class ChatViewModel : ObservableObject
         ISessionService sessionService,
         IAuthService authService, 
         IAudioPlaybackService audioPlaybackService, 
-        ISubscriptionService subscriptionService, 
-        IChatService chatService, IAssistantService assistantService, INavigationService navigationService, IGameService gameService)
+        IChatService chatService, 
+        IAssistantService assistantService, 
+        INavigationService navigationService, 
+        IGameService gameService, IOverlayService overlayService, IInputService inputService)
     {
         _logger = logger;
         _authService = authService;
         _audioPlaybackService = audioPlaybackService;
-        _subscriptionService = subscriptionService;
         _chatService = chatService;
         _assistantService = assistantService;
         _navigationService = navigationService;
         _gameService = gameService;
-        
+        _overlayService = overlayService;
+        _inputService = inputService;
+
         if (sessionService.CurrentAccount != null)
         {
             CurrentAccount = sessionService.CurrentAccount;
@@ -57,9 +65,36 @@ public partial class ChatViewModel : ObservableObject
         _gameService.OnGameStarted += OnGameStarted;
         _gameService.OnGameStopped += OnGameStopped;
         
-        _ =  RefreshConversationsAsync();
+        OnConversationChanged += c =>
+        {
+            Messages = new ObservableCollection<Message>(c.Messages);
+            OnMessageUpdated?.Invoke();
+            
+            logger.LogInformation("Yarr matey, you be in a conversation with {GameContext}", c.GameContext);
+        };
+
+        _ = RefreshConversations();
         
         _ = _gameService.StartScanning();
+        
+
+    }
+
+    public void Init()
+    {
+        
+        _inputService.RegisterHotkey(new HotkeyBinding
+        {
+            Id = "ToggleOverlay",
+            Name = "Toggle Overlay",
+            Key = Key.O,
+            Modifiers = ModifierKeys.Alt | ModifierKeys.Control,
+            Callback = () => _overlayService.ToggleOverlay(),
+            IsGlobal = true,
+            IsEnabled = true
+        });
+        
+        _inputService.Start();
     }
 
     // Observable properties
@@ -72,6 +107,7 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty] private AccountDTO _currentAccount;
 
     [ObservableProperty] private ObservableCollection<Conversation> _conversations;
+    [ObservableProperty] private ObservableCollection<Message> _messages;
 
     [ObservableProperty] private Conversation? _currentConversation = new();
     
@@ -87,8 +123,6 @@ public partial class ChatViewModel : ObservableObject
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
     private bool _isOverrideEnabled;
     
-    public event Action OnMessageUpdated;
-
     public bool CanSendMessage =>
         !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
 
@@ -100,7 +134,6 @@ public partial class ChatViewModel : ObservableObject
     {
         CurrentConversation = new Conversation();
         CurrentMessage = string.Empty;
-        OnMessageUpdated.Invoke();
     }
 
     [RelayCommand]
@@ -120,7 +153,7 @@ public partial class ChatViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_gameService.GetWindowedProcessesAsync());
+    private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_gameService.GetWindowedProcesses());
     
     [RelayCommand]
     private async Task PredictGame()
@@ -157,49 +190,19 @@ public partial class ChatViewModel : ObservableObject
     [RelayCommand]
     private void ManageSubscription() => Process.Start (new ProcessStartInfo("https://staging.LudereAI.com/Account") { UseShellExecute = true });
 
+    
+    [RelayCommand]
+    private void ShowOverlay() => _overlayService.ShowOverlay();
+
+    [RelayCommand]
+    private void CloseOverlay() => _overlayService.HideOverlay();
+
     [RelayCommand]
     private void OpenSettings()
     {
         _navigationService.ShowWindow<SettingsView>(false, true);
     }
-
-
-    [RelayCommand]
-    private async Task SubscribeProMonthly()
-    {
-        await _subscriptionService.Subscribe(SubscriptionPlan.Pro);
-        
-        MessageBox.Show("You will now be logged out to apply the changes.", "Subscription Updated", MessageBoxButton.OK, MessageBoxImage.Information); 
-        await _authService.LogoutAsync();
-    }
     
-    [RelayCommand]
-    private async Task SubscribeProYearly()
-    {
-        await _subscriptionService.Subscribe(SubscriptionPlan.ProYearly);
-        
-        MessageBox.Show("You will now be logged out to apply the changes.", "Subscription Updated", MessageBoxButton.OK, MessageBoxImage.Information);
-        await _authService.LogoutAsync();
-    }
-    
-    [RelayCommand]
-    private async Task SubscribeUltimateMonthly()
-    {
-        await _subscriptionService.Subscribe(SubscriptionPlan.Ultimate);
-        
-        MessageBox.Show("You will now be logged out to apply the changes.", "Subscription Updated", MessageBoxButton.OK, MessageBoxImage.Information);
-        await _authService.LogoutAsync();
-    }
-    
-    [RelayCommand]
-    private async Task SubscribeUltimateYearly()
-    {
-        await _subscriptionService.Subscribe(SubscriptionPlan.UltimateYearly);
-        
-        MessageBox.Show("You will now be logged out to apply the changes.", "Subscription Updated", MessageBoxButton.OK, MessageBoxImage.Information);
-        await _authService.LogoutAsync();
-    }
-
     private async Task ProcessMessage(string message)
     {
         try
@@ -221,16 +224,13 @@ public partial class ChatViewModel : ObservableObject
             {
                 var response = result.Value;
                 
-                await RefreshConversationsAsync();
+                await RefreshConversations();
                 CurrentConversation = Conversations.FirstOrDefault(c => c.Id == response.ConversationId);
-                if (CurrentConversation != null)
-                {
-                   //Nothing
-                }
-                else
+                if (CurrentConversation == null)
                 {
                     AddMessage(response.Content, MessageRole.Assistant);
                 }
+                
                 await _audioPlaybackService.PlayAudioAsync(response.Audio);
             }
             else
@@ -241,6 +241,15 @@ public partial class ChatViewModel : ObservableObject
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to process message");
+            
+            if (ex.Message.Contains("invalid window dimensions", StringComparison.CurrentCultureIgnoreCase))
+            {
+                AddSystemMessage("The window dimensions are invalid, please select a valid window.");
+                PredicatedWindow = null;
+                ManualWindow = null;
+                return;
+            }
+            
             AddSystemMessage("An error occurred while processing your request.");
         }finally
         {
@@ -249,7 +258,7 @@ public partial class ChatViewModel : ObservableObject
     }
 
     
-    private async Task RefreshConversationsAsync()
+    private async Task RefreshConversations()
     {
         try
         {
@@ -267,7 +276,7 @@ public partial class ChatViewModel : ObservableObject
         if (value == null) return;
         
         CurrentConversation = value;
-        OnMessageUpdated.Invoke();
+        OnConversationChanged.Invoke(CurrentConversation);
     }
 
     partial void OnConversationsChanged(ObservableCollection<Conversation> value)
@@ -287,12 +296,10 @@ public partial class ChatViewModel : ObservableObject
     private void OnGameStarted(WindowInfo gameWindow)
     {
         PredicatedWindow = gameWindow;
-        AddSystemMessage($"Game detected: {gameWindow.Title}");
     }
 
     private void OnGameStopped(WindowInfo gameWindow)
     {
-        AddSystemMessage($"Game closed: {gameWindow.Title}");
         PredicatedWindow = null;
     }
 }

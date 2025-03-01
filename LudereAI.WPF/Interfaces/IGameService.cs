@@ -9,6 +9,6 @@ public interface IGameService : IDisposable
 
     Task StartScanning();
     Task StopScanning();
-    IEnumerable<WindowInfo> GetWindowedProcessesAsync();
+    IEnumerable<WindowInfo> GetWindowedProcesses();
 
 }

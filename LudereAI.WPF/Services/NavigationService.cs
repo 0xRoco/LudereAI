@@ -9,6 +9,9 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 {
     private readonly List<Window> _windows = new();
 
+    public static event Action<Window>? OnWindowClosed;
+    public static event Action<Window>? OnWindowOpened;
+
     public void ShowWindow<T>(bool isMainWindow = true, bool showDialog = false) where T : Window
     {
         var window = serviceProvider.GetRequiredService<T>();
@@ -20,7 +23,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         }
         
         
-        window.Closed += OnWindowClosed;
+        window.Closed += WindowClosed;
         _windows.Add(window);
 
         if (isMainWindow)
@@ -29,6 +32,8 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         }
         
         logger.LogInformation("Window {window} opened (MainWindow: {isMainWindow}, Dialog: {isDialog})", window.GetType().Name, isMainWindow, showDialog);
+        
+        OnWindowOpened?.Invoke(window);
 
         if (showDialog)
             window.ShowDialog();
@@ -78,7 +83,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         }
     }
 
-    private void OnWindowClosed(object? sender, EventArgs e)
+    private void WindowClosed(object? sender, EventArgs e)
     {
         if (sender is not Window window)
         {
@@ -86,7 +91,8 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         }
         
         logger.LogInformation("Window {window} closed", window.GetType().Name);
-        window.Closed -= OnWindowClosed;
+        OnWindowClosed?.Invoke(window);
+        window.Closed -= WindowClosed;
         _windows.Remove(window);
         
         if (Application.Current.MainWindow == window)

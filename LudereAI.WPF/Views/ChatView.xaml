@@ -99,30 +99,6 @@
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
-                                
-                                <!-- Subscription Buttons -->
-                                <!--<Expander Header="Subscription Options"
-                                          Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                          Margin="0,8,0,0">
-                                    <StackPanel Margin="8">
-                                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                                Command="{Binding SubscribeProMonthlyCommand}">
-                                            <TextBlock Text="Pro Monthly" />
-                                        </Button>
-                                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                                Command="{Binding SubscribeProYearlyCommand}">
-                                            <TextBlock Text="Pro Yearly" />
-                                        </Button>
-                                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                                Command="{Binding SubscribeUltimateMonthlyCommand}">
-                                            <TextBlock Text="Ultimate Monthly" />
-                                        </Button>
-                                        <Button Style="{StaticResource SidebarButtonStyle}"
-                                                Command="{Binding SubscribeUltimateYearlyCommand}">
-                                            <TextBlock Text="Ultimate Yearly" />
-                                        </Button>
-                                    </StackPanel>
-                                </Expander>-->
 
                                 <!-- New Chat Button -->
                                 <Button Command="{Binding NewChatCommand}"
@@ -142,7 +118,7 @@
 
                         <!-- Conversations List -->
                         <materialDesign:Card Grid.Row="1" Margin="20,0,20,20" UniformCornerRadius="16">
-                            <ListBox SelectedItem="{Binding CurrentConversation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                            <ListBox SelectedItem="{Binding CurrentConversation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=null}"
                                      ItemsSource="{Binding Conversations, Mode=TwoWay}"
                                      Style="{StaticResource MaterialDesignListBox}"
                                      Margin="8">
@@ -182,6 +158,19 @@
                                 <StackPanel Orientation="Horizontal">
                                     <materialDesign:PackIcon Kind="ExternalLink" Margin="0,0,8,0" />
                                     <TextBlock Text="Manage Subscription" FontWeight="Medium" />
+                                </StackPanel>
+                            </Button>
+                            
+                            <Button
+                                Margin="20 5"
+                                Command="{Binding ShowOverlayCommand}"
+                                Style="{StaticResource MaterialDesignOutlinedButton}"
+                                Height="30"
+                                materialDesign:ButtonAssist.CornerRadius="8"
+                                BorderThickness="1.5">
+                                <StackPanel Orientation="Horizontal">
+                                    <materialDesign:PackIcon Kind="QuestionMark" Margin="0,0,8,0" />
+                                    <TextBlock Text="Overlay" FontWeight="Medium" />
                                 </StackPanel>
                             </Button>
                             
@@ -229,7 +218,7 @@
                           x:Name="ChatScroll"
                           VerticalScrollBarVisibility="Auto"
                           Margin="0,0,0,24">
-                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, Mode=TwoWay, FallbackValue=null}">
+                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, FallbackValue=null}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
                             <materialDesign:Card Style="{StaticResource MessageBubbleStyle}"
