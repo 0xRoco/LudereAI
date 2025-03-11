@@ -16,8 +16,8 @@ namespace LudereAI.WPF.Services;
 public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshotService
 {
     private const int TargetWidth = 1024;
-    private const int TargetHeight = 1024;
-    private const long MaxScreenshotSize = 1024 * 1024; // 1 MB
+    private const int TargetHeight = 768;
+    private const long MaxScreenshotSize = 2 * 1024 * 1024; // 2 MB
     private const int DefaultScreenshotQuality = 75;
 
     public Bitmap TakeScreenshot(IntPtr handle)

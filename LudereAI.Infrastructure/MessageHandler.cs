@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using LudereAI.Application.Interfaces;
+﻿using LudereAI.Application.Interfaces;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Models;
@@ -19,7 +18,7 @@ public class MessageHandler : IMessageHandler
     private readonly IMessageRepository _messageRepository;
     private readonly IConversationRepository _conversationRepository;
     private readonly IInstructionLoader _instructionLoader;
-    private const int MaxMessageHistory = 20;
+    private const int MaxMessageHistory = 60;
     private const int MaxScreenshotHistory = 0;
     private bool _isOpenAI;
 
@@ -50,7 +49,6 @@ public class MessageHandler : IMessageHandler
         
 
         var recentMessages = conversation.Messages
-            .OrderByDescending(m => m.CreatedAt)
             .Take(MaxMessageHistory)
             .Reverse()
             .ToList();
@@ -120,8 +118,6 @@ public class MessageHandler : IMessageHandler
         var conversation = await _conversationRepository.Get(response.ConversationId);
         if (conversation == null)
             return;
-        
-        conversation.UpdatedAt = DateTime.UtcNow;
         await _conversationRepository.Update(conversation);
     }
     

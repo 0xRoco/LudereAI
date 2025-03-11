@@ -42,8 +42,7 @@
                               Style="{StaticResource MaterialDesignActionToggleButton}"
                               Height="48"
                               Width="48"
-                              Margin="8"
-                              HorizontalAlignment="Left">
+                              Margin="12">
                     <ToggleButton.Content>
                         <materialDesign:PackIcon Kind="MenuOpen" Width="24" Height="24" />
                     </ToggleButton.Content>
@@ -53,7 +52,7 @@
                 </ToggleButton>
 
                 <!-- Expandable Content -->
-                <Grid Grid.Row="1" Width="320">
+                <Grid Grid.Row="1" Width="280">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Style.Triggers>
@@ -72,30 +71,35 @@
                         </Grid.RowDefinitions>
 
                         <!-- User Profile Section -->
-                        <materialDesign:Card Grid.Row="0" Margin="20" UniformCornerRadius="16">
-                            <StackPanel Margin="20">
+                        <materialDesign:Card Grid.Row="0" Margin="16 24 16 16" UniformCornerRadius="16">
+                            <StackPanel Margin="16 20">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                                    <Border Width="40" Height="40" CornerRadius="12">
+                                    <Border Width="36" Height="36" CornerRadius="12">
                                         <materialDesign:PackIcon Kind="Account"
-                                                                 Width="24"
-                                                                 Height="24"
+                                                                 Width="20"
+                                                                 Height="20"
                                                                  HorizontalAlignment="Center"
                                                                  VerticalAlignment="Center" />
                                     </Border>
-                                    <TextBlock 
-                                               Text="{Binding CurrentAccount.Username, FallbackValue=$Username$, Mode=TwoWay}"
-                                               Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                               VerticalAlignment="Center" />
+                                    <TextBlock
+                                        Text="{Binding CurrentAccount.Username, FallbackValue=$Username$, Mode=TwoWay}"
+                                        Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                        FontSize="16"
+                                        Margin="20 0 0 0"
+                                        VerticalAlignment="Center" />
                                 </StackPanel>
 
                                 <TextBlock TextAlignment="Center"
-                                    Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                    Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                    Margin="0,0,0,16">
+                                           Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                           Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                           Opacity="0.7"
+                                           Margin="0,0,0,12">
                                     <TextBlock.Text>
                                         <MultiBinding StringFormat="✨ {0} ({1})">
-                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay" FallbackValue="$Plan$" />
-                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName" Mode="TwoWay"  FallbackValue="$Status$"/>
+                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay"
+                                                     FallbackValue="$Plan$" />
+                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName"
+                                                     Mode="TwoWay" FallbackValue="$Status$" />
                                         </MultiBinding>
                                     </TextBlock.Text>
                                 </TextBlock>
@@ -103,11 +107,9 @@
                                 <!-- New Chat Button -->
                                 <Button Command="{Binding NewChatCommand}"
                                         Style="{StaticResource MaterialDesignFlatButton}"
-                                        Height="44"
+                                        Height="24"
                                         materialDesign:ButtonAssist.CornerRadius="8"
-                                        Background="{DynamicResource PrimaryHueMidBrush}"
-                                        Foreground="White"
-                                        Margin="0,8,0,0">
+                                        Foreground="White">
                                     <StackPanel Orientation="Horizontal">
                                         <materialDesign:PackIcon Kind="Plus" Margin="0,0,8,0" />
                                         <TextBlock Text="New Chat" FontWeight="Medium" />
@@ -117,27 +119,28 @@
                         </materialDesign:Card>
 
                         <!-- Conversations List -->
-                        <materialDesign:Card Grid.Row="1" Margin="20,0,20,20" UniformCornerRadius="16">
-                            <ListBox SelectedItem="{Binding CurrentConversation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=null}"
-                                     ItemsSource="{Binding Conversations, Mode=TwoWay}"
-                                     Style="{StaticResource MaterialDesignListBox}"
-                                     Margin="8">
+                        <materialDesign:Card Grid.Row="1" Margin="16,8,16,16" UniformCornerRadius="12">
+                            <ListBox
+                                SelectedItem="{Binding CurrentConversation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=null}"
+                                ItemsSource="{Binding Conversations, Mode=TwoWay}"
+                                Style="{StaticResource MaterialDesignListBox}"
+                                Margin="8">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
-                                        <materialDesign:Card Margin="4" UniformCornerRadius="8"
+                                        <materialDesign:Card Margin="4 6" UniformCornerRadius="8"
                                                              Background="Transparent"
-                                                             BorderThickness="1.5"
-                                                             BorderBrush="{DynamicResource MaterialDesignDivider}">
-                                            <StackPanel Margin="16,12">
-                                                <TextBlock Text="{Binding GameContext, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                                           TextTrimming="CharacterEllipsis"
-                                                           Style="{StaticResource MaterialDesignBody1TextBlock}"
-                                                           FontWeight="Medium" />
+                                                             BorderThickness="1">
+                                            <StackPanel Margin="16,14">
+                                                <TextBlock
+                                                    Text="{Binding GameContext, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                    TextTrimming="CharacterEllipsis"
+                                                    Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                                    FontWeight="Medium" />
                                                 <TextBlock
                                                     Text="{Binding UpdatedAt, StringFormat={}{0:dd.MM.yyyy HH:mm}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                     Style="{StaticResource MaterialDesignCaptionTextBlock}"
-                                                    Margin="0,4,0,0"
-                                                    Opacity="0.7" />
+                                                    Margin="0,6,0,0"
+                                                    Opacity="0.5" />
                                             </StackPanel>
                                         </materialDesign:Card>
                                     </DataTemplate>
@@ -145,68 +148,72 @@
                             </ListBox>
                         </materialDesign:Card>
 
-                        <!-- Logout Button -->
-                        <StackPanel Grid.Row="2">
-                            <Button
-                                Margin="20 5"
-                                Command="{Binding ManageSubscriptionCommand}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                Height="30"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                BorderThickness="1.5">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="ExternalLink" Margin="0,0,8,0" />
-                                    <TextBlock Text="Manage Subscription" FontWeight="Medium" />
+                        <materialDesign:Card Grid.Row="2" Margin="16 0 16 16" UniformCornerRadius="12">
+                            <Expander Header="Settings" Margin="0">
+                                <StackPanel Margin="16 8 16 16">
+                                    <Button
+                                        Margin="20 5"
+                                        Command="{Binding ManageSubscriptionCommand}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                        Height="30"
+                                        materialDesign:ButtonAssist.CornerRadius="8"
+                                        BorderThickness="1.5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="ExternalLink" Margin="0,0,8,0" />
+                                            <TextBlock Text="Manage Subscription" FontWeight="Medium" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        Margin="20 5"
+                                        Command="{Binding ShowOverlayCommand}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Height="30"
+                                        materialDesign:ButtonAssist.CornerRadius="8"
+                                        BorderThickness="1.5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="QuestionMark" Margin="0,0,8,0" />
+                                            <TextBlock Text="Overlay" FontWeight="Medium" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        Margin="20 5"
+                                        Command="{Binding OpenSettingsCommand}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Height="30"
+                                        materialDesign:ButtonAssist.CornerRadius="8"
+                                        BorderThickness="1.5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Settings" Margin="0,0,8,0" />
+                                            <TextBlock Text="Settings" FontWeight="Medium" />
+                                        </StackPanel>
+                                    </Button>
+
+                                    <Button
+                                        Margin="20 5"
+                                        Command="{Binding LogoutCommand}"
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        Height="30"
+                                        materialDesign:ButtonAssist.CornerRadius="8"
+                                        BorderThickness="1.5">
+                                        <StackPanel Orientation="Horizontal">
+                                            <materialDesign:PackIcon Kind="Logout" Margin="0,0,8,0" />
+                                            <TextBlock Text="Logout" FontWeight="Medium" />
+                                        </StackPanel>
+                                    </Button>
                                 </StackPanel>
-                            </Button>
-                            
-                            <Button
-                                Margin="20 5"
-                                Command="{Binding ShowOverlayCommand}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Height="30"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                BorderThickness="1.5">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="QuestionMark" Margin="0,0,8,0" />
-                                    <TextBlock Text="Overlay" FontWeight="Medium" />
-                                </StackPanel>
-                            </Button>
-                            
-                            <Button
-                                Margin="20 5"
-                                Command="{Binding OpenSettingsCommand}"
-                                Style="{StaticResource MaterialDesignOutlinedButton}"
-                                Height="30"
-                                materialDesign:ButtonAssist.CornerRadius="8"
-                                BorderThickness="1.5">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Settings" Margin="0,0,8,0" />
-                                    <TextBlock Text="Settings" FontWeight="Medium" />
-                                </StackPanel>
-                            </Button>
-                            
-                            <Button
-                                    Margin="20 5"
-                                    Command="{Binding LogoutCommand}"
-                                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                                    Height="30"
-                                    materialDesign:ButtonAssist.CornerRadius="8"
-                                    BorderThickness="1.5">
-                                <StackPanel Orientation="Horizontal">
-                                    <materialDesign:PackIcon Kind="Logout" Margin="0,0,8,0" />
-                                    <TextBlock Text="Logout" FontWeight="Medium" />
-                                </StackPanel>
-                            </Button>
-                        </StackPanel>
+                            </Expander>
+                        </materialDesign:Card>
+
                     </Grid>
                 </Grid>
             </Grid>
         </materialDesign:Card>
 
         <!-- Main Chat Area -->
-        <Grid Grid.Column="1" Margin="24">
+        <Grid Grid.Column="1" Margin="20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
@@ -243,9 +250,9 @@
             <!-- Thinking Indicator -->
             <materialDesign:Card Grid.Row="1"
                                  Style="{StaticResource MessageBubbleStyle}"
-                                 Margin="8,0,8,16"
+                                 Margin="8,0,8,20"
                                  Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal">
+                <StackPanel Orientation="Horizontal" Margin="16 10">
                     <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                  Value="35"
                                  IsIndeterminate="True"
@@ -258,8 +265,8 @@
             </materialDesign:Card>
 
             <!-- Input Area -->
-            <materialDesign:Card Grid.Row="2" UniformCornerRadius="16">
-                <Grid Margin="20,12">
+            <materialDesign:Card Grid.Row="2" UniformCornerRadius="16" Margin="0 4 0 0">
+                <Grid Margin="22,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -267,7 +274,6 @@
 
                     <TextBox Grid.Column="0"
                              x:Name="MessageInput"
-                             IsEnabled="{Binding CanWriteMessage}"
                              materialDesign:HintAssist.Hint="Type your message..."
                              Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
@@ -275,7 +281,7 @@
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"
-                             MinHeight="56"
+                             MinHeight="52"
                              MaxHeight="150"
                              Margin="0,0,16,0">
                         <TextBox.InputBindings>
@@ -287,21 +293,21 @@
                         <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
                                 Command="{Binding SendMessageCommand}"
                                 IsEnabled="{Binding CanSendMessage}"
-                                Width="56"
-                                Height="56"
-                                materialDesign:ButtonAssist.CornerRadius="28">
-                            <materialDesign:PackIcon Kind="Send" Width="24" Height="24" />
+                                Width="52"
+                                Height="52"
+                                materialDesign:ButtonAssist.CornerRadius="20">
+                            <materialDesign:PackIcon Kind="Send" Width="20" Height="20" />
                         </Button>
-                        
+
                     </StackPanel>
                 </Grid>
             </materialDesign:Card>
         </Grid>
-        
-                <materialDesign:Card Grid.Column="2"
-                            UniformCornerRadius="0"
-                            Background="{DynamicResource MaterialDesignPaper}"
-                            Effect="{DynamicResource MaterialDesignShadowDepth3}">
+
+        <materialDesign:Card Grid.Column="2"
+                             UniformCornerRadius="0"
+                             Background="{DynamicResource MaterialDesignPaper}"
+                             Effect="{DynamicResource MaterialDesignShadowDepth3}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -310,11 +316,10 @@
 
                 <!-- Toggle Button -->
                 <ToggleButton x:Name="RightSidebarToggle"
-                            Style="{StaticResource MaterialDesignActionToggleButton}"
-                            Height="48"
-                            Width="48"
-                            Margin="8"
-                            HorizontalAlignment="Right">
+                              Style="{StaticResource MaterialDesignActionToggleButton}"
+                              Height="48"
+                              Width="48"
+                              Margin="12">
                     <ToggleButton.Content>
                         <materialDesign:PackIcon Kind="ChevronLeft" Width="24" Height="24" />
                     </ToggleButton.Content>
@@ -324,7 +329,7 @@
                 </ToggleButton>
 
                 <!-- Expandable Content -->
-                <Grid Grid.Row="1" Width="320">
+                <Grid Grid.Row="1" Width="280">
                     <Grid.Style>
                         <Style TargetType="Grid">
                             <Style.Triggers>
@@ -335,73 +340,83 @@
                         </Style>
                     </Grid.Style>
 
-                    <StackPanel Margin="20">
+                    <StackPanel Margin="10 8 16 16">
+
                         <!-- Predicted Game Info Section -->
-                        <materialDesign:Card UniformCornerRadius="16" Margin="0,0,0,20">
-                            <StackPanel Margin="20">
+                        <materialDesign:Card UniformCornerRadius="16" Margin="0 6">
+                            <StackPanel Margin="20 16">
                                 <TextBlock Text="Predicted Game Info"
-                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                         Margin="0,0,0,16"/>
-                                
-                                <StackPanel Margin="0,0,0,8">
+                                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                           FontSize="16"
+                                           Margin="0,0,0,16" />
+
+                                <StackPanel Margin="0,0,0,12">
                                     <TextBlock Text="Game Name"
-                                             Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                             Opacity="0.7"/>
+                                               Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                               Opacity="0.7" />
                                     <TextBlock Text="{Binding PredicatedWindow.Title, FallbackValue=Not Detected}"
-                                             Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                                               Style="{StaticResource MaterialDesignBody1TextBlock}" />
                                 </StackPanel>
 
-                                <StackPanel Margin="0,0,0,16">
+                                <StackPanel Margin="0,0,0,12">
                                     <TextBlock Text="Process"
-                                             Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                             Opacity="0.7"/>
-                                    <TextBlock Text="{Binding PredicatedWindow.ProcessName, FallbackValue=Not Detected}"
-                                             Style="{StaticResource MaterialDesignBody1TextBlock}"/>
+                                               Style="{StaticResource MaterialDesignBody2TextBlock}"
+                                               Opacity="0.7" />
+                                    <TextBlock
+                                        Text="{Binding PredicatedWindow.ProcessName, FallbackValue=Not Detected}"
+                                        Style="{StaticResource MaterialDesignBody1TextBlock}"
+                                        Margin="0 4 0 0" />
                                 </StackPanel>
-                                
+
                                 <Button Command="{Binding PredictGameCommand}"
-                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                        Margin="0,0,0,16">
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        materialDesign:ButtonAssist.CornerRadius="6"
+                                        Height="30"
+                                        Margin="0,0,0,8">
                                     <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Radar" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Rescan"/>
+                                        <materialDesign:PackIcon Kind="Radar" Margin="0,0,8,0" />
+                                        <TextBlock Text="Rescan" />
                                     </StackPanel>
                                 </Button>
 
                                 <!-- Override Toggle -->
                                 <CheckBox Content="Override Prediction"
-                                         IsChecked="{Binding IsOverrideEnabled}"
-                                         Style="{StaticResource MaterialDesignCheckBox}"/>
+                                          IsChecked="{Binding IsOverrideEnabled}"
+                                          Style="{StaticResource MaterialDesignCheckBox}" />
                             </StackPanel>
                         </materialDesign:Card>
 
                         <!-- Manual Override Section -->
                         <materialDesign:Card UniformCornerRadius="16"
-                                          Visibility="{Binding IsOverrideEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <StackPanel Margin="20">
+                                             Margin="0 6"
+                                             Visibility="{Binding IsOverrideEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel Margin="20,16">
                                 <TextBlock Text="Manual Override"
-                                         Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                         Margin="0,0,0,16"/>
+                                           Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                           FontSize="16"
+                                           Margin="0,0,0,16" />
 
                                 <TextBox materialDesign:HintAssist.Hint="Game Name"
-                                        Text="{Binding ManualGameName, UpdateSourceTrigger=PropertyChanged}"
-                                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                                        materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
-                                        Margin="0,0,0,16"/>
+                                         Text="{Binding ManualGameName, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                                         materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                         Margin="0,0,0,16" />
 
                                 <ComboBox materialDesign:HintAssist.Hint="Windows"
-                                         ItemsSource="{Binding Windows}"
-                                         SelectedItem="{Binding ManualWindow}"
-                                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                                         materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
-                                         Margin="0,0,0,16"/>
+                                          ItemsSource="{Binding Windows}"
+                                          SelectedItem="{Binding ManualWindow}"
+                                          Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                                          materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                          Margin="0,0,0,16" />
 
                                 <Button Command="{Binding RefreshProcessesCommand}"
-                                        Style="{StaticResource MaterialDesignFlatButton}"
-                                        HorizontalAlignment="Right">
+                                        Style="{StaticResource MaterialDesignOutlinedButton}"
+                                        HorizontalAlignment="Right"
+                                        materialDesign:ButtonAssist.CornerRadius="6"
+                                        Height="36">
                                     <StackPanel Orientation="Horizontal">
-                                        <materialDesign:PackIcon Kind="Refresh" Margin="0,0,8,0"/>
-                                        <TextBlock Text="Refresh"/>
+                                        <materialDesign:PackIcon Kind="Refresh" Margin="0,0,6,0" />
+                                        <TextBlock Text="Refresh" />
                                     </StackPanel>
                                 </Button>
                             </StackPanel>

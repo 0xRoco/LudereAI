@@ -49,7 +49,7 @@ public sealed class DatabaseContext : DbContext
         modelBuilder.Entity<Message>()
             .HasOne(m => m.Screenshot)
             .WithOne(s => s.Message)
-            .HasForeignKey<Screenshot>(m => m.MessageId)
+            .HasForeignKey<Screenshot>(s => s.MessageId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<AuditLog>()

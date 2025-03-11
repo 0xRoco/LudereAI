@@ -13,12 +13,14 @@ public class SettingsService : ISettingsService
 {
     private readonly ILogger<ISettingsService> _logger;
     private readonly IChatService _chatService;
+    private readonly IInputService _inputService;
     private readonly string _settingsPath;
     
-    public SettingsService(ILogger<ISettingsService> logger, IChatService chatService)
+    public SettingsService(ILogger<ISettingsService> logger, IChatService chatService, IInputService inputService)
     {
         _logger = logger;
         _chatService = chatService;
+        _inputService = inputService;
 
         _settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LudereAI", "settings.json");
     }
@@ -70,6 +72,7 @@ public class SettingsService : ISettingsService
     {
         try
         {
+            //ApplyKeyBindSettings(settings.KeyBind);
             SetAutoStart(settings.General.AutoStartWithWindows, settings.General.MinimizeToTray);
             ApplyTheme(settings.General.Theme);
             ApplyPrivacySettings(settings.Privacy);
@@ -138,7 +141,7 @@ public class SettingsService : ISettingsService
         {
             if (privacySettings.AllowUsageStatistics)
             {
-                if (!SentrySdk.IsEnabled)
+                if (!SentrySdk.IsEnabled && Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") == Environments.Production)
                 {
                     SentrySdk.Init(options =>
                     {
@@ -153,6 +156,7 @@ public class SettingsService : ISettingsService
                         options.Environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Production;
             
                         options.AddIntegration(new ProfilingIntegration());
+                        
                     });
                 }
             }
@@ -164,6 +168,23 @@ public class SettingsService : ISettingsService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to apply privacy settings");
+        }
+    }
+
+    private void ApplyKeyBindSettings(KeyBindSettings settings)
+    {
+        try
+        {
+            _inputService.UnregisterAllHotkeys();
+            
+            foreach (var binding in settings.Hotkeys)
+            {
+                _inputService.RegisterHotkey(binding);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to apply key bind settings");
         }
     }
 }

@@ -29,6 +29,7 @@ public class WaitlistMiddleware(RequestDelegate next, ILogger<TokenAuthenticatio
 
         if (!isAllowed)
         {
+            //context.Response.Redirect("https://ludereai.com/");
             context.Response.Redirect("/Waitlist");
         }
         else

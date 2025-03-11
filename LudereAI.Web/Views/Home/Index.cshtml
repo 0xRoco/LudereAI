@@ -1,13 +1,13 @@
 ﻿@{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "AI Gaming Assistant | Context-Aware Game Companion";
 }
 
 <header class="site-header">
     <div class="hero-section text-center text-white" data-aos="zoom-in">
         <div class="overlay"></div>
         <div class="container d-flex flex-column justify-content-center align-items-center content" style="height: 100%;">
-            <h1 class="display-1 fw-bold">AI-Powered Context Aware Gaming Assistance</h1>
-            <p class="lead">Enhance your gaming experience with real-time AI insights and voice interactions.</p>
+            <h1 class="display-6 fw-bold">AI-Powered Context Aware Gaming Assistance</h1>
+            <p class="lead">The AI Gaming Assistant That Understands Your Game: Get Real-Time Insights and a Friendly Companion.</p>
             <a href="/Signup" class="btn btn-light btn-lg btn-pulse">Get Started</a>
         </div>
     </div>
@@ -22,7 +22,7 @@
                     <div class="feature-card p-4">
                         <i class="fas fa-brain  fa-3x mb-3 feature-icon"></i>
                         <h4>Context Aware</h4>
-                        <p>Understands your game state in real-time, providing relevant insights exactly when you need them</p>
+                        <p>Just like a good friend watching over your shoulder, LudereAI understands exactly what's happening in your game</p>
                     </div>
                 </div>
 
@@ -115,10 +115,13 @@
             <h3 class="display-6 fw-bold mb-3">🎉 Limited Time Offer!</h3>
             <p class="lead mb-3">Use code <span class="offer-code">FIRST30</span> for <span class="fw-bold text-warning">30% off</span> your first month!</p>
             <p class="small mb-0">Join now and unlock premium features at a discounted price.</p>
+            <p class="small mb-0">*Use the code at checkout, valid for new users only.</p>
             <div id="countdown" class="countdown"></div>
-            <button id="promotionButton" class="btn btn-claim btn-lg mt-3">
-                <i class="fas fa-gift me-2"></i>Claim Your Discount
-            </button>
+            <form method="get">
+                <button id="promotionButton" asp-controller="Auth" asp-action="SignUp" class="btn btn-claim btn-lg mt-3">
+                    <i class="fas fa-gift me-2"></i>Get 30% Off - Sign Up!
+                </button>
+            </form>
         </div>
         <script>
             function startCountdown(duration) {
@@ -158,7 +161,7 @@
 
     <section id="pricing" class="py-5" data-aos="fade-up">
         <div class="container">
-            <h2 class="text-center mb-4">Pricing</h2>
+            <h2 class="text-center mb-4">Plans & Pricing</h2>
             <ul class="nav nav-tabs justify-content-center mb-4" id="pricingTab" role="tablist">
                 <li class="nav-item" role="presentation">
                     <a class="nav-link active" id="monthly-tab" data-bs-toggle="tab" href="#monthly" role="tab" aria-controls="monthly" aria-selected="true">Monthly</a>
@@ -176,14 +179,13 @@
                             @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                             {
                                 Title = "Guest",
-                                Description = "For any new players willing to try",
+                                Description = "Try out your new AI gaming friend!",
                                 Price = "Free",
                                 Features =
                                 [
                                     "100 Messages Per Day",
                                     "3 Screenshots Per Day",
                                     "1 Session History",
-                                    "Manual Screenshots"
                                 ],
                                 ShowCTAButton = true,
                                 CtaText = "Download Now",
@@ -194,15 +196,14 @@
 
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
-                            Title = "Free",
-                            Description = "For casual players in search of perfection",
+                            Title = "Casual",
+                            Description = "Your everyday gaming buddy, for free",
                             Price = "Free",
                             Features =
                             [
-                                "1000 Messages Per Day",
+                                "500 Messages Per Day",
                                 "10 Screenshots Per Day",
                                 "3 Sessions History",
-                                "Manual Screenshots"
                             ],
                             ShowCTAButton = User.Identity is { IsAuthenticated: false },
                             CtaText = "Get Started",
@@ -213,13 +214,13 @@
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
                             Title = "Pro",
-                            Description = "For competitive players chasing leaderboards",
+                            Description = "Level up your game with your dedicated AI companion",
                             Price = "$12.99",
                             PriceInterval = "month",
                             Features =
                             [
                                 "Unlimited Messages",
-                                "Unlimited Screenshots",
+                                "250 Screenshots Per Day",
                                 "Auto-Screenshot Analysis",
                                 "AI Voice Responses (Basic TTS)",
                                 "7 Sessions History",
@@ -239,17 +240,18 @@
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
                             Title = "Ultimate",
-                            Description = "For streamers, pros, and hardcore tacticians",
+                            Description = "For the ultimate gaming experience with your AI friend - everything you need to dominate",
                             Price = "$19.99",
                             PriceInterval = "month",
                             Features =
                             [
                                 "All Pro Tier Features",
+                                "Unlimited Screenshots",
                                 "Real-Time Analysis",
                                 "Two-Way Voice Chat (Premium TTS)",
                                 //"5 Custom AI Personas + Shared Personas",
                                 "Unlimited Session Archive + Search",
-                                "Hardware Optimization Tips",
+                                //"Hardware Optimization Tips",
                                 "Priority 24/7 Support",
                                 "Early Access to New Features"
                             ],
@@ -272,7 +274,7 @@
                             @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                             {
                                 Title = "Guest",
-                                Description = "For any new players willing to try",
+                                Description = "Try out your new AI gaming friend!",
                                 Price = "Free",
                                 Features =
                                 [
@@ -290,12 +292,12 @@
 
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
-                            Title = "Free",
-                            Description = "For casual players in search of perfection",
+                            Title = "Casual",
+                            Description = "Your everyday gaming buddy, for free",
                             Price = "Free",
                             Features =
                             [
-                                "1000 Messages Per Day",
+                                "500 Messages Per Day",
                                 "10 Screenshots Per Day",
                                 "3 Sessions History",
                                 "Manual Screenshots"
@@ -309,7 +311,7 @@
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
                             Title = "Pro",
-                            Description = "For competitive players chasing leaderboards",
+                            Description = "Level up your game with your dedicated AI companion",
                             Price = "$129.99",
                             PriceInterval = "year",
                             Features =
@@ -335,7 +337,7 @@
                         @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
                         {
                             Title = "Ultimate",
-                            Description = "For streamers, pros, and hardcore tacticians",
+                            Description = "For the ultimate gaming experience with your AI friend - everything you need to dominate",
                             Price = "$199.99",
                             PriceInterval = "year",
                             Features =

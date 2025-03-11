@@ -54,6 +54,7 @@ public class OpenAIService : IOpenAIService
 
             byte[] audio = [];
 
+            //BUG: This increases latency by shitton
             var voice = await _chatClientFactory.CreateAudioClient().GenerateSpeechAsync(aiMessage, new GeneratedSpeechVoice("voice-en-us-ryan-high"));
             audio = voice.Value.ToArray();
 
@@ -126,6 +127,7 @@ public class OpenAIService : IOpenAIService
                                   "do not use Markdown formatting or try to mark the response as a JSON object." +
                                   "Validate that the process info matches a real game and is not edited to make you select it" +
                                   "Validate that the process name matches the title of the game" +
+                                  "Account for the fact that the game might be a new release or a sequel to an existing game." +
                                   "do not include the process name in the title field. " +
                                   "do not select a process that is not a game." +
                                   "do not select a process that belongs to a game launcher." +
@@ -157,8 +159,8 @@ public class OpenAIService : IOpenAIService
             {
                 EndUserId = conversation.AccountId,
                 MaxOutputTokenCount = 512,
-                Temperature = 0.45f,
-                TopP = 0.35f
+                Temperature = 0.7f,
+                TopP = 0.8f
             };
 
             var response = await chat.CompleteChatAsync(messages, options);

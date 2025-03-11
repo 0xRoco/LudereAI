@@ -68,7 +68,6 @@ return;
 
 void ConfigureSentry(WebApplicationBuilder builder)
 {
-
     builder.WebHost.UseSentry(o =>
     {
         o.Dsn = builder.Configuration["Sentry:Dsn"];
@@ -77,6 +76,8 @@ void ConfigureSentry(WebApplicationBuilder builder)
         o.MinimumEventLevel = LogLevel.Error;
         o.MinimumBreadcrumbLevel = LogLevel.Information;
         o.AttachStacktrace = true;
+        
+        o.InitializeSdk = builder.Environment.IsProduction();
     });
     
     Log.Information("Sentry configured");
@@ -288,7 +289,7 @@ async Task EnsureDatabaseAsync(WebApplication app)
 
 void ConfigureMiddleware(WebApplication app)
 {
-    if (app.Environment.IsDevelopment() || app.Environment.IsStaging())
+    if (app.Environment.IsDevelopment())
     {
         app.MapOpenApi();
         app.MapScalarApiReference(options =>

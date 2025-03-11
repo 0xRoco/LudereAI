@@ -23,7 +23,6 @@ public class MessageService : IMessageService
     {
         var messages = await _messageRepository.GetMessagesAsync(conversationId);
         var dtos = _mapper.Map<IEnumerable<MessageDTO>>(messages);
-        dtos = dtos.OrderDescending().OrderBy(x => x.CreatedAt);
         return dtos;
     }
 

@@ -17,8 +17,6 @@ public partial class ChatView : Window
         vm.OnMessageUpdated += MessagesOnCollectionChanged;
 
         MessageInput.Focus();
-        
-        vm.Init();
     }
     private void MessagesOnCollectionChanged()
     {

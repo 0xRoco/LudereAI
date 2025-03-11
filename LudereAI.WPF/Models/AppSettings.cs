@@ -1,9 +1,12 @@
-﻿namespace LudereAI.WPF.Models;
+﻿using System.Windows.Input;
+
+namespace LudereAI.WPF.Models;
 
 public class AppSettings
 {
     public GeneralSettings General { get; set; } = new();
     public GameIntegrationSettings GameIntegration { get; set; } = new();
+    public KeyBindSettings KeyBind { get; set; } = new();
     public PrivacySettings Privacy { get; set; } = new();
 }
 
@@ -27,4 +30,22 @@ public class PrivacySettings
 {
     public bool AllowUsageStatistics { get; set; } = true; 
     public bool AllowScreenshotStorage { get; set; } = true;
+}
+
+public class KeyBindSettings
+{
+    public List<KeyBinding> Hotkeys { get; set; } =
+    [
+        new KeyBinding
+        {
+            Id = "ToggleOverlay", Name = "Toggle Overlay", Key = Key.O, Modifiers = ModifierKeys.Alt,
+            IsGlobal = true, IsEnabled = true
+        },
+
+        new KeyBinding
+        {
+            Id = "NewChat", Name = "New Chat", Key = Key.N, Modifiers = ModifierKeys.Control, IsGlobal = true,
+            IsEnabled = true
+        }
+    ];
 }

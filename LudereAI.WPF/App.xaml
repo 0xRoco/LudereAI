@@ -26,6 +26,7 @@
             <converters:MessageBackgroundConverter x:Key="MessageBackgroundConverter" />
             <converters:MessageAlignmentConverter x:Key="MessageAlignmentConverter" />
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+            <converters:InverseBooleanToVisibilityConverter x:Key="InverseBooleanToVisibilityConverter" />
             
             <Style TargetType="materialDesign:Card" x:Key="MessageBubbleStyle">
                 <Setter Property="Margin" Value="8 4" />

@@ -15,6 +15,10 @@ try
     Console.Title = "LudereAI Web";
     // Configure core services
     ConfigureSentry(builder);
+    
+    builder.Host.UseSerilog((context, config) => 
+        config.ReadFrom.Configuration(context.Configuration));
+    
     ConfigureServices(builder);
     
     var app = builder.Build();
@@ -49,6 +53,8 @@ void ConfigureSentry(WebApplicationBuilder builder)
         o.MinimumBreadcrumbLevel = LogLevel.Information;
         o.SendDefaultPii = true;
         o.AttachStacktrace = true;
+
+        o.InitializeSdk = builder.Environment.IsProduction();
     });
 }
 

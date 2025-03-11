@@ -5,17 +5,16 @@ namespace LudereAI.WPF.Interfaces;
 
 public interface IInputService
 {
-    event Action<HotkeyBinding> OnHotkeyPressed;
+    event Action<KeyBinding> OnHotkeyPressed;
     
-    void RegisterHotkey(HotkeyBinding hotkey);
-    void UnregisterHotkey(HotkeyBinding hotkey);
+    void RegisterHotkey(KeyBinding key);
+    void UnregisterHotkey(KeyBinding key);
     void UnregisterAllHotkeys();
     
-    void SetHotkeyCallback(HotkeyBinding hotkey, Action callback);
-    void UpdateMainWindow(Window window);
+    void SetHotkeyCallback(string keyId, Action callback);
     
-    List<HotkeyBinding> GetRegisteredHotkeys();
-    bool IsHotkeyRegistered(HotkeyBinding hotkey);
+    List<KeyBinding> GetRegisteredHotkeys();
+    bool IsHotkeyRegistered(KeyBinding key);
 
     void Start();
     void Stop();

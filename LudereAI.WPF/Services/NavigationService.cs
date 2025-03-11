@@ -34,11 +34,14 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         logger.LogInformation("Window {window} opened (MainWindow: {isMainWindow}, Dialog: {isDialog})", window.GetType().Name, isMainWindow, showDialog);
         
         OnWindowOpened?.Invoke(window);
-
+        
         if (showDialog)
             window.ShowDialog();
         else
+        {
             window.Show();
+            window.Activate();
+        }
     }
 
     public void CloseWindow<T>() where T : Window

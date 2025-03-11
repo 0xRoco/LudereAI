@@ -17,6 +17,11 @@ public class BooleanToVisibilityConverter : IValueConverter
 
     public object? ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        throw new NotImplementedException();
+        if (value is System.Windows.Visibility visibility)
+        {
+            return visibility == System.Windows.Visibility.Visible;
+        }
+
+        return false;
     }
 }

@@ -49,7 +49,7 @@ public partial class App : Application
             _ => _loggingLevelSwitch.MinimumLevel
         };
         
-        if (_environment == Environments.Development) return;
+        if (_environment != Environments.Production) return;
         
         SentrySdk.Init(options =>
         {

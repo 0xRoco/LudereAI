@@ -9,12 +9,20 @@ public class MessageRepository(DatabaseContext context) : IMessageRepository
 {
     public async Task<IEnumerable<Message>> GetAllAsync()
     {
-        return await context.Messages.AsNoTracking().ToListAsync();
+        return await context.Messages
+            .AsNoTracking()
+            .OrderByDescending(m => m.CreatedAt)
+            .Include(m => m.Screenshot)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<Message>> GetMessagesAsync(string conversationId)
     {
-        return await context.Messages.AsNoTracking().Where(m => m.ConversationId == conversationId).ToListAsync();
+        return await context.Messages.AsNoTracking()
+            .Where(m => m.ConversationId == conversationId)
+            .OrderByDescending(m => m.CreatedAt)
+            .Include(message => message.Screenshot)
+            .ToListAsync();
     }
 
     public async Task<bool> CreateAsync(Message message)

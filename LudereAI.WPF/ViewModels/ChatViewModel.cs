@@ -1,7 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
-using System.Windows;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.Shared.DTOs;
@@ -69,32 +67,28 @@ public partial class ChatViewModel : ObservableObject
         {
             Messages = new ObservableCollection<Message>(c.Messages);
             OnMessageUpdated?.Invoke();
-            
-            logger.LogInformation("Yarr matey, you be in a conversation with {GameContext}", c.GameContext);
         };
 
         _ = RefreshConversations();
         
         _ = _gameService.StartScanning();
         
-
+        Init();
     }
 
     public void Init()
     {
         
-        _inputService.RegisterHotkey(new HotkeyBinding
-        {
-            Id = "ToggleOverlay",
-            Name = "Toggle Overlay",
-            Key = Key.O,
-            Modifiers = ModifierKeys.Alt | ModifierKeys.Control,
-            Callback = () => _overlayService.ToggleOverlay(),
-            IsGlobal = true,
-            IsEnabled = true
-        });
-        
         _inputService.Start();
+
+        _inputService.OnHotkeyPressed += binding =>
+        {
+            switch (binding.Id)
+            {
+                case "ToggleOverlay":  _overlayService.ToggleOverlay(); break;
+                case "NewChat": NewChat(); break;
+            }
+        };
     }
 
     // Observable properties
@@ -127,7 +121,7 @@ public partial class ChatViewModel : ObservableObject
         !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
 
     public bool CanWriteMessage => !IsAssistantThinking;
-    public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: false, Tier: not SubscriptionTier.Guest};
+    public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: true, Tier: not SubscriptionTier.Guest};
 
     [RelayCommand]
     private void NewChat()

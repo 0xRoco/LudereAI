@@ -13,22 +13,22 @@
         Style="{DynamicResource MaterialDesignWindow}"
         FontWeight="Regular"
         FontSize="16"
-        TextOptions.TextFormattingMode="Ideal"        
+        TextOptions.TextFormattingMode="Ideal"
         WindowStartupLocation="CenterScreen"
         Title="Settings" Height="700" Width="900">
-    
+
     <Grid Margin="16">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <TextBlock Text="Settings" HorizontalAlignment="Center"
                    Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                   Margin="0 0 0 16"/>
+                   Margin="0 0 0 16" />
 
-        <TabControl Grid.Row="1"  SelectedIndex="0"
+        <TabControl Grid.Row="1" SelectedIndex="2"
                     Background="{DynamicResource MaterialDesignBackground}"
                     Foreground="{DynamicResource MaterialDesignBody}"
                     Style="{StaticResource MaterialDesignTabControl}">
@@ -36,31 +36,31 @@
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
                         <TextBlock Text="General Settings"
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0 0 0 16"/>
-                        
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0 0 0 16" />
+
                         <materialDesign:Card Padding="16" Margin="0 0 0 16">
                             <StackPanel>
                                 <TextBlock Text="Language"
-                                         Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                         Margin="0 0 0 8"/>
-                                <ComboBox materialDesign:HintAssist.Hint="Select language" 
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                           Margin="0 0 0 8" />
+                                <ComboBox materialDesign:HintAssist.Hint="Select language"
                                           ItemsSource="{Binding Languages}"
                                           SelectedItem="{Binding Settings.General.Language}"
                                           Margin="0 8 0 0">
                                 </ComboBox>
                             </StackPanel>
                         </materialDesign:Card>
-                        
+
                         <materialDesign:Card Padding="16" Margin="0 0 0 16">
                             <StackPanel>
                                 <TextBlock Text="Application Theme"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                           Margin="0 0 0 8"/>
+                                           Margin="0 0 0 8" />
                                 <ComboBox materialDesign:HintAssist.Hint="Select theme"
-                                            ItemsSource="{Binding Themes}"
-                                            SelectedItem="{Binding Settings.General.Theme}"
-                                            Margin="0 8 0 0">
+                                          ItemsSource="{Binding Themes}"
+                                          SelectedItem="{Binding Settings.General.Theme}"
+                                          Margin="0 8 0 0">
                                 </ComboBox>
                             </StackPanel>
                         </materialDesign:Card>
@@ -68,49 +68,49 @@
                         <materialDesign:Card Padding="16">
                             <StackPanel>
                                 <TextBlock Text="Startup Options"
-                                         Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                         Margin="0 0 0 8"/>
-                                <CheckBox Content="Auto-start with Windows" 
-                                          IsChecked="{Binding Settings.General.AutoStartWithWindows}" Margin="0 0 0 8"/>
-                                <CheckBox Content="Minimize to System Tray" 
-                                          IsChecked="{Binding Settings.General.MinimizeToTray}" Margin="0 0 0 8"/>
-                                <CheckBox Content="Check for Updates Automatically" 
-                                          IsChecked="{Binding Settings.General.AutoCheckForUpdates}" Margin="0 0 0 8"/>
+                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                           Margin="0 0 0 8" />
+                                <CheckBox Content="Auto-start with Windows"
+                                          IsChecked="{Binding Settings.General.AutoStartWithWindows}" Margin="0 0 0 8" />
+                                <CheckBox Content="Minimize to System Tray"
+                                          IsChecked="{Binding Settings.General.MinimizeToTray}" Margin="0 0 0 8" />
+                                <CheckBox Content="Check for Updates Automatically"
+                                          IsChecked="{Binding Settings.General.AutoCheckForUpdates}" Margin="0 0 0 8" />
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            
+
             <TabItem Header="Game Integration">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
                         <TextBlock Text="Game Integration Settings"
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0 0 0 16"/>
-                        
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0 0 0 16" />
+
                         <materialDesign:Card Padding="16">
                             <StackPanel>
                                 <TextBlock Text="Game Detection"
                                            Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
                                            Margin="0 0 0 16">
                                 </TextBlock>
-                                
+
                                 <CheckBox Content="Auto-detect running games"
-                                            IsChecked="{Binding Settings.GameIntegration.Enabled}"
-                                          Margin="0 0 0 8"/>
-                                
+                                          IsChecked="{Binding Settings.GameIntegration.Enabled}"
+                                          Margin="0 0 0 8" />
+
                                 <CheckBox Content="Auto-capture screenshots"
                                           IsChecked="{Binding Settings.GameIntegration.AutoCaptureScreenshots}"
-                                          Margin="0 0 0 8"/>
-                                
+                                          Margin="0 0 0 8" />
+
                                 <DockPanel Margin="0,8">
-                                    <TextBlock Text="Scan interval (seconds)"/>
+                                    <TextBlock Text="Scan interval (seconds)" />
                                     <TextBox Style="{StaticResource MaterialDesignTextBox}"
                                              HorizontalAlignment="Left"
                                              Width="120"
                                              Margin="8 0 0 0"
-                                             Text="{Binding Settings.GameIntegration.ScanInterval}"/>
+                                             Text="{Binding Settings.GameIntegration.ScanInterval}" />
                                 </DockPanel>
                             </StackPanel>
                         </materialDesign:Card>
@@ -118,21 +118,76 @@
                 </ScrollViewer>
             </TabItem>
 
+            <TabItem Header="Keybinds">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="16">
+                        <TextBlock Text="Keyboard Shortcuts"
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0 0 0 16" />
+
+                        <materialDesign:Card Padding="16" Margin="0 0 0 16">
+                            
+                            
+                            
+                            <DataGrid ColumnHeaderHeight="40" 
+                                      Style="{StaticResource MaterialDesignDataGrid}"
+                                      AutoGenerateColumns="False"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      IsReadOnly="True"
+                                      SelectionMode="Single"
+                                      ItemsSource="{Binding KeyBindings}">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto"/>
+                                    <DataGridTemplateColumn Header="Key" Width="150">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Grid>
+                                                    <TextBlock Text="{Binding KeyDisplay}"
+                                                               Visibility="{Binding IsRecording, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
+                                                    <TextBlock Text="Press a key..."
+                                                               Visibility="{Binding IsRecording, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+                                                </Grid>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    <!--<DataGridCheckBoxColumn Header="Global" Binding="{Binding IsGlobal}" Width="100"/>
+                                    <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" Width="100"/>
+                                    <DataGridTemplateColumn Width="auto" Header="Actions">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button 
+                                                    Content="Change"
+                                                    Command="{Binding StartRecordingCommand}"
+                                                    Margin="5"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>-->
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+
             <TabItem Header="Privacy">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
                         <TextBlock Text="Data Settings"
-                                 Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                 Margin="0 0 0 16"/>
-                        
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0 0 0 16" />
+
                         <materialDesign:Card Padding="16">
                             <StackPanel>
                                 <CheckBox Content="Allow anonymous data collection"
                                           IsChecked="{Binding Settings.Privacy.AllowUsageStatistics}"
-                                          Margin="0 0 0 8"/>
-                                <CheckBox Content="Allow storage of captured screenshots for analysis and model training"
-                                            IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
-                                          Margin="0 0 0 8"/>
+                                          Margin="0 0 0 8" />
+                                <CheckBox
+                                    Content="Allow storage of captured screenshots for analysis and model training"
+                                    IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
+                                    Margin="0 0 0 8" />
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
@@ -142,31 +197,31 @@
             <TabItem Header="About">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="16">
-                        
+
                         <materialDesign:Card Padding="16">
                             <StackPanel>
-                                
+
                             </StackPanel>
                         </materialDesign:Card>
-                        
+
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>
-        
+
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Style="{StaticResource MaterialDesignOutlinedButton}"
                     Margin="0 0 8 0"
                     Height="40"
                     Width="80"
                     Content="Save"
-                    Command="{Binding SaveCommand}"/>
+                    Command="{Binding SaveCommand}" />
             <Button Style="{StaticResource MaterialDesignOutlinedButton}"
                     Margin="0 0 8 0"
                     Height="40"
                     Width="80"
                     Content="Cancel"
-                    Command="{Binding LoadCommand}"/>
+                    Command="{Binding LoadCommand}" />
         </StackPanel>
     </Grid>
 </Window>

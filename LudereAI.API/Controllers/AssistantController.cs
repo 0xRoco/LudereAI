@@ -140,8 +140,6 @@ public class AssistantController : ControllerBase
     {
         var conversation = await _conversationRepository.Get(conversationId);
         
-        _logger.LogDebug("Conversation: {conversation}", conversation?.ToJson());
-    
         if (conversation == null)
         {
             conversation = new Conversation

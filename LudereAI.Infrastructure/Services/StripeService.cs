@@ -46,14 +46,14 @@ public class StripeService : IStripeService
             AllowPromotionCodes = true,
             Customer = customerId,
             Mode = "subscription",
-            LineItems = new List<SessionLineItemOptions>
-            {
+            LineItems =
+            [
                 new()
                 {
                     Price = priceId,
                     Quantity = 1
                 }
-            },
+            ],
             SuccessUrl = $"{_stripeConfig.SuccessUrl}?session_id={{CHECKOUT_SESSION_ID}}",
             CancelUrl = _stripeConfig.CancelUrl,
             ClientReferenceId = account.Id,

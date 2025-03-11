@@ -17,7 +17,9 @@ public class ConversationRepository : IConversationRepository
 
     public async Task<Conversation?> Get(string conversationId)
     {
-        var conv =  await _context.Conversations.AsNoTracking().FirstOrDefaultAsync(c => c.Id == conversationId);
+        var conv = await _context.Conversations
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == conversationId);
         if (conv == null) return null;
         
         conv.Messages = await _messageRepository.GetMessagesAsync(conversationId);
@@ -26,17 +28,15 @@ public class ConversationRepository : IConversationRepository
 
     public async Task<IEnumerable<Conversation>> GetByAccountId(string accountId)
     {
-        var conv = await _context.Conversations.AsNoTracking().Where(c => c.AccountId == accountId)
-            .Include(conversation => conversation.Messages).ToListAsync();
-
-        conv = conv.OrderByDescending(c => c.UpdatedAt).ToList();
+        return await _context.Conversations
+            .AsNoTracking()
+            .Where(c => c.AccountId == accountId)
+            .OrderByDescending(c=>c.UpdatedAt)
+            .Take(10)
+            .Include(conversation => conversation.Messages
+                .OrderBy(m => m.CreatedAt))
+            .ToListAsync();
         
-        foreach (var conversation in conv)
-        {
-            conversation.Messages = conversation.Messages.OrderBy(m => m.CreatedAt).ToList();
-        }
-        
-        return conv;
     }
 
     public async Task<bool> Create(Conversation conversation)
