@@ -7,12 +7,13 @@
              xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:SignUpViewModel}"
-             Background="{DynamicResource MaterialDesignBackground}"
+             Background="{DynamicResource MaterialDesignPaper}"
              Foreground="{DynamicResource MaterialDesignBody}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              Width="500" Height="600">
 
    <materialDesign:Card Margin="32" UniformCornerRadius="15" 
+                        Background="{DynamicResource MaterialDesignPaper}"
                         materialDesign:ElevationAssist.Elevation="Dp3">
         <Grid VerticalAlignment="Center">
             <Grid.RowDefinitions>
@@ -41,12 +42,14 @@
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             materialDesign:HintAssist.Hint="First Name"
                             materialDesign:TextFieldAssist.HasClearButton="True"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}"
                             Text="{Binding FirstName, UpdateSourceTrigger=PropertyChanged}" />
                     
                     <TextBox Grid.Column="1" Margin="8,0,0,0"
                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                             materialDesign:HintAssist.Hint="Last Name"
                             materialDesign:TextFieldAssist.HasClearButton="True"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}"
                             Text="{Binding LastName, UpdateSourceTrigger=PropertyChanged}" />
                 </Grid>
 
@@ -54,18 +57,21 @@
                          Margin="0,0,0,16"
                          materialDesign:HintAssist.Hint="Username"
                          materialDesign:TextFieldAssist.HasClearButton="True"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" />
 
                 <TextBox Style="{StaticResource MaterialDesignOutlinedTextBox}"
                          Margin="0,0,0,16"
                          materialDesign:HintAssist.Hint="Email"
                          materialDesign:TextFieldAssist.HasClearButton="True"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" />
 
                 <PasswordBox Style="{StaticResource MaterialDesignOutlinedPasswordBox}"
                             Margin="0,0,0,24"
                             materialDesign:HintAssist.Hint="Password"
                             materialDesign:TextFieldAssist.HasClearButton="True"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}"
                             materialDesign:PasswordBoxAssist.Password="{Binding Password, UpdateSourceTrigger=PropertyChanged}" />
 
                 <CheckBox Content="I agree to the Terms of Service and Privacy Policy"

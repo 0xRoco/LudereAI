@@ -258,6 +258,9 @@ public partial class ChatViewModel : ObservableObject
         {
             var conversationsAsync = await _chatService.GetConversations();
             Conversations = new ObservableCollection<Conversation>(conversationsAsync);
+            
+            Conversations.ToList().ForEach(c => c.CreatedAt = c.CreatedAt.ToLocalTime());
+            Conversations.ToList().ForEach(c => c.UpdatedAt = c.UpdatedAt.ToLocalTime());
         }
         catch (Exception ex)
         {
@@ -270,6 +273,7 @@ public partial class ChatViewModel : ObservableObject
         if (value == null) return;
         
         CurrentConversation = value;
+        CurrentConversation.Messages.ToList().ForEach(m=>m.CreatedAt = m.CreatedAt.ToLocalTime());
         OnConversationChanged.Invoke(CurrentConversation);
     }
 

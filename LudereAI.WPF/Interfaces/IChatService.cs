@@ -13,6 +13,7 @@ public interface IChatService
     }
     
     void SetAutoCaptureScreenshots(bool enabled);
+    void SetTextToSpeechEnabled(bool enabled);
     
     Task<Result<Message, ChatRequestResult>> SendMessage(ChatRequest request);
     Task<IEnumerable<Conversation>> GetConversations();

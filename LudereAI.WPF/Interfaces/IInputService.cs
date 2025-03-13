@@ -11,8 +11,6 @@ public interface IInputService
     void UnregisterHotkey(KeyBinding key);
     void UnregisterAllHotkeys();
     
-    void SetHotkeyCallback(string keyId, Action callback);
-    
     List<KeyBinding> GetRegisteredHotkeys();
     bool IsHotkeyRegistered(KeyBinding key);
 

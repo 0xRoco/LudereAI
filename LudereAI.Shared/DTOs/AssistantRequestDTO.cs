@@ -7,6 +7,8 @@ public class AssistantRequestDTO
     public string Screenshot { get; set; }
     public string GameContext { get; set; }
     
+    public bool TextToSpeechEnabled { get; set; } = true;
+    
     public bool IsScreenshotValid()
     {
         if (string.IsNullOrWhiteSpace(Screenshot)) return true;

@@ -10,7 +10,7 @@
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:AuthViewModel}"
         Style="{StaticResource MaterialDesignWindow}"
-        Background="{DynamicResource MaterialDesignBackground}"
+        Background="{DynamicResource MaterialDesignPaper}"
         Foreground="{DynamicResource MaterialDesignBody}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         ResizeMode="CanMinimize"
@@ -46,7 +46,9 @@
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
 
-                        <materialDesign:Card Width="250" Margin="24">
+                        <materialDesign:Card Width="250" Margin="24"
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             >
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="AccountOutline"
                                                          Width="50"
@@ -62,7 +64,9 @@
                             </StackPanel>
                         </materialDesign:Card>
 
-                        <materialDesign:Card Width="250" Margin="24">
+                        <materialDesign:Card Width="250" Margin="24"
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             >
                             <StackPanel Orientation="Vertical"
                                         HorizontalAlignment="Center">
                                 <materialDesign:PackIcon Kind="Account"
@@ -80,7 +84,9 @@
                             </StackPanel>
                         </materialDesign:Card>
 
-                        <materialDesign:Card Width="250" Margin="24">
+                        <materialDesign:Card Width="250" Margin="24"
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             >
 
                             <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
 

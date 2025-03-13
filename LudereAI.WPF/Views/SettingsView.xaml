@@ -1,4 +1,5 @@
-﻿<Window x:Class="LudereAI.WPF.Views.SettingsView"
+﻿
+<Window x:Class="LudereAI.WPF.Views.SettingsView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -7,17 +8,55 @@
         xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:SettingsViewModel}"
-        Background="{DynamicResource MaterialDesignBackground}"
+        Background="{DynamicResource MaterialDesignPaper}"
         Foreground="{DynamicResource MaterialDesignBody}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignWindow}"
         FontWeight="Regular"
-        FontSize="16"
+        FontSize="14"
         TextOptions.TextFormattingMode="Ideal"
         WindowStartupLocation="CenterScreen"
         Title="Settings" Height="700" Width="900">
 
-    <Grid Margin="16">
+    <Window.Resources>
+        <!-- Common styles for consistent visual appearance -->
+        <Style x:Key="SettingsSectionHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignHeadline6TextBlock}">
+            <Setter Property="Margin" Value="0 0 0 16" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        
+        <Style x:Key="SettingsCategoryHeaderStyle" TargetType="TextBlock" BasedOn="{StaticResource MaterialDesignSubtitle1TextBlock}">
+            <Setter Property="Margin" Value="0 0 0 12" />
+            <Setter Property="FontWeight" Value="Medium" />
+        </Style>
+        
+        <Style x:Key="SettingsCardStyle" TargetType="materialDesign:Card">
+            <Setter Property="Margin" Value="0 0 0 16" />
+            <Setter Property="Padding" Value="20" />
+            <Setter Property="UniformCornerRadius" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
+        </Style>
+        
+        <Style x:Key="SettingsToggleStyle" TargetType="ToggleButton" BasedOn="{StaticResource MaterialDesignSwitchToggleButton}">
+            <Setter Property="Margin" Value="8 0 0 0" />
+        </Style>
+        
+        <Style x:Key="SettingsHelpTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource MaterialDesignBodyLight}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Margin" Value="24 4 0 0" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+        
+        <Style x:Key="KeybindCardStyle" TargetType="materialDesign:Card">
+            <Setter Property="Margin" Value="0 0 0 12" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="UniformCornerRadius" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource MaterialDesignCardBackground}" />
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -26,202 +65,409 @@
 
         <TextBlock Text="Settings" HorizontalAlignment="Center"
                    Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-                   Margin="0 0 0 16" />
+                   FontWeight="Medium"
+                   Margin="0 0 0 24" />
 
-        <TabControl Grid.Row="1" SelectedIndex="2"
+        <TabControl Grid.Row="1" SelectedIndex="0"
                     Background="{DynamicResource MaterialDesignBackground}"
                     Foreground="{DynamicResource MaterialDesignBody}"
-                    Style="{StaticResource MaterialDesignTabControl}">
+                    Style="{StaticResource MaterialDesignTabControl}"
+                    materialDesign:ColorZoneAssist.Mode="Standard">
+            
+            <!-- GENERAL TAB -->
             <TabItem Header="General">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="16">
+                    <StackPanel Margin="24">
                         <TextBlock Text="General Settings"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0 0 0 16" />
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
 
-                        <materialDesign:Card Padding="16" Margin="0 0 0 16">
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="Language"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                           Margin="0 0 0 8" />
-                                <ComboBox materialDesign:HintAssist.Hint="Select language"
-                                          ItemsSource="{Binding Languages}"
-                                          SelectedItem="{Binding Settings.General.Language}"
-                                          Margin="0 8 0 0">
-                                </ComboBox>
+                                <TextBlock Text="Application"
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
+                                
+                                <!-- Language Setting -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Language" 
+                                               VerticalAlignment="Center" />
+                                    
+                                    <ComboBox Grid.Column="1"
+                                              materialDesign:HintAssist.Hint="Select language"
+                                              ItemsSource="{Binding Languages}"
+                                              SelectedItem="{Binding Settings.General.Language}"
+                                              Width="200"
+                                              HorizontalAlignment="Left" />
+                                </Grid>
+                                
+                                <!-- Theme Setting -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Theme" 
+                                               VerticalAlignment="Center" />
+                                    
+                                    <ComboBox Grid.Column="1"
+                                              materialDesign:HintAssist.Hint="Select theme"
+                                              ItemsSource="{Binding Themes}"
+                                              SelectedItem="{Binding Settings.General.Theme}"
+                                              Width="200"
+                                              HorizontalAlignment="Left" />
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                        
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Speech Options"
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
+                                
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.General.TextToSpeechEnabled}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <StackPanel Grid.Column="1" Margin="12 0 0 0">
+                                        <TextBlock Text="Enable Text-to-Speech for AI Responses" />
+                                        <TextBlock Text="Note: Enabling TTS may increase response latency"
+                                                  Style="{StaticResource SettingsHelpTextStyle}" />
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
 
-                        <materialDesign:Card Padding="16" Margin="0 0 0 16">
-                            <StackPanel>
-                                <TextBlock Text="Application Theme"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                           Margin="0 0 0 8" />
-                                <ComboBox materialDesign:HintAssist.Hint="Select theme"
-                                          ItemsSource="{Binding Themes}"
-                                          SelectedItem="{Binding Settings.General.Theme}"
-                                          Margin="0 8 0 0">
-                                </ComboBox>
-                            </StackPanel>
-                        </materialDesign:Card>
-
-                        <materialDesign:Card Padding="16">
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
                                 <TextBlock Text="Startup Options"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                           Margin="0 0 0 8" />
-                                <CheckBox Content="Auto-start with Windows"
-                                          IsChecked="{Binding Settings.General.AutoStartWithWindows}" Margin="0 0 0 8" />
-                                <CheckBox Content="Minimize to System Tray"
-                                          IsChecked="{Binding Settings.General.MinimizeToTray}" Margin="0 0 0 8" />
-                                <CheckBox Content="Check for Updates Automatically"
-                                          IsChecked="{Binding Settings.General.AutoCheckForUpdates}" Margin="0 0 0 8" />
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
+                                
+                                <!-- Auto-start with Windows -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.General.AutoStartWithWindows}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Auto-start with Windows" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
+                                
+                                <!-- Minimize to System Tray -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.General.MinimizeToTray}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Minimize to System Tray" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
+                                
+                                <!-- Check for Updates Automatically -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.General.AutoCheckForUpdates}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Check for Updates Automatically" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
+            <!-- GAME INTEGRATION TAB -->
             <TabItem Header="Game Integration">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="16">
+                    <StackPanel Margin="24">
                         <TextBlock Text="Game Integration Settings"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0 0 0 16" />
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
 
-                        <materialDesign:Card Padding="16">
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
                                 <TextBlock Text="Game Detection"
-                                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                                           Margin="0 0 0 16">
-                                </TextBlock>
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
 
-                                <CheckBox Content="Auto-detect running games"
-                                          IsChecked="{Binding Settings.GameIntegration.Enabled}"
-                                          Margin="0 0 0 8" />
+                                <!-- Auto-detect running games -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.GameIntegration.Enabled}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Auto-detect running games" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
 
-                                <CheckBox Content="Auto-capture screenshots"
-                                          IsChecked="{Binding Settings.GameIntegration.AutoCaptureScreenshots}"
-                                          Margin="0 0 0 8" />
+                                <!-- Auto-capture screenshots -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.GameIntegration.AutoCaptureScreenshots}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Auto-capture screenshots" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
 
-                                <DockPanel Margin="0,8">
-                                    <TextBlock Text="Scan interval (seconds)" />
-                                    <TextBox Style="{StaticResource MaterialDesignTextBox}"
-                                             HorizontalAlignment="Left"
-                                             Width="120"
-                                             Margin="8 0 0 0"
-                                             Text="{Binding Settings.GameIntegration.ScanInterval}" />
-                                </DockPanel>
+                                <!-- Scan interval -->
+                                <Grid Margin="0 16 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="180" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <TextBlock Text="Scan interval (seconds)" 
+                                              VerticalAlignment="Center" />
+                                    
+                                    <TextBox Grid.Column="1" 
+                                            Style="{StaticResource MaterialDesignTextBox}"
+                                            Width="120"
+                                            HorizontalAlignment="Left"
+                                            Text="{Binding Settings.GameIntegration.ScanInterval}" />
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
+            <!-- KEYBINDS TAB -->
             <TabItem Header="Keybinds">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="16">
+                    <StackPanel Margin="24">
                         <TextBlock Text="Keyboard Shortcuts"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0 0 0 16" />
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
 
-                        <materialDesign:Card Padding="16" Margin="0 0 0 16">
-                            
-                            
-                            
-                            <DataGrid ColumnHeaderHeight="40" 
-                                      Style="{StaticResource MaterialDesignDataGrid}"
-                                      AutoGenerateColumns="False"
-                                      CanUserAddRows="False"
-                                      CanUserDeleteRows="False"
-                                      IsReadOnly="True"
-                                      SelectionMode="Single"
-                                      ItemsSource="{Binding KeyBindings}">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="auto"/>
-                                    <DataGridTemplateColumn Header="Key" Width="150">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Grid>
-                                                    <TextBlock Text="{Binding KeyDisplay}"
-                                                               Visibility="{Binding IsRecording, Converter={StaticResource InverseBooleanToVisibilityConverter}}"/>
-                                                    <TextBlock Text="Press a key..."
-                                                               Visibility="{Binding IsRecording, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Configure keyboard shortcuts to quickly access app features" 
+                                           TextWrapping="Wrap"
+                                           Margin="0 0 0 16" />
+                                
+                                <ItemsControl ItemsSource="{Binding KeyBindings}" Margin="0 0 0 16">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <materialDesign:Card 
+                                                Background="{DynamicResource MaterialDesignPaper}"
+                                                Style="{StaticResource KeybindCardStyle}">
+                                                <Grid Margin="8">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition Width="*" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                        <ColumnDefinition Width="Auto" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition Height="Auto" />
+                                                        <RowDefinition Height="Auto" />
+                                                    </Grid.RowDefinitions>
 
+                                                    <!-- Keybind Name -->
+                                                    <TextBlock Text="{Binding Name}" 
+                                                               Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
+                                                               VerticalAlignment="Center"
+                                                               Grid.Column="0"
+                                                               Grid.Row="0"
+                                                               Margin="0 0 16 0" />
+
+                                                    <!-- Key Visual Representation -->
+                                                    <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
+                                                            CornerRadius="6" 
+                                                            Padding="16 8" 
+                                                            Margin="0 0 16 0"
+                                                            MinWidth="120"
+                                                            HorizontalAlignment="Right"
+                                                            Background="{DynamicResource MaterialDesignChipBackground}"
+                                                            BorderBrush="{DynamicResource MaterialDesignDivider}"
+                                                            BorderThickness="1"
+                                                            VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding KeyDisplay}" 
+                                                                   HorizontalAlignment="Center"
+                                                                   FontWeight="SemiBold" />
+                                                    </Border>
+
+                                                    <!-- Change Button -->
+                                                    <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
+                                                            Content="{Binding RecordButtonText}"
+                                                            Command="{Binding StartRecordingCommand}"
+                                                            Style="{StaticResource MaterialDesignOutlinedButton}"
+                                                            Margin="0"
+                                                            Width="100"
+                                                            VerticalAlignment="Center" />
+
+                                                    <!-- Toggle Switches -->
+                                                    <StackPanel Grid.Column="0" Grid.Row="1" Orientation="Horizontal" Margin="0 12 0 0">
+                                                        <StackPanel Orientation="Horizontal" Margin="0 0 24 0">
+                                                            <TextBlock Text="Global" 
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="0 0 8 0" />
+                                                            <ToggleButton IsChecked="{Binding IsGlobal}" 
+                                                                          Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                                                        </StackPanel>
+                                                        
+                                                        <StackPanel Orientation="Horizontal">
+                                                            <TextBlock Text="Enabled" 
+                                                                       VerticalAlignment="Center"
+                                                                       Margin="0 0 8 0" />
+                                                            <ToggleButton IsChecked="{Binding IsEnabled}" 
+                                                                          Style="{StaticResource MaterialDesignSwitchToggleButton}" />
+                                                        </StackPanel>
+                                                    </StackPanel>
                                                 </Grid>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>
-                                    <!--<DataGridCheckBoxColumn Header="Global" Binding="{Binding IsGlobal}" Width="100"/>
-                                    <DataGridCheckBoxColumn Header="Enabled" Binding="{Binding IsEnabled}" Width="100"/>
-                                    <DataGridTemplateColumn Width="auto" Header="Actions">
-                                        <DataGridTemplateColumn.CellTemplate>
-                                            <DataTemplate>
-                                                <Button 
-                                                    Content="Change"
-                                                    Command="{Binding StartRecordingCommand}"
-                                                    Margin="5"/>
-                                            </DataTemplate>
-                                        </DataGridTemplateColumn.CellTemplate>
-                                    </DataGridTemplateColumn>-->
-                                </DataGrid.Columns>
-                            </DataGrid>
+                                            </materialDesign:Card>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                                
+                                <TextBlock Text="Note: Global hotkeys work even when the app doesn't have focus" 
+                                          Style="{StaticResource SettingsHelpTextStyle}"
+                                          Margin="0 0 0 0" />
+                            </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
-
+            <!-- PRIVACY TAB -->
             <TabItem Header="Privacy">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="16">
+                    <StackPanel Margin="24">
                         <TextBlock Text="Data Settings"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0 0 0 16" />
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
 
-                        <materialDesign:Card Padding="16">
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
-                                <CheckBox Content="Allow anonymous data collection"
-                                          IsChecked="{Binding Settings.Privacy.AllowUsageStatistics}"
-                                          Margin="0 0 0 8" />
-                                <CheckBox
-                                    Content="Allow storage of captured screenshots for analysis and model training"
-                                    IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
-                                    Margin="0 0 0 8" />
+                                <TextBlock Text="Privacy Options"
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
+                                
+                                <!-- Allow anonymous data collection -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.Privacy.AllowUsageStatistics}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Allow anonymous data collection" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
+                                
+                                <!-- Allow storage of captured screenshots -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <StackPanel Grid.Column="1" Margin="12 0 0 0">
+                                        <TextBlock Text="Allow storage of captured screenshots" />
+                                        <TextBlock Text="Used for analysis and model training to improve the assistant"
+                                                  Style="{StaticResource SettingsHelpTextStyle}" />
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
 
+            <!-- ABOUT TAB -->
             <TabItem Header="About">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel Margin="16">
+                    <StackPanel Margin="24">
+                        <TextBlock Text="About Ludere AI"
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
 
-                        <materialDesign:Card Padding="16">
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
-
+                                <StackPanel HorizontalAlignment="Center" Margin="0 0 0 24">
+                                    <TextBlock Text="Ludere AI" 
+                                               Style="{StaticResource MaterialDesignHeadline5TextBlock}"
+                                               HorizontalAlignment="Center" 
+                                               Margin="0 0 0 4" />
+                                    <TextBlock Text="Version 1.0.0" 
+                                               HorizontalAlignment="Center" 
+                                               Foreground="{DynamicResource MaterialDesignBodyLight}" />
+                                </StackPanel>
+                                
+                                <TextBlock Text="© 2023 Ludere AI. All rights reserved."
+                                          HorizontalAlignment="Center"
+                                          Margin="0 24 0 0"
+                                          Foreground="{DynamicResource MaterialDesignBodyLight}" />
                             </StackPanel>
                         </materialDesign:Card>
-
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0 16 0 0">
             <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Margin="0 0 8 0"
+                    Margin="0 0 16 0"
                     Height="40"
-                    Width="80"
-                    Content="Save"
-                    Command="{Binding SaveCommand}" />
-            <Button Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Margin="0 0 8 0"
-                    Height="40"
-                    Width="80"
+                    Width="100"
                     Content="Cancel"
                     Command="{Binding LoadCommand}" />
+            <Button Style="{StaticResource MaterialDesignRaisedButton}"
+                    Margin="0"
+                    Height="40"
+                    Width="100"
+                    Content="Save"
+                    Command="{Binding SaveCommand}" />
         </StackPanel>
     </Grid>
 </Window>

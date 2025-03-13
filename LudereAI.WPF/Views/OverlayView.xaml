@@ -108,6 +108,7 @@
 
             <!-- Thinking Indicator -->
             <materialDesign:Card Grid.Row="2"
+                                 Background="{DynamicResource MaterialDesignPaper}"
                                  Style="{StaticResource MessageBubbleStyle}"
                                  Margin="8,0,8,8"
                                  Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -125,6 +126,7 @@
 
             <!-- Input Area -->
             <materialDesign:Card Grid.Row="3" 
+                                 Background="{DynamicResource MaterialDesignPaper}"
                                  UniformCornerRadius="8" 
                                  Margin="8">
                 <Grid Margin="12,8">
@@ -140,6 +142,7 @@
                              Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                             BorderBrush="{DynamicResource MaterialDesignDivider}"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
                              VerticalScrollBarVisibility="Auto"

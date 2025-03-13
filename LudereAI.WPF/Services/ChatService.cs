@@ -14,8 +14,10 @@ public class ChatService : IChatService
     private readonly IAssistantService _assistantService;
     private readonly IScreenshotService _screenshotService;
     private bool _autoCaptureScreenshots;
+    private bool _textToSpeechEnabled;
     
     public void SetAutoCaptureScreenshots(bool enabled) => _autoCaptureScreenshots = enabled;
+    public void SetTextToSpeechEnabled(bool enabled) => _textToSpeechEnabled = enabled;
     
     public ChatService(ILogger<IChatService> logger, IAssistantService assistantService, IScreenshotService screenshotService, IMapper mapper)
     {
@@ -48,7 +50,8 @@ public class ChatService : IChatService
             ConversationId = request.ConversationId ?? "",
             Message = request.Message,
             Screenshot = screenshotBase64,
-            GameContext = request.GameContext
+            GameContext = request.GameContext,
+            TextToSpeechEnabled = _textToSpeechEnabled
         };
         
         var result = await _assistantService.SendMessage(assistantRequest);

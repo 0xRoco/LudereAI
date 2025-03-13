@@ -7,13 +7,13 @@
              xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
              mc:Ignorable="d"
              d:DataContext="{d:DesignInstance viewModels:LoginViewModel}"
-             Background="{DynamicResource MaterialDesignBackground}"
+             Background="{DynamicResource MaterialDesignPaper}"
              Foreground="{DynamicResource MaterialDesignBody}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              Width="400" Height="500">
 
     <materialDesign:Card Margin="32" UniformCornerRadius="15"
-                         Background="{DynamicResource MaterialDesignBackground}"
+                         Background="{DynamicResource MaterialDesignPaper}"
                          materialDesign:ElevationAssist.Elevation="Dp3">
         <Grid VerticalAlignment="Center">
             <Grid.RowDefinitions>
@@ -38,6 +38,7 @@
                          Margin="0,16"
                          materialDesign:HintAssist.Hint="Username"
                          materialDesign:TextFieldAssist.HasClearButton="True"
+                         BorderBrush="{DynamicResource MaterialDesignDivider}"
                          Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}">
                     <TextBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />
@@ -48,6 +49,7 @@
                              Margin="0,0,0,24"
                              materialDesign:HintAssist.Hint="Password"
                              materialDesign:TextFieldAssist.HasClearButton="True"
+                             BorderBrush="{DynamicResource MaterialDesignDivider}"
                              PasswordChanged="PasswordBox_OnPasswordChanged">
                     <PasswordBox.InputBindings>
                         <KeyBinding Key="Enter" Command="{Binding LoginCommand}" />

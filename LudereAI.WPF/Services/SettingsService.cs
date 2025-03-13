@@ -72,12 +72,13 @@ public class SettingsService : ISettingsService
     {
         try
         {
-            //ApplyKeyBindSettings(settings.KeyBind);
+            ApplyKeyBindSettings(settings.KeyBind);
             SetAutoStart(settings.General.AutoStartWithWindows, settings.General.MinimizeToTray);
             ApplyTheme(settings.General.Theme);
             ApplyPrivacySettings(settings.Privacy);
             
             _chatService.SetAutoCaptureScreenshots(settings.GameIntegration.AutoCaptureScreenshots);
+            _chatService.SetTextToSpeechEnabled(settings.General.TextToSpeechEnabled);
         }
         catch (Exception ex)
         {
@@ -175,11 +176,14 @@ public class SettingsService : ISettingsService
     {
         try
         {
+            _logger.LogInformation("Applying keybind settings with {count} hotkeys", settings.Hotkeys.Count);
+            
             _inputService.UnregisterAllHotkeys();
             
             foreach (var binding in settings.Hotkeys)
             {
                 _inputService.RegisterHotkey(binding);
+                _logger.LogDebug("Registered hotkey {id}: {key}", binding.Id, binding);
             }
         }
         catch (Exception ex)

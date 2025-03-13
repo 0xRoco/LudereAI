@@ -7,7 +7,7 @@
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:ChatViewModel}"
-        Background="{DynamicResource MaterialDesignBackground}"
+        Background="{DynamicResource MaterialDesignPaper}"
         Foreground="{DynamicResource MaterialDesignBody}"
         FontFamily="{DynamicResource MaterialDesignFont}"
         Style="{DynamicResource MaterialDesignWindow}"
@@ -18,6 +18,26 @@
         TextOptions.TextFormattingMode="Ideal"
         Title="LudereAI - Chat"
         Height="800" Width="1200">
+    
+    <Window.Resources>
+        <Style x:Key="EnhancedMessageBubbleStyle" TargetType="materialDesign:Card">
+            <Setter Property="Margin" Value="8,6" />
+            <Setter Property="Padding" Value="16,14" />
+            <Setter Property="MaxWidth" Value="650" />
+            <Setter Property="UniformCornerRadius" Value="18" />
+            <Setter Property="HorizontalAlignment" 
+                    Value="{Binding Role, Converter={StaticResource MessageAlignmentConverter}}" />
+            <Setter Property="materialDesign:ElevationAssist.Elevation" Value="Dp1" />
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Role}" Value="User">
+                    <Setter Property="materialDesign:Card.UniformCornerRadius" Value="8" />
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Role}" Value="Assistant">
+                    <Setter Property="materialDesign:Card.UniformCornerRadius" Value="8" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" />
@@ -71,7 +91,9 @@
                         </Grid.RowDefinitions>
 
                         <!-- User Profile Section -->
-                        <materialDesign:Card Grid.Row="0" Margin="16 24 16 16" UniformCornerRadius="16">
+                        <materialDesign:Card Grid.Row="0" 
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             Margin="16 24 16 16" UniformCornerRadius="16">
                             <StackPanel Margin="16 20">
                                 <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
                                     <Border Width="36" Height="36" CornerRadius="12">
@@ -119,11 +141,15 @@
                         </materialDesign:Card>
 
                         <!-- Conversations List -->
-                        <materialDesign:Card Grid.Row="1" Margin="16,8,16,16" UniformCornerRadius="12">
+                        <materialDesign:Card Grid.Row="1" 
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             Margin="16,8,16,16" UniformCornerRadius="12">
                             <ListBox
                                 SelectedItem="{Binding CurrentConversation, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay, FallbackValue=null}"
                                 ItemsSource="{Binding Conversations, Mode=TwoWay}"
                                 Style="{StaticResource MaterialDesignListBox}"
+                                SelectionMode="Single"
+                                materialDesign:ListBoxItemAssist.ShowSelection="False"
                                 Margin="8">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
@@ -213,59 +239,86 @@
         </materialDesign:Card>
 
         <!-- Main Chat Area -->
-        <Grid Grid.Column="1" Margin="20">
+        <Grid Grid.Column="1" Margin="24">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
+            
+            <!-- Chat Header -->
+            <TextBlock Grid.Row="0" 
+                       Text="{Binding CurrentConversation.GameContext, FallbackValue='New Conversation'}" 
+                       Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                       FontWeight="Medium"
+                       Margin="0,0,0,20"
+                       Opacity="0.85"/>
 
             <!-- Messages -->
-            <ScrollViewer Grid.Row="0"
+            <ScrollViewer Grid.Row="1"
                           x:Name="ChatScroll"
                           VerticalScrollBarVisibility="Auto"
                           Margin="0,0,0,24">
                 <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, FallbackValue=null}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <materialDesign:Card Style="{StaticResource MessageBubbleStyle}"
-                                                 Background="{Binding Role, Converter={StaticResource MessageBackgroundConverter}}">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Role}"
-                                               FontWeight="Medium"
-                                               FontSize="12"
-                                               Opacity="0.7"
-                                               Margin="0,0,0,8" />
-                                    <TextBlock Text="{Binding Content}"
-                                               TextWrapping="Wrap"
-                                               FontSize="14"
-                                               LineHeight="20" />
-                                </StackPanel>
-                            </materialDesign:Card>
+                            <Grid Margin="0,4">
+                                <!-- Message Timestamp -->
+                                <TextBlock Text="{Binding CreatedAt, StringFormat='{}{0:HH:mm}'}"
+                                           FontSize="11"
+                                           Opacity="0.6"
+                                           Foreground="{DynamicResource MaterialDesignBody}"
+                                           Margin="12,2"
+                                           HorizontalAlignment="{Binding Role, Converter={StaticResource MessageAlignmentConverter}}" />
+                                          
+                                <!-- Message Bubble -->
+                                <materialDesign:Card Style="{StaticResource EnhancedMessageBubbleStyle}"
+                                                     Background="{Binding Role, Converter={StaticResource MessageBackgroundConverter}}"
+                                                     Margin="0,20,0,0">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Role}"
+                                                   FontWeight="Medium"
+                                                   FontSize="12"
+                                                   Opacity="0.7"
+                                                   Margin="0,0,0,8" />
+                                        <TextBlock Text="{Binding Content}"
+                                                   TextWrapping="Wrap"
+                                                   FontSize="14"
+                                                   LineHeight="22" />
+                                    </StackPanel>
+                                </materialDesign:Card>
+                            </Grid>
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </ScrollViewer>
 
             <!-- Thinking Indicator -->
-            <materialDesign:Card Grid.Row="1"
-                                 Style="{StaticResource MessageBubbleStyle}"
+            <materialDesign:Card Grid.Row="2"
+                                 Style="{StaticResource EnhancedMessageBubbleStyle}"
+                                 Background="{DynamicResource MaterialDesignPaper}"
+                                 Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}"
                                  Margin="8,0,8,20"
-                                 Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal" Margin="16 10">
+                                 HorizontalAlignment="Left">
+                <StackPanel Orientation="Horizontal" Margin="8,6">
                     <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
                                  Value="35"
                                  IsIndeterminate="True"
-                                 Width="20"
-                                 Height="20"
+                                 Width="16"
+                                 Height="16"
                                  Margin="0,0,12,0" />
                     <TextBlock Text="Thinking..."
-                               FontSize="14" />
+                               FontSize="14"
+                               Opacity="0.75" />
                 </StackPanel>
             </materialDesign:Card>
 
             <!-- Input Area -->
-            <materialDesign:Card Grid.Row="2" UniformCornerRadius="16" Margin="0 4 0 0">
+            <materialDesign:Card Grid.Row="3" 
+                                 Background="{DynamicResource MaterialDesignPaper}"
+                                 UniformCornerRadius="16" Margin="0 4 0 0"
+                                 materialDesign:ElevationAssist.Elevation="Dp1">
                 <Grid Margin="22,14">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -277,6 +330,7 @@
                              materialDesign:HintAssist.Hint="Type your message..."
                              Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             BorderBrush="{DynamicResource MaterialDesignDivider}"
                              materialDesign:TextFieldAssist.TextFieldCornerRadius="12"
                              AcceptsReturn="True"
                              TextWrapping="Wrap"
@@ -289,17 +343,16 @@
                         </TextBox.InputBindings>
                     </TextBox>
 
-                    <StackPanel Grid.Column="1">
-                        <Button Style="{StaticResource MaterialDesignFloatingActionButton}"
-                                Command="{Binding SendMessageCommand}"
-                                IsEnabled="{Binding CanSendMessage}"
-                                Width="52"
-                                Height="52"
-                                materialDesign:ButtonAssist.CornerRadius="20">
-                            <materialDesign:PackIcon Kind="Send" Width="20" Height="20" />
-                        </Button>
-
-                    </StackPanel>
+                    <!-- Send Button -->
+                    <Button Grid.Column="1"
+                            Style="{StaticResource MaterialDesignFloatingActionButton}"
+                            Command="{Binding SendMessageCommand}"
+                            IsEnabled="{Binding CanSendMessage}"
+                            materialDesign:ButtonAssist.CornerRadius="20"
+                            Width="52"
+                            Height="52">
+                        <materialDesign:PackIcon Kind="Send" Width="20" Height="20" />
+                    </Button>
                 </Grid>
             </materialDesign:Card>
         </Grid>
@@ -307,7 +360,7 @@
         <materialDesign:Card Grid.Column="2"
                              UniformCornerRadius="0"
                              Background="{DynamicResource MaterialDesignPaper}"
-                             Effect="{DynamicResource MaterialDesignShadowDepth3}">
+                             Effect="{DynamicResource MaterialDesignShadowDepth2}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -343,7 +396,9 @@
                     <StackPanel Margin="10 8 16 16">
 
                         <!-- Predicted Game Info Section -->
-                        <materialDesign:Card UniformCornerRadius="16" Margin="0 6">
+                        <materialDesign:Card UniformCornerRadius="16" Margin="0 6" 
+                                             Background="{DynamicResource MaterialDesignPaper}"
+                                             >
                             <StackPanel Margin="20 16">
                                 <TextBlock Text="Predicted Game Info"
                                            Style="{StaticResource MaterialDesignHeadline6TextBlock}"
@@ -389,6 +444,7 @@
                         <!-- Manual Override Section -->
                         <materialDesign:Card UniformCornerRadius="16"
                                              Margin="0 6"
+                                             Background="{DynamicResource MaterialDesignPaper}"
                                              Visibility="{Binding IsOverrideEnabled, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <StackPanel Margin="20,16">
                                 <TextBlock Text="Manual Override"
@@ -400,6 +456,7 @@
                                          Text="{Binding ManualGameName, UpdateSourceTrigger=PropertyChanged}"
                                          Style="{StaticResource MaterialDesignOutlinedTextBox}"
                                          materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                         BorderBrush="{DynamicResource MaterialDesignDivider}"
                                          Margin="0,0,0,16" />
 
                                 <ComboBox materialDesign:HintAssist.Hint="Windows"
@@ -407,6 +464,7 @@
                                           SelectedItem="{Binding ManualWindow}"
                                           Style="{StaticResource MaterialDesignOutlinedComboBox}"
                                           materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
+                                          BorderBrush="{DynamicResource MaterialDesignDivider}"
                                           Margin="0,0,0,16" />
 
                                 <Button Command="{Binding RefreshProcessesCommand}"

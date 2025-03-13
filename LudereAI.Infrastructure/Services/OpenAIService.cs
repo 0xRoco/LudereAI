@@ -54,9 +54,12 @@ public class OpenAIService : IOpenAIService
 
             byte[] audio = [];
 
-            //BUG: This increases latency by shitton
-            var voice = await _chatClientFactory.CreateAudioClient().GenerateSpeechAsync(aiMessage, new GeneratedSpeechVoice("voice-en-us-ryan-high"));
-            audio = voice.Value.ToArray();
+            if (requestDto.TextToSpeechEnabled)
+            {
+                //BUG: This increases latency by shitton
+                var voice = await _chatClientFactory.CreateAudioClient().GenerateSpeechAsync(aiMessage, new GeneratedSpeechVoice("voice-en-us-ryan-high"));
+                audio = voice.Value.ToArray();
+            }
 
             var aiResponse = new AIResponse()
             {

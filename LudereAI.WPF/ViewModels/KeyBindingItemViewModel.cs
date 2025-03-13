@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Windows;
+using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.WPF.Interfaces;
@@ -12,19 +13,28 @@ public partial class KeyBindingItemViewModel : ObservableObject
     
     [ObservableProperty]
     private string _id = string.Empty;
+    
     [ObservableProperty]
     private string _name = string.Empty;
+    
     [ObservableProperty] 
     private Key _key;
+    
     [ObservableProperty] 
     private ModifierKeys _modifiers;
+    
     [ObservableProperty]
     private bool _isGlobal;
+    
     [ObservableProperty]
     private bool _isEnabled;
+    
     [ObservableProperty] 
     private bool _isRecording;
     
+    [ObservableProperty]
+    private string _recordButtonText = "Change";
+
     public string KeyDisplay => IsRecording ? "Press a key..." : $"{(Modifiers == ModifierKeys.None ? "" : $"{Modifiers}+")}{Key}";
 
     public KeyBindingItemViewModel(KeyBinding keyBinding, IInputService inputService)

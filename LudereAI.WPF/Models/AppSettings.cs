@@ -14,6 +14,7 @@ public class GeneralSettings
 {
     public string Theme { get; set; } = "Dark";
     public string Language { get; set; } = "English";
+    public bool TextToSpeechEnabled { get; set; } = true;
     public bool AutoStartWithWindows { get; set; } = false;
     public bool MinimizeToTray { get; set; } = false;
     public bool AutoCheckForUpdates { get; set; } = true;
@@ -36,16 +37,16 @@ public class KeyBindSettings
 {
     public List<KeyBinding> Hotkeys { get; set; } =
     [
-        new KeyBinding
+        new()
         {
-            Id = "ToggleOverlay", Name = "Toggle Overlay", Key = Key.O, Modifiers = ModifierKeys.Alt,
+            Id = "ToggleOverlay", Name = "Toggle Overlay", Key = Key.O, Modifiers = ModifierKeys.Alt, Window = "ChatView",
             IsGlobal = true, IsEnabled = true
         },
 
-        new KeyBinding
+        new()
         {
-            Id = "NewChat", Name = "New Chat", Key = Key.N, Modifiers = ModifierKeys.Control, IsGlobal = true,
-            IsEnabled = true
+            Id = "NewChat", Name = "New Chat", Key = Key.N, Modifiers = ModifierKeys.Control, Window = "ChatView",
+            IsGlobal = true, IsEnabled = true
         }
     ];
 }
