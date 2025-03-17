@@ -25,8 +25,7 @@ try
     builder.Host.UseSerilog((context, config) => 
         config.ReadFrom.Configuration(context.Configuration));
     
-    builder.WebHost.UseUrls("http://localhost:9098");
-    builder.WebHost.UseUrls("https://localhost:9099");
+    builder.WebHost.UseUrls("http://localhost:9098;https://localhost:9099");
     
     // Add services to container
     ConfigureServices(builder);
