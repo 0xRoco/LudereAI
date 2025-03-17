@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -22,10 +22,6 @@
       <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
       <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
       <PackageReference Include="NAudio" Version="2.2.1" />
-      <PackageReference Include="Sentry" Version="5.0.1" />
-      <PackageReference Include="Sentry.AspNetCore" Version="5.0.1" />
-      <PackageReference Include="Sentry.Profiling" Version="5.0.1" />
-      <PackageReference Include="Sentry.Serilog" Version="5.0.1" />
       <PackageReference Include="Serilog" Version="4.2.0" />
       <PackageReference Include="Serilog.Extensions" Version="8.0.3" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
@@ -50,10 +46,6 @@
       <Page Update="Views\SignUpView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Enums\" />
     </ItemGroup>
 
 </Project>

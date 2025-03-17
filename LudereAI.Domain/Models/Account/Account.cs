@@ -22,15 +22,10 @@ public class Account : BaseEntity
     public string HashedPassword { get; set; } = "";
     public AccountRole Role { get; set; } = AccountRole.User;
     public AccountStatus Status { get; set; } = AccountStatus.Active;
-    public SubscriptionTier Tier { get; set; } = SubscriptionTier.Free;
     
     public DateTime? LastLogin { get; set; }
     public string DeviceId { get; set; } = "";
-    public string? StripeCustomerId { get; set; } = "";
     
     public string FullName => $"{FirstName} {LastName}".Trim();
-    public bool IsSubscribed => Tier is SubscriptionTier.Pro or SubscriptionTier.Ultimate;
-    
-    public UserSubscription? Subscription { get; set; }
     public IEnumerable<Conversation>? Conversations { get; set; } = new List<Conversation>();
 }

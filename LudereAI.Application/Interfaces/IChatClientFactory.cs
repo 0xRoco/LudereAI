@@ -5,7 +5,7 @@ namespace LudereAI.Application.Interfaces;
 
 public interface IChatClientFactory
 {
-    ChatClient CreateOpenAIClient();
-    ChatClient CreateGeminiClient();
-    AudioClient CreateAudioClient();
+    ChatClient CreateChatClient();
+    
+    Task<byte[]> GenerateAudio(string text);
 }

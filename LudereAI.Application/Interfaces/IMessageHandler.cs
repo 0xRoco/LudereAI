@@ -7,9 +7,8 @@ namespace LudereAI.Application.Interfaces;
 
 public interface IMessageHandler
 {
-    Task<StoredFile?> HandleScreenshot(AssistantRequestDTO request, Conversation conversation);
+ //   Task<StoredFile?> HandleScreenshot(AssistantRequestDTO request, Conversation conversation);
     Task<List<ChatMessage>> BuildMessageHistory(AssistantRequestDTO request, Conversation conversation);
 
-    Task SaveConversationMessages(AssistantRequestDTO request, AIResponse response,
-        string screenshotId = "");
+    Task SaveConversationMessages(AssistantRequestDTO request, AIResponse response);
 }

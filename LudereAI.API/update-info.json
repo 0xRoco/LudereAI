@@ -1,8 +1,0 @@
-﻿{
-  "Version": "1.0.0",
-  "DownloadUrl": "https://LudereAI.com/download/LudereAI-latest.exe",
-  "Changelog": "Initial release",
-  "InstallerName": "LudereAI-latest.exe",
-  "Hash": "0x12345678",
-  "IsCritical": false
-}

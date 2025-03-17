@@ -5,7 +5,6 @@ using LudereAI.Domain.Models.Chat;
 using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
 using Microsoft.Extensions.Logging;
-using OpenAI.Audio;
 using OpenAI.Chat;
 
 #pragma warning disable OPENAI001
@@ -17,18 +16,15 @@ public class OpenAIService : IOpenAIService
     private readonly ILogger<IOpenAIService> _logger;
     private readonly IChatClientFactory _chatClientFactory;
     private readonly IMessageHandler _messageHandler;
-    private readonly IAudioService _audioGenerator;
     private readonly IAccountService _accountService;
     public OpenAIService(ILogger<IOpenAIService> logger,
         IChatClientFactory chatClientFactory,
         IMessageHandler messageHandler,
-        IAudioService audioGenerator,
         IAccountService accountService)
     {
         _logger = logger;
         _chatClientFactory = chatClientFactory;
         _messageHandler = messageHandler;
-        _audioGenerator = audioGenerator;
         _accountService = accountService;
     }
     
@@ -43,11 +39,11 @@ public class OpenAIService : IOpenAIService
             if (account == null) throw new Exception("Account not found");
 
 
-            var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
+            /*var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
             if (file != null && !string.IsNullOrWhiteSpace(file.Url))
             {
                 requestDto.Screenshot = file.Url;
-            }
+            }*/
             
 
             var aiMessage = await ProcessRequestAsync(conversation, requestDto);
@@ -57,8 +53,7 @@ public class OpenAIService : IOpenAIService
             if (requestDto.TextToSpeechEnabled)
             {
                 //BUG: This increases latency by shitton
-                var voice = await _chatClientFactory.CreateAudioClient().GenerateSpeechAsync(aiMessage, new GeneratedSpeechVoice("voice-en-us-ryan-high"));
-                audio = voice.Value.ToArray();
+                audio = await _chatClientFactory.GenerateAudio(aiMessage);
             }
 
             var aiResponse = new AIResponse()
@@ -68,7 +63,7 @@ public class OpenAIService : IOpenAIService
                 ttsAudio = audio
             };
 
-            await _messageHandler.SaveConversationMessages(requestDto, aiResponse, file?.Id ?? "");
+            await _messageHandler.SaveConversationMessages(requestDto, aiResponse);
 
             return aiResponse;
         }
@@ -88,15 +83,15 @@ public class OpenAIService : IOpenAIService
         if (account == null) throw new Exception("Account not found");
 
 
-        var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
+        /*var file = await _messageHandler.HandleScreenshot(requestDto, conversation);
         if (file != null && !string.IsNullOrWhiteSpace(file.Url))
         {
             requestDto.Screenshot = file.Url;
-        }
+        }*/
         
         
         var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
-        var chat = _chatClientFactory.CreateGeminiClient();
+        var chat = _chatClientFactory.CreateChatClient();
         var options = new ChatCompletionOptions
         {
             EndUserId = conversation.AccountId,
@@ -141,7 +136,7 @@ public class OpenAIService : IOpenAIService
         
         _logger.LogInformation("Predicting game from processes: {Processes}", processes.ToJson());
         
-        var chat = _chatClientFactory.CreateGeminiClient();
+        var chat = _chatClientFactory.CreateChatClient();
         
         var response = await chat.CompleteChatAsync(messages);
         LogTokenUsage(response.Value.Usage);
@@ -154,7 +149,7 @@ public class OpenAIService : IOpenAIService
     private async Task<string> ProcessRequestAsync(Conversation conversation, AssistantRequestDTO requestDto)
     {
         var messages = await _messageHandler.BuildMessageHistory(requestDto, conversation);
-        var chat = _chatClientFactory.CreateGeminiClient();
+        var chat = _chatClientFactory.CreateChatClient();
 
         try
         {

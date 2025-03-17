@@ -15,13 +15,11 @@ public class ConversationsController : ControllerBase
 { 
     private readonly ILogger<ConversationsController> _logger;
     private readonly IConversationsService _conversationsService;
-    private readonly IAuditService _auditService;
 
-    public ConversationsController(ILogger<ConversationsController> logger, IConversationsService conversationsService, IAuditService auditService)
+    public ConversationsController(ILogger<ConversationsController> logger, IConversationsService conversationsService)
     {
         _logger = logger;
         _conversationsService = conversationsService;
-        _auditService = auditService;
     }
     
     [HttpGet("me")]
@@ -37,8 +35,6 @@ public class ConversationsController : ControllerBase
             }
             
             var conversations = await _conversationsService.GetConversationsByUser(accountId);
-            
-            await _auditService.Log(accountId, "GetConversations", "User requested conversations", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
             
             return Ok(APIResult<IEnumerable<ConversationDTO>>.Success(data: conversations));
         }

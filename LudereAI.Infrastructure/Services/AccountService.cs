@@ -11,18 +11,15 @@ public class AccountService : IAccountService
 {
     private readonly ILogger<IAccountService> _logger;
     private readonly IAccountRepository _accountRepository;
-    private readonly IStripeService _stripeService;
     private readonly IAccountFactory _accountFactory;
     private readonly IMapper _mapper;
 
     public AccountService(ILogger<IAccountService> logger,
         IAccountRepository accountRepository,
-        IStripeService stripeService,
         IMapper mapper, IAccountFactory accountFactory)
     {
         _logger = logger;
         _accountRepository = accountRepository;
-        _stripeService = stripeService;
         _mapper = mapper;
         _accountFactory = accountFactory;
     }
@@ -62,9 +59,7 @@ public class AccountService : IAccountService
         
         if (!await _accountRepository.Create(account)) return null;
         
-        await _stripeService.CreateOrSyncAccount(account);
         return _mapper.Map<AccountDTO>(account);
-
     }
 
     public async Task<AccountDTO?> CreateGuestAccount(GuestDTO dto)
@@ -85,9 +80,7 @@ public class AccountService : IAccountService
 
         if (!await _accountRepository.Update(account)) return null;
         
-        await _stripeService.CreateOrSyncAccount(account);
         return _mapper.Map<AccountDTO>(account);
-
     }
 
     public async Task<bool> DeleteAccount(string id)

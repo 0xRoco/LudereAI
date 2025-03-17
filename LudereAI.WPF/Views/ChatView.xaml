@@ -111,21 +111,6 @@
                                         VerticalAlignment="Center" />
                                 </StackPanel>
 
-                                <TextBlock TextAlignment="Center"
-                                           Visibility="{Binding CurrentAccount.IsSubscribed, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                           Style="{StaticResource MaterialDesignBody2TextBlock}"
-                                           Opacity="0.7"
-                                           Margin="0,0,0,12">
-                                    <TextBlock.Text>
-                                        <MultiBinding StringFormat="✨ {0} ({1})">
-                                            <Binding Path="CurrentAccount.Subscription.PlanFriendlyName" Mode="TwoWay"
-                                                     FallbackValue="$Plan$" />
-                                            <Binding Path="CurrentAccount.Subscription.StatusFriendlyName"
-                                                     Mode="TwoWay" FallbackValue="$Status$" />
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-
                                 <!-- New Chat Button -->
                                 <Button Command="{Binding NewChatCommand}"
                                         Style="{StaticResource MaterialDesignFlatButton}"
@@ -177,19 +162,6 @@
                         <materialDesign:Card Grid.Row="2" Margin="16 0 16 16" UniformCornerRadius="12">
                             <Expander Header="Settings" Margin="0">
                                 <StackPanel Margin="16 8 16 16">
-                                    <Button
-                                        Margin="20 5"
-                                        Command="{Binding ManageSubscriptionCommand}"
-                                        Style="{StaticResource MaterialDesignOutlinedButton}"
-                                        Visibility="{Binding CanShowSubscriptionOptions, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                        Height="30"
-                                        materialDesign:ButtonAssist.CornerRadius="8"
-                                        BorderThickness="1.5">
-                                        <StackPanel Orientation="Horizontal">
-                                            <materialDesign:PackIcon Kind="ExternalLink" Margin="0,0,8,0" />
-                                            <TextBlock Text="Manage Subscription" FontWeight="Medium" />
-                                        </StackPanel>
-                                    </Button>
 
                                     <Button
                                         Margin="20 5"
