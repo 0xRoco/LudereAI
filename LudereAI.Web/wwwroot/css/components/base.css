@@ -1,0 +1,47 @@
+﻿html {
+    font-size: var(--font-size-base);
+    position: relative;
+    min-height: 100%;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: var(--font-size-lg);
+    }
+}
+
+body {
+    background: linear-gradient(to bottom right, var(--color-bg-dark), #1a1a1a);
+    color: var(--color-text);
+    font-family: 'Poppins', sans-serif;
+    font-feature-settings: "salt", "ss01";
+    margin: 0 0 60px 0;
+    padding: 0;
+    letter-spacing: -0.01em;
+}
+
+.container {
+    max-width: 1140px;
+}
+
+.navbar,
+footer {
+    background-color: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar {
+    width: 14px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-dark);
+}

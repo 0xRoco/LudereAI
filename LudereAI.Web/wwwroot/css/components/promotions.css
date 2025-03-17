@@ -1,0 +1,42 @@
+﻿
+.promotion-section {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+    border-radius: 16px;
+    padding: 2.5rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+}
+
+.promotion-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+    animation: shimmerEffect 3s infinite;
+}
+
+.promotion-section .offer-code {
+    background: rgba(255, 255, 255, 0.15);
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+}
+
+.promotion-section .countdown {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+@keyframes shimmerEffect {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}

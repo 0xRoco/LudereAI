@@ -6,8 +6,10 @@
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>LudereAI - @ViewData["Title"]</title>
-    <meta name="description" content="Level up your game with LudereAI, the context-aware AI gaming assistant. Get real-time insights, personalized advice, and a friendly AI companion."/>
-    <meta name="keywords" content="AI gaming assistant, context-aware gaming, game AI, gaming companion, game help, improve gaming skills, PC gaming, game strategy, AI voice chat"/>
+    <meta name="description"
+          content="Level up your game with LudereAI, the context-aware AI gaming assistant. Get real-time insights, personalized advice, and a friendly AI companion."/>
+    <meta name="keywords"
+          content="AI gaming assistant, context-aware gaming, game AI, gaming companion, game help, improve gaming skills, PC gaming, game strategy, AI voice chat"/>
     <meta name="author" content="LudereAI"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap">
@@ -33,8 +35,8 @@
                     <ul class="navbar-nav align-items-center">
                         <li class="nav-item"><a class="nav-link" href="/#features">Features</a></li>
                         <li class="nav-item"><a class="nav-link" href="/#pricing">Pricing</a></li>
-                        <li class="nav-item"><a class="nav-link" asp-controller="Download" asp-action="Index">Download</a></li>
-
+                        <li class="nav-item"><a class="nav-link" asp-controller="Download"
+                                                asp-action="Index">Download</a></li>
                         @if (User.Identity is { IsAuthenticated: true })
                         {
                             <li class="nav-item dropdown">
@@ -66,12 +68,36 @@
                                     </li>
                                 </ul>
                             </li>
+                            
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle text-danger" href="#" id="userDropdown" role="button"
+                                       data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="fas fa-user-shield me-1"></i>
+                                        Admin Panel
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                        <li><a class="dropdown-item text-danger" asp-controller="Admin" asp-action="Index">
+                                            <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        </a></li>
+                                        <li><a class="dropdown-item text-danger" asp-controller="Admin" asp-action="Users">
+                                            <i class="fas fa-users me-2"></i>Users
+                                        </a></li>
+                                        <li><a class="dropdown-item text-danger" asp-controller="Admin" asp-action="Waitlist">
+                                            <i class="fas fa-user-clock me-2"></i>Waitlist
+                                        </a></li>
+                                    </ul>
+                                </li>
+                            }
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a></li>
+                            <li class="nav-item"><a class="nav-link" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
                             <li class="nav-item ms-2">
-                                <a class="nav-link btn btn-primary text-white px-3" asp-controller="Auth" asp-action="SignUp">
+                                <a class="nav-link btn btn-primary text-white px-3" asp-controller="Auth"
+                                   asp-action="SignUp">
                                     <i class="fas fa-user-plus me-1"></i>Sign Up
                                 </a>
                             </li>

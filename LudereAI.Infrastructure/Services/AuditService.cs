@@ -19,17 +19,31 @@ public class AuditService : IAuditService
 
     public async Task<IEnumerable<AuditLog>> GetLogs()
     {
-        return await _context.AuditLogs.AsNoTracking().ToListAsync();
+        return await _context.AuditLogs
+            .AsNoTracking()
+            .Include(a => a.Account)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<AuditLog>> GetLogs(string accountId)
     {
-        return await _context.AuditLogs.AsNoTracking().Where(x => x.AccountId == accountId).ToListAsync();
+        return await _context.AuditLogs
+            .AsNoTracking()
+            .Where(x => x.AccountId == accountId)
+            .Include(a => a.Account)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task<IEnumerable<AuditLog>> GetLogs(string accountId, string action)
     {
-        return await _context.AuditLogs.AsNoTracking().Where(x => x.AccountId == accountId && x.Action == action).ToListAsync();
+        return await _context.AuditLogs
+            .AsNoTracking()
+            .Where(x => x.AccountId == accountId && x.Action == action)
+            .Include(a => a.Account)
+            .OrderByDescending(x => x.CreatedAt)
+            .ToListAsync();
     }
 
     public async Task Log(string accountId, string action, string message, string ipAddress)

@@ -2,50 +2,338 @@
     ViewData["Title"] = "User Management";
 }
 
-
-<div class="container-fluid px-4">
-<h1 class="mt-4">User Management</h1>
-<div class="card mb-4">
-    <div class="card-header">
-        <i class="fas fa-users me-1"></i>
-        Users
+<div class="container-fluid px-4 admin-dashboard">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4">User Management</h1>
+        <div>
+            <a href="@Url.Action("Index", "Admin")" class="btn btn-outline-secondary me-2">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newUserModal">
+                <i class="fas fa-user-plus me-2"></i>Add New User
+            </button>
+        </div>
     </div>
-    <div class="card-body">
-        <table class="table table-bordered table-hover" id="usersTable">
-            <thead>
-            <tr>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Created</th>
-                <th>Roles</th>
-                <th>Actions</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td>Username</td>
-                <td>Email</td>
-                <td>
-                                <span class="badge bg-success">
-                                    Active
-                                </span>
-                </td>
-                <td>@DateTime.UtcNow.ToString("g")</td>
-                <td>@string.Join(", ", "User, Admin")</td>
-                <td>
-                    <a href="@Url.Action("Edit", new { id = 123 })" class="btn btn-primary btn-sm">
-                        <i class="fas fa-edit"></i>
-                    </a>
-                    <form method="post" action="@Url.Action("ToggleStatus", new { id = 123})" style="display: inline;">
-                        <button type="submit" class="btn btn-success btn-sm">
-                            <i class="fas fa-ban"></i>
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+
+    <div class="hover-card mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <i class="fas fa-users me-1"></i>
+                Users
+            </div>
+            <div class="d-flex">
+                <div class="input-group me-2" style="width: 250px;">
+                    <input type="text" id="userSearchInput" class="form-control" placeholder="Search users...">
+                    <button class="btn btn-outline-primary" type="button" id="userSearchButton">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+                <select class="form-select me-2" id="statusFilter" style="width: 150px;">
+                    <option value="all">All Statuses</option>
+                    <option value="active">Active</option>
+                    <option value="suspended">Suspended</option>
+                    <option value="pending">Pending</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered table-dark table-hover" id="usersTable">
+                    <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Roles</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    
+                    <tr>
+                        <td>johndoe</td>
+                        <td>john.doe@example.com</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                        <td>@DateTime.UtcNow.AddDays(-30).ToString("g")</td>
+                        <td>User</td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="1">
+                                    <i class="fas fa-edit text-white"></i>
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm me-1" data-user-id="1">
+                                    <i class="fas fa-ban text-white"></i>
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm me-1" data-user-id="1">
+                                    <i class="fas fa-check text-white"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm me-1" data-bs-toggle="modal" data-bs-target="#deleteUserModal" data-user-id="1">
+                                    <i class="fas fa-trash-alt text-white"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>janedoe</td>
+                        <td>jane.doe@example.com</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                        <td>@DateTime.UtcNow.AddDays(-25).ToString("g")</td>
+                        <td>User, Admin</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="2">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm suspend-user-btn" data-user-id="2">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm delete-user-btn" data-user-id="2">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>mikebrown</td>
+                        <td>mike.brown@example.com</td>
+                        <td>
+                            <span class="badge bg-warning">
+                                Pending
+                            </span>
+                        </td>
+                        <td>@DateTime.UtcNow.AddDays(-5).ToString("g")</td>
+                        <td>User</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="3">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm activate-user-btn" data-user-id="3">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm delete-user-btn" data-user-id="3">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>sarahsmith</td>
+                        <td>sarah.smith@example.com</td>
+                        <td>
+                            <span class="badge bg-danger">
+                                Suspended
+                            </span>
+                        </td>
+                        <td>@DateTime.UtcNow.AddDays(-60).ToString("g")</td>
+                        <td>User</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="4">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-success btn-sm activate-user-btn" data-user-id="4">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm delete-user-btn" data-user-id="4">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>robwilson</td>
+                        <td>rob.wilson@example.com</td>
+                        <td>
+                            <span class="badge bg-success">
+                                Active
+                            </span>
+                        </td>
+                        <td>@DateTime.UtcNow.AddDays(-15).ToString("g")</td>
+                        <td>User</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editUserModal" data-user-id="5">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button type="button" class="btn btn-warning btn-sm suspend-user-btn" data-user-id="5">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm delete-user-btn" data-user-id="5">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <div>
+                    <span class="text-muted text-white">Showing 1 to 5 of 5 entries</span>
+                </div>
+                <nav aria-label="User pagination">
+                    <ul class="pagination">
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
     </div>
 </div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-labelledby="editUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editUserModalLabel">Edit User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body ">
+                <form id="editUserForm">
+                    <input type="hidden" id="editUserId" value="">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="editFirstName" class="form-label">First Name</label>
+                            <input type="text" id="editFirstName" name="firstName" class="form-control"
+                                   required placeholder="Enter first name" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="editLastName" class="form-label">Last Name</label>
+                            <input type="text" id="editLastName" name="lastName" class="form-control"
+                                   required placeholder="Enter last name"/>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="editUsername" value="johndoe">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="editEmail" value="john.doe@example.com">
+                    </div>
+                    <div class="mb-3">
+                        <label for="editStatus" class="form-label">Status</label>
+                        <select class="form-select" id="editStatus">
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="editRole">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveUserChanges">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New User Modal -->
+<div class="modal fade" id="newUserModal" tabindex="-1" aria-labelledby="newUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="newUserModalLabel">Add New User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="newUserForm">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="newFirstName" class="form-label">First Name</label>
+                            <input type="text" id="newFirstName" name="firstName" class="form-control"
+                                   required placeholder="Enter first name" />
+                        </div>
+                        <div class="col-md-6">
+                            <label for="newLastName" class="form-label">Last Name</label>
+                            <input type="text" id="newLastName" name="lastName" class="form-control"
+                                   required placeholder="Enter last name"/>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="newUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="newUsername" placeholder="Enter username">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="newEmail" placeholder="Enter email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="newPassword" placeholder="Enter password">
+                    </div>
+                    <div class="mb-3">
+                        <label for="newStatus" class="form-label">Status</label>
+                        <select class="form-select" id="newStatus">
+                            <option value="active">Active</option>
+                            <option value="suspended">Suspended</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="newRole">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="createNewUser">Create User</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteUserModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to delete this user? This action cannot be undone.</p>
+                <input type="hidden" id="deleteUserId" value="">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteUser">Delete User</button>
+            </div>
+        </div>
+    </div>
 </div>

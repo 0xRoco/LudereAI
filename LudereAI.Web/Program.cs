@@ -134,6 +134,9 @@ void RegisterDependencies(WebApplicationBuilder builder)
     builder.Services.AddTransient<IAPIClient, APIClient>();
     builder.Services.AddTransient<IAuthGateway, AuthGateway>();
     builder.Services.AddTransient<IWaitlistGateway, WaitlistGateway>();
+    builder.Services.AddTransient<IAccountGateway, AccountGateway>();
+    builder.Services.AddTransient<IAuditGateway, AuditGateway>();
+    builder.Services.AddTransient<IAdminDashboardService, AdminDashboardService>();
     
     Log.Information("Dependencies registered");
 }

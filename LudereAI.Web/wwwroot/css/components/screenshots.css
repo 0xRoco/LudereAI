@@ -1,0 +1,23 @@
+﻿
+.screenshots-section img {
+    transition: transform var(--transition-default), box-shadow var(--transition-default);
+    cursor: pointer;
+    border: 2px solid var(--glass-border);
+}
+
+.screenshots-section img:hover {
+    transform: scale(1.02) translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 123, 255, 0.2);
+}
+
+.screenshots-section .ratio {
+    margin-top: 3rem;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow-lg);
+    border: 2px solid var(--glass-border);
+}
+
+.screenshots-section iframe {
+    background: var(--color-bg-secondary);
+}
