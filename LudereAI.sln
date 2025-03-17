@@ -12,8 +12,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.WPF", "LudereAI.WP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Shared", "LudereAI.Shared\LudereAI.Shared.csproj", "{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Web", "LudereAI.Web\LudereAI.Web.csproj", "{3186AF14-FC94-4099-8EDE-F489F7AF8258}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -44,10 +42,6 @@ Global
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3186AF14-FC94-4099-8EDE-F489F7AF8258}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3186AF14-FC94-4099-8EDE-F489F7AF8258}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3186AF14-FC94-4099-8EDE-F489F7AF8258}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3186AF14-FC94-4099-8EDE-F489F7AF8258}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

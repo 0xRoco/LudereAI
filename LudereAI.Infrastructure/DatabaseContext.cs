@@ -14,11 +14,7 @@ public sealed class DatabaseContext : DbContext
     public DbSet<Message> Messages => Set<Message>();
     public DbSet<Screenshot> Screenshots => Set<Screenshot>();
     public DbSet<Conversation> Conversations => Set<Conversation>();
-    public DbSet<UserSubscription> Subscriptions => Set<UserSubscription>();
-    public DbSet<AuditLog> AuditLogs => Set<AuditLog>();
     public DbSet<AccountUsage> AccountUsages => Set<AccountUsage>();
-    
-    public DbSet<WaitlistEntry> WaitlistEntries => Set<WaitlistEntry>();
     
     
     public DatabaseContext(DbContextOptions<DatabaseContext> options, ILogger<DatabaseContext> logger) : base(options)
@@ -33,12 +29,7 @@ public sealed class DatabaseContext : DbContext
             .WithOne(c => c.Account)
             .HasForeignKey(c => c.AccountId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<Account>()
-            .HasOne(e => e.Subscription)
-            .WithOne()
-            .HasForeignKey<UserSubscription>(s => s.AccountId)
-            .OnDelete(DeleteBehavior.Cascade);
+        
 
         modelBuilder.Entity<Conversation>()
             .HasMany(e => e.Messages)
@@ -50,12 +41,6 @@ public sealed class DatabaseContext : DbContext
             .HasOne(m => m.Screenshot)
             .WithOne(s => s.Message)
             .HasForeignKey<Screenshot>(s => s.MessageId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        modelBuilder.Entity<AuditLog>()
-            .HasOne(a => a.Account)
-            .WithMany()
-            .HasForeignKey(a => a.AccountId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

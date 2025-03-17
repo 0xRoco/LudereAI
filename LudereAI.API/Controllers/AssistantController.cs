@@ -1,6 +1,5 @@
 ﻿using System.Net;
 using System.Security.Claims;
-using LudereAI.API.Core;
 using LudereAI.Application.Interfaces.Repositories;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Domain.Models.Chat;
@@ -19,23 +18,18 @@ public class AssistantController : ControllerBase
     private readonly IOpenAIService _openAIService;
     private readonly IConversationRepository _conversationRepository;
     private readonly IAccountRepository _accountRepository;
-    private readonly IAccountUsageService _accountUsageService;
-    private readonly IAuditService _auditService;
 
     public AssistantController(ILogger<AssistantController> logger,
         IOpenAIService openAIService, 
         IConversationRepository conversationRepository, 
-        IAccountRepository accountRepository, IAccountUsageService accountUsageService, IAuditService auditService)
+        IAccountRepository accountRepository)
     {
         _logger = logger;
         _openAIService = openAIService;
         _conversationRepository = conversationRepository;
         _accountRepository = accountRepository;
-        _accountUsageService = accountUsageService;
-        _auditService = auditService;
     }
 
-    [RequireFeature("Assistant.Enabled")]
     [HttpPost]
     public async Task<ActionResult<APIResult<MessageDTO>>> SendMessage([FromBody] AssistantRequestDTO requestDto)
     {
@@ -50,34 +44,11 @@ public class AssistantController : ControllerBase
             if (validationResult.Result != null || string.IsNullOrWhiteSpace(validationResult.AccountId))
                 return validationResult.Result
                        ?? Unauthorized(APIResult<MessageDTO>.Error(HttpStatusCode.Unauthorized, "Invalid user"));
-            
-            if (!await _accountUsageService.CanSendMessage(validationResult.AccountId))
-            {
-                return BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Daily message limit reached", new MessageDTO
-                {
-                    Content = "Daily message limit reached",
-                    Role = MessageRole.System,
-                }));
-            }
-
-            if (!string.IsNullOrWhiteSpace(requestDto.Screenshot))
-            {
-                if (!await _accountUsageService.CanAnalyseScreenshot(validationResult.AccountId))
-                {
-                    return BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Daily screenshot analysis limit reached", new MessageDTO()
-                    {
-                        Content = "Daily screenshot analysis limit reached",
-                        Role = MessageRole.System
-                    }));
-                }
-            }
 
             var conversation = await GetOrCreateConversation(requestDto.ConversationId, validationResult.AccountId, requestDto.GameContext);
             if (conversation.Result != null || conversation.Conversation == null) return conversation.Result ?? BadRequest(APIResult<MessageDTO>.Error(HttpStatusCode.BadRequest, "Invalid conversation"));
 
             var response = await _openAIService.SendMessageAsync(conversation.Conversation, requestDto);
-            await _accountUsageService.IncrementUsage(validationResult.AccountId, isMessage: true, isScreenshot: !string.IsNullOrWhiteSpace(requestDto.Screenshot));
-            await _auditService.Log(validationResult.AccountId, "SendMessage","Message sent to assistant", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
             
             _logger.LogInformation("Successfully processed message for conversation {ConversationId}", conversation.Conversation!.Id);
 
@@ -100,7 +71,6 @@ public class AssistantController : ControllerBase
         }
     }
 
-    [RequireFeature("Assistant.GamePredictionEnabled")]
     [HttpPost("PredictGame")]
     public async Task<ActionResult<APIResult<ProcessInfoDTO>>> PredictGame([FromBody] List<ProcessInfoDTO> dtos)
     {

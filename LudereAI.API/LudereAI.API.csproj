@@ -16,15 +16,8 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Minio" Version="6.0.4" />
         <PackageReference Include="MySql.EntityFrameworkCore" Version="9.0.0" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.0.9" />
-        <PackageReference Include="Sentry" Version="5.0.1" />
-        <PackageReference Include="Sentry.AspNet" Version="5.0.1" />
-        <PackageReference Include="Sentry.AspNetCore" Version="5.0.1" />
-        <PackageReference Include="Sentry.EntityFramework" Version="5.0.1" />
-        <PackageReference Include="Sentry.Extensions.Logging" Version="5.0.1" />
-        <PackageReference Include="Sentry.Serilog" Version="5.0.1" />
         <PackageReference Include="Serilog" Version="4.2.0" />
         <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
         <PackageReference Include="Serilog.Enrichers.Environment" Version="3.0.1" />
@@ -32,7 +25,6 @@
         <PackageReference Include="Serilog.Enrichers.Thread" Version="4.0.0" />
         <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-        <PackageReference Include="Stripe.net" Version="47.3.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -49,21 +41,9 @@
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </Content>
       <None Remove="Templates\waitlist-confirm.html" />
-      <Content Include="Templates\waitlist-confirm.html">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <None Remove="Templates\waitlist-invite.html" />
-      <Content Include="Templates\waitlist-invite.html">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <None Remove="Templates\signup-confirm.html" />
-      <Content Include="Templates\signup-confirm.html">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
       <None Remove="Templates\password-reset.html" />
-      <Content Include="Templates\password-reset.html">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </Content>
     </ItemGroup>
 
 </Project>

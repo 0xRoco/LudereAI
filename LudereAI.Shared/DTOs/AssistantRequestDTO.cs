@@ -9,13 +9,6 @@ public class AssistantRequestDTO
     
     public bool TextToSpeechEnabled { get; set; } = true;
     
-    public bool IsScreenshotValid()
-    {
-        if (string.IsNullOrWhiteSpace(Screenshot)) return true;
-        Uri.TryCreate(Screenshot, UriKind.Absolute, out var uri);
-        return uri != null && (uri.Scheme == Uri.UriSchemeHttp || uri.Scheme == Uri.UriSchemeHttps);
-    }
-    
     public bool IsMessageValid()
     {
         return !string.IsNullOrWhiteSpace(Message);

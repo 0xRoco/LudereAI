@@ -7,10 +7,9 @@ public class Screenshot : BaseEntity
 {
     
     [Required]
-    public string Url { get; set; }
+    public string Base64 { get; set; }
     public Message Message { get; set; }
     
-    // Foreign Key
     public string MessageId { get; set; }
 
 }

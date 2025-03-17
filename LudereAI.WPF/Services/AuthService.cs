@@ -90,7 +90,7 @@ public class AuthService(ILogger<IAuthService> logger,
     {
         try
         {
-            await apiClient.PostAsync<bool>("Auth/Logout", new {});
+            //await apiClient.PostAsync<bool>("Auth/Logout", new {});
 
             await gameService.StopScanning();
             sessionService.RemoveCurrentAccount();
