@@ -1,0 +1,79 @@
+﻿
+.hover-card, .pricing-card {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    border-radius: 16px;
+    transition: all var(--transition-default);
+}
+
+.hover-card:hover, .pricing-card:hover {
+    transform: translateY(-8px);
+    box-shadow:
+            0 0 0 1px rgba(0, 123, 255, 0.1),
+            0 20px 40px -20px rgba(0, 123, 255, 0.3);
+}
+
+.hover-card i {
+    color: var(--color-primary);
+}
+
+.hover-card h4 {
+    margin-top: 15px;
+    font-weight: 600;
+}
+
+.hover-card p {
+    font-size: 0.95rem;
+}
+
+.pricing-card {
+    background: var(--color-bg-secondary);
+    border: none;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+    min-height: 450px;
+    transition: transform var(--transition-default), box-shadow var(--transition-default);
+    overflow: hidden;
+}
+
+.pricing-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.pricing-card .badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 0.75rem;
+    padding: 5px 10px;
+}
+
+.pricing-card ul li {
+    padding: 5px 0;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.pricing-card ul li:last-child {
+    border-bottom: none;
+}
+
+.pricing-card.shine {
+    position: relative;
+    overflow: hidden;
+}
+
+.pricing-card.shine::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -150%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+    transform: skewX(-20deg);
+    animation: shine 5s ease-in-out infinite;
+}

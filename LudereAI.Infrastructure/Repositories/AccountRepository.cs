@@ -8,6 +8,7 @@ namespace LudereAI.Infrastructure.Repositories;
 
 public class AccountRepository(ILogger<IAccountRepository> logger,
     DatabaseContext context,
+    ISubscriptionRepository subscriptionRepository,
     IConversationRepository conversationRepository) : IAccountRepository
 {
     public async Task<IEnumerable<Account>> GetAll()
@@ -20,8 +21,9 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         var account =  await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Id == accountId);
         if (account == null) return null;
 
-        var conversations = await GetAccountData(account.Id);
+        var (conversations, subscription) = await GetAccountData(accountId);
         account.Conversations = conversations.ToList();
+        account.Subscription = subscription;
         
         return account;
     }
@@ -31,8 +33,10 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Username == username);
         if (account == null) return null;
         
-        var conversations = await GetAccountData(account.Id);
+        var (conversations, subscription) = await GetAccountData(account.Id);
         account.Conversations = conversations.ToList();
+        account.Subscription = subscription;
+        
         return account;
     }
 
@@ -41,8 +45,9 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         var account = await context.Accounts.AsNoTracking().FirstOrDefaultAsync(a => a.Email == email);
         if (account == null) return null;
         
-        var conversations = await GetAccountData(account.Id);
+        var (conversations, subscription) = await GetAccountData(account.Id);
         account.Conversations = conversations.ToList();
+        account.Subscription = subscription;
         
         return account;
     }
@@ -100,10 +105,11 @@ public class AccountRepository(ILogger<IAccountRepository> logger,
         return await Update(account);
     }
 
-    private async Task<IEnumerable<Conversation>> GetAccountData(string accountId)
+    private async Task<(IEnumerable<Conversation> conversations, UserSubscription? subscription)> GetAccountData(string accountId)
     {
         var conversations = await conversationRepository.GetByAccountId(accountId);
+        var subscription = await subscriptionRepository.GetByAccountId(accountId);
 
-        return conversations;
+        return (conversations, subscription);
     }
 }

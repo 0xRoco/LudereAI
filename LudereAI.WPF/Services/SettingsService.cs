@@ -75,6 +75,7 @@ public class SettingsService : ISettingsService
             ApplyKeyBindSettings(settings.KeyBind);
             SetAutoStart(settings.General.AutoStartWithWindows, settings.General.MinimizeToTray);
             ApplyTheme(settings.General.Theme);
+            ApplyPrivacySettings(settings.Privacy);
             
             _chatService.SetAutoCaptureScreenshots(settings.GameIntegration.AutoCaptureScreenshots);
             _chatService.SetTextToSpeechEnabled(settings.General.TextToSpeechEnabled);
@@ -135,6 +136,41 @@ public class SettingsService : ISettingsService
         }
     }
     
+    private void ApplyPrivacySettings(PrivacySettings privacySettings)
+    {
+        try
+        {
+            if (privacySettings.AllowUsageStatistics)
+            {
+                if (!SentrySdk.IsEnabled && Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") == Environments.Production)
+                {
+                    SentrySdk.Init(options =>
+                    {
+                        options.Dsn = "https://4e80dccaaa4336baf45d556d80cebbc6@o4506301335142400.ingest.us.sentry.io/4508719728558080";
+                        options.Debug = false;
+                        options.TracesSampleRate = 0.5;
+                        options.ProfilesSampleRate = 0.5;
+                        options.IsGlobalModeEnabled = true;
+                        options.SendDefaultPii = true;
+                        options.AttachStacktrace = true;
+                        options.AutoSessionTracking = true;
+                        options.Environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT") ?? Environments.Production;
+            
+                        options.AddIntegration(new ProfilingIntegration());
+                        
+                    });
+                }
+            }
+            else
+            {
+                SentrySdk.Close();
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to apply privacy settings");
+        }
+    }
 
     private void ApplyKeyBindSettings(KeyBindSettings settings)
     {

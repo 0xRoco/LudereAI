@@ -19,5 +19,8 @@ public class DomainMappingProfile : Profile
         
         CreateMap<Message, MessageDTO>();
         CreateMap<MessageDTO, Message>();
+        
+        CreateMap<UserSubscription, UserSubscriptionDTO>();
+        CreateMap<UserSubscriptionDTO, UserSubscription>();
     }
 }

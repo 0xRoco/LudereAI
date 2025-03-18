@@ -1,0 +1,56 @@
+﻿@model PricingPlanViewModel
+
+<div class="col-lg-@Model.ColumnWidth mb-4" data-aos="fade-up" data-aos-delay="@Model.AnimationDelay">
+    <div class="pricing-card @(Model.IsShine ? "shine" : "") text-center">
+        @if (!string.IsNullOrEmpty(Model.Badge))
+        {
+            <span class="badge @Model.BadgeClass">@Model.Badge</span>
+        }
+        <h3 class="mt-4">@Model.Title</h3>
+        <p class="small">@Model.Description</p>
+        <p class="fs-2">
+            <strong>@Model.Price</strong><br/>
+            @if (!string.IsNullOrEmpty(Model.PriceInterval))
+            {
+                <small>per @Model.PriceInterval</small>
+            }
+        </p>
+        <hr class="my-3" style="border-color: #007bff;">
+        <ul class="list-unstyled">
+            @foreach (var feature in Model.Features)
+            {
+                <li><i class="fas fa-check text-success"></i> @feature</li>
+            }
+        </ul>
+        
+        @if (Model.ShowCTAButton)
+        {
+            @if (Model.IsFormSubmit)
+            {
+                <form asp-controller="@Model.FormController"
+                      asp-action="@Model.FormAction"
+                      method="@Model.FormMethod">
+
+                    @foreach (var param in Model.FormParameters)
+                    {
+                        <input type="hidden" name="@param.Key" value="@param.Value" />
+                    }
+
+                    <button type="submit"
+                            class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+                            @(Model.IsDisabled ? "disabled" : "")>
+                        @Model.CtaText
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a href="@Model.CtaLink"
+                   class="btn btn-primary @(Model.IsPulse ? "btn-pulse" : "") w-100 mt-3"
+                   @(Model.IsDisabled ? "disabled" : "")>
+                    @Model.CtaText
+                </a>
+            }
+        }
+    </div>
+</div>

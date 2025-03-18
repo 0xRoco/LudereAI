@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.Shared.DTOs;
@@ -120,6 +121,7 @@ public partial class ChatViewModel : ObservableObject
         !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
 
     public bool CanWriteMessage => !IsAssistantThinking;
+    public bool CanShowSubscriptionOptions => CurrentAccount is { IsSubscribed: true, Tier: not SubscriptionTier.Guest};
 
     [RelayCommand]
     private void NewChat()
@@ -178,6 +180,10 @@ public partial class ChatViewModel : ObservableObject
 
     [RelayCommand]
     private async Task Logout() => await _authService.LogoutAsync();
+
+    [RelayCommand]
+    private void ManageSubscription() => Process.Start (new ProcessStartInfo("https://staging.LudereAI.com/Account") { UseShellExecute = true });
+
     
     [RelayCommand]
     private void ShowOverlay() => _overlayService.ShowOverlay();

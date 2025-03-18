@@ -12,9 +12,12 @@ public class AccountDTO
     public string DeviceId { get; set; }
     public AccountRole Role { get; set; }
     public AccountStatus Status { get; set; }
+    public SubscriptionTier Tier { get; set; }
     public DateTime CreatedAt { get; set; }
     
     public string FullName => $"{FirstName} {LastName}".Trim();
+    public bool IsSubscribed => Tier is SubscriptionTier.Pro or SubscriptionTier.Ultimate;
     
+    public UserSubscriptionDTO? Subscription { get; set; }
     public IEnumerable<ConversationDTO> Conversations { get; set; }
 }

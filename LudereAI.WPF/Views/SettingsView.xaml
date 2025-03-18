@@ -187,6 +187,21 @@
                                               Text="Minimize to System Tray" 
                                               Margin="12 0 0 0" />
                                 </Grid>
+                                
+                                <!-- Check for Updates Automatically -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.General.AutoCheckForUpdates}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Check for Updates Automatically" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
@@ -317,7 +332,6 @@
 
                                                     <!-- Change Button -->
                                                     <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
-                                                            IsEnabled="False"
                                                             Content="{Binding RecordButtonText}"
                                                             Command="{Binding StartRecordingCommand}"
                                                             Style="{StaticResource MaterialDesignOutlinedButton}"
@@ -349,15 +363,66 @@
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
                                 
-                                <TextBlock Text="Note: Keybind changing is disabled in this version." 
-                                            Style="{StaticResource SettingsHelpTextStyle}"
-                                            Margin="0 0 0 0" />
+                                <TextBlock Text="Note: Global hotkeys work even when the app doesn't have focus" 
+                                          Style="{StaticResource SettingsHelpTextStyle}"
+                                          Margin="0 0 0 0" />
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
-            
+
+            <!-- PRIVACY TAB -->
+            <TabItem Header="Privacy">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="24">
+                        <TextBlock Text="Data Settings"
+                                   Style="{StaticResource SettingsSectionHeaderStyle}" />
+
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Privacy Options"
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
+                                
+                                <!-- Allow anonymous data collection -->
+                                <Grid Margin="0 12 0 12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.Privacy.AllowUsageStatistics}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <TextBlock Grid.Column="1" VerticalAlignment="Center" 
+                                              Text="Allow anonymous data collection" 
+                                              Margin="12 0 0 0" />
+                                </Grid>
+                                
+                                <!-- Allow storage of captured screenshots -->
+                                <Grid Margin="0 12 0 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    
+                                    <ToggleButton IsChecked="{Binding Settings.Privacy.AllowScreenshotStorage}"
+                                                 Style="{StaticResource SettingsToggleStyle}" />
+                                    
+                                    <StackPanel Grid.Column="1" Margin="12 0 0 0">
+                                        <TextBlock Text="Allow storage of captured screenshots" />
+                                        <TextBlock Text="Used for analysis and model training to improve the assistant"
+                                                  Style="{StaticResource SettingsHelpTextStyle}" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
             <!-- ABOUT TAB -->
             <TabItem Header="About">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
@@ -374,10 +439,15 @@
                                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                HorizontalAlignment="Center" 
                                                Margin="0 0 0 4" />
-                                    <TextBlock Text="Made with ❤️"
+                                    <TextBlock Text="Version 1.0.0" 
                                                HorizontalAlignment="Center" 
                                                Foreground="{DynamicResource MaterialDesignBodyLight}" />
                                 </StackPanel>
+                                
+                                <TextBlock Text="© 2023 Ludere AI. All rights reserved."
+                                          HorizontalAlignment="Center"
+                                          Margin="0 24 0 0"
+                                          Foreground="{DynamicResource MaterialDesignBodyLight}" />
                             </StackPanel>
                         </materialDesign:Card>
                     </StackPanel>

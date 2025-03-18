@@ -25,30 +25,70 @@
           "outputTemplate": "[{Timestamp:yyyy-MM-dd HH:mm:ss.fff}] [{Level:u3}] [{ThreadId}] [{MachineName}:{ProcessId}] [{SourceContext}] {Message:lj}{NewLine}{Exception}",
           "theme": "Serilog.Sinks.SystemConsole.Themes.AnsiConsoleTheme::Literate, Serilog.Sinks.Console"
         }
+      },
+      {
+        "Name": "Sentry",
+        "Args": {
+          "InitializeSdk": false
+        }
       }
     ]
   },
   "ConnectionStrings": {
-    "DefaultConnection": "server=localhost;port=3306;database=LudereAI;user=YOUR_USERNAME;password=YOUR_PASSWORD;"
+    "DefaultConnection": "server=IP_ADDRESS;port=3306;database=ludereai;user=USERNAME;password=PASSWORD;"
   },
   "Jwt": {
-    "SecretKey": "YourSuperSecretKeyHereThatIsAtLeast32Bytes",
+    "SecretKey": "SECRET_KEY",
     "Issuer": "LudereAI",
     "Audience": "LudereAI.API"
   },
-  "AI":{
-    "Name": "OpenAI",
-    "Model": "MODEL_NAME",
-    "ApiKey": "YOUR_API_KEY_HERE",
-    "Endpoint": "https://api.openai.com/v1/"
+  "Sentry": {
+    "Dsn": "SENTRY_DSN"
   },
-  "ElevenLaps": {
-    "ApiKey": "YOUR_API_KEY",
-    "Voice": "VOICE_ID"
+  "DeepSeek": {
+    "ApiKey": "DEEPSEEK_API_KEY",
+    "Model": "deepseek-chat"
   },
-  "Piper": {
-    "ApiKey": "YOUR_API_KEY",
-    "Voice": "VOICE_ID",
-    "Endpoint": "PIPER_ENDPOINT"
+  "OpenAI": {
+    "ApiKey": "OPENAI_API_KEY",
+    "Model": "gpt-4o-mini"
+  },
+  "ElevenLaps":{
+    "ApiKey": "ELEVEN_LAPS_API_KEY",
+    "Voice": "asDeXBMC8hUkhqqL7agO"
+  },
+  "Stripe":{
+    "SecretKey": "STRIPE_SECRET_KEY",
+    "PublishableKey": "STRIPE_PUBLISHABLE_KEY",
+    "WebhookSecret": "STRIPE_WEBHOOK_SECRET",
+    "ProMonthlyId": "STRIP_PRO_MONTHLY_ID",
+    "ProYearlyId": "STRIP_PRO_YEARLY_ID",
+    "UltimateMonthlyId": "STRIP_ULTIMATE_MONTHLY_ID",
+    "UltimateYearlyId": "STRIP_ULTIMATE_YEARLY_ID",
+    "SuccessUrl": "STRIP_SUCCESS_URL",
+    "CancelUrl": "STRIP_CANCEL_URL"
+  },
+  "Minio": {
+    "Endpoint": "MINIO_ENDPOINT",
+    "SecretKey": "MINIO_SECRET",
+    "AccessKey": "MINIO_ACCESS"
+  },
+  "FeatureFlags":{
+    "MaintenanceMode": false,
+    "Auth": {
+      "SignupEnabled": true,
+      "LoginEnabled": true,
+      "GuestEnabled": true
+    },
+    "Subscription":{
+      "NewSubscriptionsEnabled": true,
+      "CancellationsEnabled": true,
+      "RenewalsEnabled": true,
+      "UpgradesEnabled": true
+    },
+    "Assistant":{
+      "Enabled": true,
+      "VoiceGenerationEnabled": true
+    }
   }
 }

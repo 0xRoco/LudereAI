@@ -68,11 +68,23 @@ public class SessionService(ILogger<ISessionService> logger) : ISessionService
     public void SetCurrentAccount(AccountDTO account)
     {
         CurrentAccount = account;
+        
+        SentrySdk.ConfigureScope(scope =>
+        {
+            scope.User.Id = account.Id;
+            scope.User.Username = account.Username;
+        });
     }
 
     public void RemoveCurrentAccount()
     {
         CurrentAccount = null;
+        
+        SentrySdk.ConfigureScope(scope =>
+        {
+            scope.User.Id = "anonymous";
+            scope.User.Username = "anonymous";
+        });
     }
 
     private async Task SaveToken(string token)

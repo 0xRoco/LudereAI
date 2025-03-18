@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using LudereAI.API.Core;
 using LudereAI.Application.Interfaces.Services;
 using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
@@ -17,15 +18,18 @@ public class AuthController : ControllerBase
     private readonly IAuthService _authService;
     private readonly IAccountService _accountService;
     private readonly IGuestService _guestService;
+    private readonly IAuditService _auditService;
     
-    public AuthController(ILogger<AuthController> logger, IAuthService authService, IAccountService accountService, IGuestService guestService)
+    public AuthController(ILogger<AuthController> logger, IAuthService authService, IAccountService accountService, IGuestService guestService, IAuditService auditService)
     {
         _logger = logger;
         _authService = authService;
         _accountService = accountService;
         _guestService = guestService;
+        _auditService = auditService;
     }
 
+    [RequireFeature("Auth.LoginEnabled")]
     [HttpPost("[action]")]
     public async Task<ActionResult<APIResult<LoginResponseDTO>>> Login([FromBody] LoginDTO dto)
     {
@@ -42,14 +46,17 @@ public class AuthController : ControllerBase
                 return BadRequest(APIResult<LoginResponseDTO>.Error(HttpStatusCode.BadRequest, "Account not found"));
             }
             
+            await _auditService.Log(account.Id, "Login", "Login attempt", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
 
             var loggedIn = await _authService.LoginAsync(dto);
             if (!loggedIn)
             {
+                await _auditService.Log(account.Id, "Login", "Invalid credentials", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
                 return BadRequest(APIResult<LoginResponseDTO>.Error(HttpStatusCode.Unauthorized,
                     "Invalid username or password"));
             }
             
+            await _auditService.Log(account.Id, "Login", "Login successful", HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
             
             var token = _authService.GenerateJWT(account);
 
@@ -70,6 +77,7 @@ public class AuthController : ControllerBase
     }
     
     [HttpPost("[action]")]
+    [RequireFeature("Auth.GuestEnabled")]
     public async Task<ActionResult<APIResult<LoginResponseDTO>>> GuestLogin([FromBody] GuestDTO dto)
     {
         try
@@ -104,10 +112,13 @@ public class AuthController : ControllerBase
                     DeviceId = account.DeviceId,
                     Role = AccountRole.User,
                     Status = AccountStatus.Active,
+                    Tier = SubscriptionTier.Guest,
                     CreatedAt = account.CreatedAt,
                 }
             };
             
+            await _auditService.Log(account.Id, "GuestLogin", "Guest login successful", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+
             await _accountService.UpdateLastLogin(account.Id);
             return Ok(APIResult<LoginResponseDTO>.Success(data: response));
         }
@@ -118,6 +129,7 @@ public class AuthController : ControllerBase
         }
     }
 
+    [RequireFeature("Auth.SignUpEnabled")]
     [HttpPost("[action]")]
     public async Task<ActionResult<APIResult<bool>>> SignUp([FromBody] SignUpDTO dto)
     {
@@ -136,6 +148,8 @@ public class AuthController : ControllerBase
             
             var account = await _accountService.GetAccountByUsername(dto.Username);
             
+            await _auditService.Log(account?.Id ?? dto.Username, "SignUp", "Account created", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+
             return Ok(APIResult<bool>.Success(data: true));
         }catch (Exception ex)
         {
@@ -152,6 +166,8 @@ public class AuthController : ControllerBase
         if (string.IsNullOrWhiteSpace(accountId)) return BadRequest(APIResult<bool>.Error(HttpStatusCode.Unauthorized, "Invalid token"));
         var account = await _accountService.GetAccount(accountId);
         if (account == null) return BadRequest(APIResult<bool>.Error(HttpStatusCode.Unauthorized, "Account not found"));
+        
+        await _auditService.Log(account.Id, "Logout", "User logged out", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
         
         return Ok(APIResult<bool>.Success(data: true));
     }
@@ -174,6 +190,8 @@ public class AuthController : ControllerBase
             
             if (account == null) return BadRequest(APIResult<AccountDTO>.Error(HttpStatusCode.Unauthorized, "Account not found"));
             
+            //await _auditService.Log(account.Id, "ValidateToken", "Token validated", ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
+        
             return Ok(APIResult<AccountDTO>.Success(data: account));
         }
         catch (Exception ex)

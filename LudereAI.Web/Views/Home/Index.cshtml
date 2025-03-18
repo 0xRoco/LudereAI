@@ -1,0 +1,434 @@
+﻿@{
+    ViewData["Title"] = "AI Gaming Assistant | Context-Aware Game Companion";
+}
+
+<header class="site-header">
+    <div class="hero-section text-center text-white" data-aos="zoom-in">
+        <div class="overlay"></div>
+        <div class="container d-flex flex-column justify-content-center align-items-center content" style="height: 100%;">
+            <h1 class="display-6 fw-bold">AI-Powered Context Aware Gaming Assistance</h1>
+            <p class="lead">The AI Gaming Assistant That Understands Your Game: Get Real-Time Insights and a Friendly Companion.</p>
+            <a href="/Signup" class="btn btn-light btn-lg btn-pulse">Get Started</a>
+        </div>
+    </div>
+</header>
+
+<div class="container py-5">
+    <section id="features" class="py-5" data-aos="fade-up">
+        <div class="container text-center">
+            <h2 class="mb-4">Features</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="100">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-brain  fa-3x mb-3 feature-icon"></i>
+                        <h4>Context Aware</h4>
+                        <p>Just like a good friend watching over your shoulder, LudereAI understands exactly what's happening in your game</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="200">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-bolt fa-3x mb-3 feature-icon"></i>
+                        <h4>Real-Time Analysis</h4>
+                        <p>Instant feedback and suggestions to improve your gameplay as events unfold</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="300">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-microphone-alt fa-3x mb-3 feature-icon"></i>
+                        <h4>Voice Interaction</h4>
+                        <p>Hands-free interaction with your AI assistant while staying focused on the game</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="400">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-lightbulb  fa-3x mb-3 feature-icon"></i>
+                        <h4>Smart Suggestions</h4>
+                        <p>Intelligent recommendations tailored to your current game situation</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="500">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-gamepad  fa-3x mb-3 feature-icon"></i>
+                        <h4>Multi-Game Support</h4>
+                        <p>Works seamlessly across your favorite PC games</p>
+                    </div>
+                </div>
+
+                <div class="col-md-4 mb-4" data-aos="flip-left" data-aos-delay="600">
+                    <div class="hover-card p-4">
+                        <i class="fas fa-shield-alt fa-3x mb-3 feature-icon"></i>
+                        <h4>Privacy Protected</h4>
+                        <p>Full control over your data with customizable privacy settings</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section id="screenshots" class="screenshots-section py-5" data-aos="fade-up">
+        <div class="container text-center">
+            <h2 class="mb-4">Preview</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4 beta-feature" data-aos="fade-right">
+                    <img src="images/preview1.jpg" alt="LudereAI with Kingdom Come Deliverance II" width="1859" height="879"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal"
+                         data-bs-target="#imageModal">
+                    <label class="text-primary">LudereAI with Kingdom Come Deliverance II</label>
+                </div>
+                <div class="col-md-4 mb-4 beta-feature" data-aos="fade-up">
+                    <img src="images/preview2.jpg" alt="LudereAI with The Elder Scrolls III: Morrowind" width="1742" height="1013"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal"
+                         data-bs-target="#imageModal">
+                    <label class="text-primary">LudereAI with The Elder Scrolls III: Morrowind</label>
+                </div>
+                <div class="col-md-4 mb-4 beta-feature" data-aos="fade-left">
+                    <img src="images/preview3.jpg" alt="LudereAI with Baldur's Gate III" width="2420" height="1442"
+                         class="img-fluid rounded shadow clickable-screenshot" data-bs-toggle="modal"
+                         data-bs-target="#imageModal">
+                    <label class="text-primary">LudereAI with Baldur's Gate III</label>
+                </div>
+            </div>
+            @*<div class="ratio ratio-16x9">
+                <iframe src="https://www.youtube.com/embed/VIDEO_ID" title="Product Demo" allowfullscreen></iframe>
+            </div>*@
+        </div>
+    </section>
+
+    <div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-xxl">
+            <div class="modal-content bg-dark">
+                <div class="modal-body p-0">
+                    <img src="" id="modalImage" class="img-fluid w-100" alt="Expanded Screenshot">
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+    <section id="promotions" class="promotion-section my-5" data-aos="zoom-in" style="background: #007bff;">
+        <div class="container text-center">
+            <h3 class="display-6 fw-bold mb-3">🎉 Limited Time Offer!</h3>
+            <p class="lead mb-3">Use code <span class="offer-code">FIRST30</span> for <span class="fw-bold text-warning">30% off</span> your first month!</p>
+            <p class="small mb-0">Join now and unlock premium features at a discounted price.</p>
+            <p class="small mb-0">*Use the code at checkout, valid for new users only.</p>
+            <div id="countdown" class="countdown"></div>
+            <form method="get">
+                <button id="promotionButton" asp-controller="Auth" asp-action="SignUp" class="btn btn-claim btn-lg mt-3">
+                    <i class="fas fa-gift me-2"></i>Get 30% Off - Sign Up!
+                </button>
+            </form>
+        </div>
+        <script>
+            function startCountdown(duration) {
+                let timer = duration, days, hours, minutes, seconds;
+                let countdownDisplay = document.getElementById('countdown');
+                let promotionContainer = document.getElementById('promotionButton');
+
+                let interval = setInterval(() => {
+                    days = Math.floor(timer / (24 * 60 * 60));
+                    hours = Math.floor((timer % (24 * 60 * 60)) / (60 * 60));
+                    minutes = Math.floor((timer % (60 * 60)) / 60);
+                    seconds = timer % 60;
+
+                    countdownDisplay.textContent = `Offer expires in: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+
+                    if (--timer < 0) {
+                        clearInterval(interval);
+                        countdownDisplay.textContent = "Offer expired!";
+                        promotionContainer.style.display = 'none';
+                    }
+                }, 1000);
+            }
+            startCountdown(0.5 * 24 * 60 * 60);
+        </script>
+
+    </section>
+
+    @*
+<span class="badge bg-secondary">New</span>
+<span class="badge bg-info">Popular</span>
+<span class="badge bg-danger">Most Popular</span>
+<span class="badge bg-warning text-dark">Recommended</span>
+<span class="badge bg-success">Best Value</span>
+*@
+
+
+
+    <section id="pricing" class="py-5" data-aos="fade-up">
+        <div class="container">
+            <h2 class="text-center mb-4">Plans & Pricing</h2>
+            <ul class="nav nav-tabs justify-content-center mb-4" id="pricingTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link active" id="monthly-tab" data-bs-toggle="tab" href="#monthly" role="tab" aria-controls="monthly" aria-selected="true">Monthly</a>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <a class="nav-link" id="yearly-tab" data-bs-toggle="tab" href="#yearly" role="tab" aria-controls="yearly" aria-selected="false">Yearly</a>
+                </li>
+            </ul>
+            <div class="tab-content" id="pricingTabContent">
+                <div class="tab-pane fade show active" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
+                    <div class="row justify-content-center">
+
+                        @if (User.Identity is { IsAuthenticated: false })
+                        {
+                            @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                            {
+                                Title = "Guest",
+                                Description = "Try out your new AI gaming friend!",
+                                Price = "Free",
+                                Features =
+                                [
+                                    "100 Messages Per Day",
+                                    "3 Screenshots Per Day",
+                                    "1 Session History",
+                                ],
+                                ShowCTAButton = true,
+                                CtaText = "Download Now",
+                                CtaLink = "/Download",
+                                AnimationDelay = 0
+                            })
+                        }
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Casual",
+                            Description = "Your everyday gaming buddy, for free",
+                            Price = "Free",
+                            Features =
+                            [
+                                "500 Messages Per Day",
+                                "10 Screenshots Per Day",
+                                "3 Sessions History",
+                            ],
+                            ShowCTAButton = User.Identity is { IsAuthenticated: false },
+                            CtaText = "Get Started",
+                            CtaLink = "/Signup",
+                            AnimationDelay = 100
+                        })
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Pro",
+                            Description = "Level up your game with your dedicated AI companion",
+                            Price = "$12.99",
+                            PriceInterval = "month",
+                            Features =
+                            [
+                                "Unlimited Messages",
+                                "250 Screenshots Per Day",
+                                "Auto-Screenshot Analysis",
+                                "AI Voice Responses (Basic TTS)",
+                                "7 Sessions History",
+                                //"1 Custom AI Persona",
+                                "Priority Response Speed"
+                            ],
+                            ShowCTAButton = true,
+                            CtaText = "Subscribe",
+                            CtaLink = "/Signup",
+                            AnimationDelay = 200,
+                            Badge = "Recommended",
+                            BadgeClass = "bg-warning text-dark",
+                            IsShine = true,
+                            IsPulse = true
+                        })
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Ultimate",
+                            Description = "For the ultimate gaming experience with your AI friend - everything you need to dominate",
+                            Price = "$19.99",
+                            PriceInterval = "month",
+                            Features =
+                            [
+                                "All Pro Tier Features",
+                                "Unlimited Screenshots",
+                                "Real-Time Analysis",
+                                "Two-Way Voice Chat (Premium TTS)",
+                                //"5 Custom AI Personas + Shared Personas",
+                                "Unlimited Session Archive + Search",
+                                //"Hardware Optimization Tips",
+                                "Priority 24/7 Support",
+                                "Early Access to New Features"
+                            ],
+                            ShowCTAButton = true,
+                            CtaText = "Subscribe",
+                            CtaLink = "/Signup",
+                            AnimationDelay = 300,
+                            Badge = "Most Popular",
+                            BadgeClass = "bg-danger",
+                            IsShine =  true
+                        })
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="yearly" role="tabpanel" aria-labelledby="yearly-tab">
+                    <div class="row justify-content-center">
+
+                        @if (User.Identity is { IsAuthenticated: false })
+                        {
+                            @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                            {
+                                Title = "Guest",
+                                Description = "Try out your new AI gaming friend!",
+                                Price = "Free",
+                                Features =
+                                [
+                                    "100 Messages Per Day",
+                                    "3 Screenshots Per Day",
+                                    "1 Session History",
+                                    "Manual Screenshots"
+                                ],
+                                ShowCTAButton = true,
+                                CtaText = "Download Now",
+                                CtaLink = "/Download",
+                                AnimationDelay = 0
+                            })
+                        }
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Casual",
+                            Description = "Your everyday gaming buddy, for free",
+                            Price = "Free",
+                            Features =
+                            [
+                                "500 Messages Per Day",
+                                "10 Screenshots Per Day",
+                                "3 Sessions History",
+                                "Manual Screenshots"
+                            ],
+                            ShowCTAButton = User.Identity is { IsAuthenticated: false },
+                            CtaText = "Get Started",
+                            CtaLink = "/Signup",
+                            AnimationDelay = 100
+                        })
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Pro",
+                            Description = "Level up your game with your dedicated AI companion",
+                            Price = "$129.99",
+                            PriceInterval = "year",
+                            Features =
+                            [
+                                "Unlimited Messages",
+                                "Unlimited Screenshots",
+                                "Auto-Screenshot Analysis",
+                                "AI Voice Responses (Basic TTS)",
+                                "7 Sessions History",
+                                //"1 Custom AI Persona",
+                                "Priority Response Speed"
+                            ],
+                            ShowCTAButton = true,
+                            CtaText = "Subscribe",
+                            CtaLink = User.Identity is { IsAuthenticated: true } ? "/Signup" : "/Account",
+                            AnimationDelay = 200,
+                            Badge = "Recommended",
+                            BadgeClass = "bg-warning text-dark",
+                            IsShine = true,
+                            IsPulse = true
+                        })
+
+                        @await Html.PartialAsync("_PricingPlan", new PricingPlanViewModel
+                        {
+                            Title = "Ultimate",
+                            Description = "For the ultimate gaming experience with your AI friend - everything you need to dominate",
+                            Price = "$199.99",
+                            PriceInterval = "year",
+                            Features =
+                            [
+                                "All Pro Tier Features",
+                                "Real-Time Analysis",
+                                "Two-Way Voice Chat (Premium TTS)",
+                                //"5 Custom AI Personas + Shared Personas",
+                                "Unlimited Session Archive + Search",
+                                "Hardware Optimization Tips",
+                                "Priority 24/7 Support",
+                                "Early Access to New Features"
+                            ],
+                            ShowCTAButton = true,
+                            CtaText = "Subscribe",
+                            CtaLink = User.Identity is { IsAuthenticated: true } ? "/Signup" : "/Account",
+                            AnimationDelay = 300,
+                            Badge = "Most Popular",
+                            BadgeClass = "bg-danger",
+                            IsShine = true
+                        })
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="faq" class="py-5" data-aos="fade-up">
+        <div class="container">
+            <h2 class="text-center mb-5">Frequently Asked Questions</h2>
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="accordion custom-accordion" id="faqAccordion">
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="100">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    <i class="fas fa-rocket me-2 text-primary"></i>
+                                    How do I get started?
+                                </button>
+                            </h2>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Simply sign up for an account and download the LudereAI client. Follow the setup instructions, and you'll be ready to go in no time!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="200">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    <i class="fas fa-shield-alt me-2 text-primary"></i>
+                                    Is this AI safe to use in competitive games?
+                                </button>
+                            </h2>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Yes! LudereAI is designed to purely act as your gaming friend and companion. It does not interact with the game in any way that would be considered cheating or unfair.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="300">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    <i class="fas fa-gamepad me-2 text-primary"></i>
+                                    Does this work with all games?
+                                </button>
+                            </h2>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    LudereAI supports a wide range of PC games and its knowledge is current up to $YEAR$. For newer games, results may vary.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item shadow-sm mb-3 border-0 rounded bg-dark" data-aos="fade-up" data-aos-delay="400">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                                    <i class="fas fa-tv me-2 text-primary"></i>
+                                    Can I use this on my console?
+                                </button>
+                            </h2>
+                            <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    LudereAI is currently only available for Windows PC. We are working on expanding to other platforms in the future.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</div>

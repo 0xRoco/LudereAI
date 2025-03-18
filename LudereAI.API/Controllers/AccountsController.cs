@@ -15,12 +15,14 @@ public class AccountsController : ControllerBase
 {
     private readonly ILogger<AccountsController> _logger;
     private readonly IAccountService _accountService;
+    private readonly IAuditService _auditService;
 
     public AccountsController(ILogger<AccountsController> logger,
-        IAccountService accountService)
+        IAccountService accountService, IAuditService auditService)
     {
         _logger = logger;
         _accountService = accountService;
+        _auditService = auditService;
     }
 
     [HttpGet]
@@ -80,6 +82,8 @@ public class AccountsController : ControllerBase
 
             if (account != null)
             {
+                await _auditService.Log(account.Id, "GetCurrentAccount", "Account retrieved", 
+                    ipAddress: HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown");
                 return Ok(APIResult<AccountDTO>.Success(data: account));
             }
             
