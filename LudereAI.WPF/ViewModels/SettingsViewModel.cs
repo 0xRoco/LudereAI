@@ -2,11 +2,15 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LudereAI.Core.Interfaces.Services;
+using LudereAI.Shared.Enums;
+using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Models;
+using LudereAI.WPF.Services;
 using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
-using KeyBinding = LudereAI.WPF.Models.KeyBinding;
+using KeyBinding = LudereAI.Shared.Models.KeyBinding;
 
 namespace LudereAI.WPF.ViewModels;
 
@@ -25,13 +29,23 @@ public partial class SettingsViewModel : ObservableObject
     
     public List<string> Themes { get; } = new() { "Light", "Dark" , "System" };
     public List<string> Languages { get; } = new() { "English" };
+    
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
+    {
+        _logger = logger;
+        _settingsService = settingsService;
+        _inputService = inputService;
+        _navigationService = navigationService;
+
+        _ = Load();
+    }
 
     [RelayCommand]
     private void Save()
     {
         Settings.KeyBind.Hotkeys = KeyBindings.Select(kb => kb.ToKeyBinding()).ToList();
         
-        _settingsService.SaveSettings(Settings);
+        _settingsService.SaveSettings(Settings, CancellationToken.None);
         
         _navigationService.CloseWindow<SettingsView>();
     }
@@ -43,9 +57,9 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Load() 
+    private async Task Load() 
     {
-        Settings = _settingsService.LoadSettings();
+        Settings = await _settingsService.LoadSettings();
         LoadKeyBindings();
     }
     
@@ -57,44 +71,5 @@ public partial class SettingsViewModel : ObservableObject
         {
             KeyBindings.Add(new KeyBindingItemViewModel(keyBinding, _inputService));
         }
-    }
-    
-    
-    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
-    {
-        _logger = logger;
-        _settingsService = settingsService;
-        _inputService = inputService;
-        _navigationService = navigationService;
-
-        Settings = _settingsService.LoadSettings();
-        
-        // Ensure defaults if no hotkeys exist
-        if (Settings.KeyBind.Hotkeys.Count == 0)
-        {
-            Settings.KeyBind.Hotkeys = new List<KeyBinding>
-            {
-                new()
-                {
-                    Id = "ToggleOverlay", 
-                    Name = "Toggle Overlay", 
-                    Key = Key.O, 
-                    Modifiers = ModifierKeys.Alt,
-                    IsGlobal = true, 
-                    IsEnabled = true
-                },
-                new()
-                {
-                    Id = "NewChat", 
-                    Name = "New Chat", 
-                    Key = Key.N, 
-                    Modifiers = ModifierKeys.Control, 
-                    IsGlobal = true,
-                    IsEnabled = true
-                }
-            };
-        }
-        
-        LoadKeyBindings();
     }
 }

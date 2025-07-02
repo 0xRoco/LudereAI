@@ -1,8 +1,12 @@
 ﻿using System.Collections.ObjectModel;
+using AutoMapper;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LudereAI.Core.Entities.Chat;
+using LudereAI.Core.Interfaces.Services;
 using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
+using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Models;
 using LudereAI.WPF.Views;
@@ -13,73 +17,66 @@ namespace LudereAI.WPF.ViewModels;
 public partial class ChatViewModel : ObservableObject
 {
     private readonly ILogger<ChatViewModel> _logger;
-    private readonly IAssistantService _assistantService;
+    private IMapper _mapper;
     private readonly IChatService _chatService;
-    private readonly IAuthService _authService;
-    private readonly IAudioPlaybackService _audioPlaybackService;
+    private readonly IAudioService _audioService;
     private readonly INavigationService _navigationService;
     private readonly IOverlayService _overlayService;
     private readonly IGameService _gameService;
     private readonly IInputService _inputService;
+
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage), nameof(CanWriteMessage))]
+    private bool _isAssistantThinking;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private string _currentMessage = string.Empty;
+    [ObservableProperty] private ObservableCollection<ConversationModel> _conversations;
+    [ObservableProperty] private ObservableCollection<MessageModel> _messages;
+    [ObservableProperty] private ConversationModel? _currentConversation = new();
+    [ObservableProperty] private ObservableCollection<WindowInfo> _windows;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private WindowInfo? _manualWindow;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private string _manualGameName = string.Empty;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private WindowInfo? _predicatedWindow;
+    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
+    private bool _isOverrideEnabled;
     
-    private event Action<Conversation> OnConversationChanged; 
+    public bool CanSendMessage => !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
+    public bool CanWriteMessage => !IsAssistantThinking;
     public event Action OnMessageUpdated;
     
-
     public ChatViewModel(
         ILogger<ChatViewModel> logger,
-        ISessionService sessionService,
-        IAuthService authService, 
-        IAudioPlaybackService audioPlaybackService, 
+        IAudioService audioService, 
         IChatService chatService, 
-        IAssistantService assistantService, 
         INavigationService navigationService, 
-        IGameService gameService, IOverlayService overlayService, IInputService inputService)
+        IGameService gameService, IOverlayService overlayService, IInputService inputService, IMapper mapper)
     {
         _logger = logger;
-        _authService = authService;
-        _audioPlaybackService = audioPlaybackService;
+        _audioService = audioService;
         _chatService = chatService;
-        _assistantService = assistantService;
         _navigationService = navigationService;
         _gameService = gameService;
         _overlayService = overlayService;
         _inputService = inputService;
+        _mapper = mapper;
 
-        if (sessionService.CurrentAccount != null)
-        {
-            CurrentAccount = sessionService.CurrentAccount;
-        }
-        else
-        { 
-            _authService.LogoutAsync();
-        }
-        
-        
         Conversations = [];
         Windows = [];
         
         _gameService.OnGameStarted += OnGameStarted;
         _gameService.OnGameStopped += OnGameStopped;
-        
-        OnConversationChanged += c =>
-        {
-            Messages = new ObservableCollection<Message>(c.Messages);
-            OnMessageUpdated?.Invoke();
-        };
+
 
         _ = RefreshConversations();
-        
         _ = _gameService.StartScanning();
         
         Init();
     }
 
-    public void Init()
+    private void Init()
     {
-        
-        _inputService.Start();
-
         _inputService.OnHotkeyPressed += binding =>
         {
             switch (binding.Id)
@@ -90,41 +87,10 @@ public partial class ChatViewModel : ObservableObject
         };
     }
 
-    // Observable properties
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage), nameof(CanWriteMessage))]
-    private bool _isAssistantThinking;
-
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private string _currentMessage = string.Empty;
-    
-    [ObservableProperty] private AccountDTO _currentAccount;
-
-    [ObservableProperty] private ObservableCollection<Conversation> _conversations;
-    [ObservableProperty] private ObservableCollection<Message> _messages;
-
-    [ObservableProperty] private Conversation? _currentConversation = new();
-    
-    [ObservableProperty] private ObservableCollection<WindowInfo> _windows;
-
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private WindowInfo? _manualWindow;
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private string _manualGameName = string.Empty;
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private WindowInfo? _predicatedWindow;
-
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
-    private bool _isOverrideEnabled;
-    
-    public bool CanSendMessage =>
-        !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
-
-    public bool CanWriteMessage => !IsAssistantThinking;
-
     [RelayCommand]
     private void NewChat()
     {
-        CurrentConversation = new Conversation();
+        CurrentConversation = new ConversationModel();
         CurrentMessage = string.Empty;
     }
 
@@ -150,34 +116,17 @@ public partial class ChatViewModel : ObservableObject
     [RelayCommand]
     private async Task PredictGame()
     {
-        RefreshProcesses();
-        
-        var processes = Windows.Select(w => new ProcessInfoDTO
+        var gameWindow = await _gameService.GetGameWindow();
+        if (gameWindow == null)
         {
-            ProcessId = w.ProcessId,
-            ProcessName= w.ProcessName,
-            Title = w.Title
-        }).ToList();
-        
-        var predicatedProcess = await _assistantService.PredictGame(processes);
-        
-        if (predicatedProcess != null)
-        {
-            var process = Windows.FirstOrDefault(w => w.ProcessId == predicatedProcess.ProcessId);
-            if (process != null)
-            {
-                process.Title = predicatedProcess.Title;
-
-                PredicatedWindow = process;
-                return;
-            }
+            AddSystemMessage("No game window detected. Please start a game and try again.");
+            PredicatedWindow = null;
+            return;
         }
         
-        PredicatedWindow = null;
+        PredicatedWindow = gameWindow;
     }
-
-    [RelayCommand]
-    private async Task Logout() => await _authService.LogoutAsync();
+    
     
     [RelayCommand]
     private void ShowOverlay() => _overlayService.ShowOverlay();
@@ -197,7 +146,7 @@ public partial class ChatViewModel : ObservableObject
         {
             IsAssistantThinking = true;
             AddMessage(message, MessageRole.User);
-
+            
             var result = await _chatService.SendMessage(new ChatRequest
             {
                 Message = message,
@@ -210,16 +159,14 @@ public partial class ChatViewModel : ObservableObject
 
             if (result is { IsSuccessful: true, Value: not null })
             {
-                var response = result.Value;
+                var conversation = result.Value;
                 
-                await RefreshConversations();
-                CurrentConversation = Conversations.FirstOrDefault(c => c.Id == response.ConversationId);
-                if (CurrentConversation == null)
-                {
-                    AddMessage(response.Content, MessageRole.Assistant);
-                }
+                UpdateConversationState(conversation);
+
+                var lastMessage = CurrentConversation?.Messages.LastOrDefault(m => m.Role == MessageRole.Assistant);
                 
-                await _audioPlaybackService.PlayAudioAsync(response.Audio);
+                if (lastMessage?.Audio.Length > 0)
+                    await _audioService.PlayAudioAsync(lastMessage.Audio);
             }
             else
             {
@@ -242,46 +189,55 @@ public partial class ChatViewModel : ObservableObject
         }finally
         {
             IsAssistantThinking = false;
+            OnMessageUpdated?.Invoke();
         }
     }
-
     
     private async Task RefreshConversations()
     {
         try
         {
-            var conversationsAsync = await _chatService.GetConversations();
-            Conversations = new ObservableCollection<Conversation>(conversationsAsync);
-            
-            Conversations.ToList().ForEach(c => c.CreatedAt = c.CreatedAt.ToLocalTime());
-            Conversations.ToList().ForEach(c => c.UpdatedAt = c.UpdatedAt.ToLocalTime());
+            var conversationEntities = await _chatService.GetConversations();
+            var uiConversations = _mapper.Map<IEnumerable<ConversationModel>>(conversationEntities);
+            Conversations = new ObservableCollection<ConversationModel>(uiConversations);
+
+            if (CurrentConversation == null || string.IsNullOrWhiteSpace(CurrentConversation.Id))
+            {
+                CurrentConversation = Conversations.FirstOrDefault();
+            }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to refresh conversations.");
         }
     }
-
-    partial void OnCurrentConversationChanged(Conversation? value)
+    
+    private void UpdateConversationState(Conversation conversation)
     {
-        if (value == null) return;
-        
-        CurrentConversation = value;
-        CurrentConversation.Messages.ToList().ForEach(m=>m.CreatedAt = m.CreatedAt.ToLocalTime());
-        OnConversationChanged.Invoke(CurrentConversation);
-    }
-
-    partial void OnConversationsChanged(ObservableCollection<Conversation> value)
-    {
-        if (CurrentConversation == null && value.Count > 0)
+        var conversationModel = _mapper.Map<ConversationModel>(conversation);
+        var existingConversation = Conversations.FirstOrDefault(c => c.Id == conversationModel.Id);
+        if (existingConversation != null)
         {
-            CurrentConversation = value.First();
+            var index = Conversations.IndexOf(existingConversation);
+            Conversations[index] = conversationModel;
         }
+        else
+        {
+            Conversations.Insert(0, conversationModel);
+        }
+        
+        conversationModel.Messages.ToList().ForEach(m => m.CreatedAt = m.CreatedAt.ToLocalTime());
+        CurrentConversation = conversationModel;
     }
+    
+    private void AddMessage(string content, MessageRole role) => AddMessage(new MessageModel { Content = content, Role = role });
 
-    private void AddMessage(string content, MessageRole role) =>
-        CurrentConversation?.AddMessage(new Message { Content = content, Role = role });
-
+    private void AddMessage(MessageModel message)
+    {
+        Messages.Add(message);
+        OnMessageUpdated?.Invoke();
+    }
+    
     private void AddSystemMessage(string content) =>
         AddMessage(content, MessageRole.System);
     
@@ -293,5 +249,28 @@ public partial class ChatViewModel : ObservableObject
     private void OnGameStopped(WindowInfo gameWindow)
     {
         PredicatedWindow = null;
+    }
+    
+    partial void OnCurrentConversationChanged(ConversationModel? value)
+    {
+        if (value == null)
+        {
+            Messages = [];
+        }
+        else
+        {
+            value.Messages.ToList().ForEach(m => m.CreatedAt = m.CreatedAt.ToLocalTime());
+            Messages = new ObservableCollection<MessageModel>(value.Messages);
+        }
+        
+        OnMessageUpdated?.Invoke();
+    }
+
+    partial void OnConversationsChanged(ObservableCollection<ConversationModel> value)
+    {
+        if (CurrentConversation == null && value.Count > 0)
+        {
+            CurrentConversation = value.First();
+        }
     }
 }

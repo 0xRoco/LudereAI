@@ -1,13 +1,9 @@
-﻿using System.Diagnostics;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Runtime.InteropServices;
-using System.Text;
-using LudereAI.Shared;
+using LudereAI.Core.Interfaces.Services;
 using LudereAI.WPF.Infrastructure;
-using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.Models;
 using Microsoft.Extensions.Logging;
 using Encoder = System.Drawing.Imaging.Encoder;
 
@@ -33,7 +29,32 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
         var bmp = CaptureWindow(handle, rect);
         return ResizeImage(bmp, TargetWidth, TargetHeight);
     }
+    public void SaveScreenshot(IntPtr handle, string path)
+    {
+        try
+        {
+            using var screenshot = TakeScreenshot(handle);
+            var outputPath = Path.ChangeExtension(path, ".jpg");
+            var imageBytes = GetOptimizedImageBytes(screenshot);
+            
+            using var fs = new FileStream(outputPath, FileMode.Create);
+            fs.Write(imageBytes, 0, imageBytes.Length);
+            
+            Console.WriteLine($"Screenshot saved: Size={imageBytes.Length / 1024} KB, Path={outputPath}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to save screenshot to {Path}", path);
+        }
+    }
 
+    public string GetBase64Screenshot(IntPtr handle)
+    {
+        using var screenshot = TakeScreenshot(handle);
+        var imageBytes = GetOptimizedImageBytes(screenshot);
+        return Convert.ToBase64String(imageBytes);
+    }
+    
     private Bitmap CaptureWindow(IntPtr handle, Rect rect)
     {
         var bmp = new Bitmap(rect.Width, rect.Height, PixelFormat.Format32bppArgb);
@@ -62,33 +83,6 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
 
         return bmp; 
     }
-
-    public void SaveScreenshot(IntPtr handle, string path)
-    {
-        try
-        {
-            using var screenshot = TakeScreenshot(handle);
-            var outputPath = Path.ChangeExtension(path, ".jpg");
-            var imageBytes = GetOptimizedImageBytes(screenshot);
-            
-            using var fs = new FileStream(outputPath, FileMode.Create);
-            fs.Write(imageBytes, 0, imageBytes.Length);
-            
-            Console.WriteLine($"Screenshot saved: Size={imageBytes.Length / 1024} KB, Path={outputPath}");
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "Failed to save screenshot to {Path}", path);
-        }
-    }
-
-    public string GetBase64Screenshot(IntPtr handle)
-    {
-        using var screenshot = TakeScreenshot(handle);
-        var imageBytes = GetOptimizedImageBytes(screenshot);
-        return Convert.ToBase64String(imageBytes);
-    }
-
 
     private byte[] GetOptimizedImageBytes(Bitmap image)
     {
@@ -163,10 +157,10 @@ public class ScreenshotService(ILogger<IScreenshotService> logger) : IScreenshot
         return codecs.First(codec => codec.FormatID == ImageFormat.Jpeg.Guid);
     }
     
-    
+    //TODO: Use LibraryImport instead of DllImport attribute for better performance + compatibility
     [DllImport("user32.dll")]
-    public static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
+    private static extern bool GetWindowRect(IntPtr hWnd, out Rect lpRect);
     [DllImport("user32.dll")]
-    public static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
+    private static extern bool PrintWindow(IntPtr hWnd, IntPtr hdcBlt, int nFlags);
     
 }

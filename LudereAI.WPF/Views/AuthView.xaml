@@ -117,14 +117,6 @@
                     </StackPanel>
                 </Grid>
             </materialDesign:TransitionerSlide>
-
-            <materialDesign:TransitionerSlide OpeningEffect="{materialDesign:TransitionEffect Kind=FadeIn}">
-                <infrastructure:ViewLocator ViewType="{x:Type views:LoginView}" />
-            </materialDesign:TransitionerSlide>
-
-            <materialDesign:TransitionerSlide OpeningEffect="{materialDesign:TransitionEffect Kind=FadeIn}">
-                <infrastructure:ViewLocator ViewType="{x:Type views:SignUpView}" />
-            </materialDesign:TransitionerSlide>
         </materialDesign:Transitioner>
     </Grid>
 </Window>

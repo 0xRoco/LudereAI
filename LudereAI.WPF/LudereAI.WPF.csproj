@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>WinExe</OutputType>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net9.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -18,34 +18,40 @@
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
       <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.1" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
-      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.1" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.6" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.6" />
+      <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.6" />
+      <PackageReference Include="Microsoft.Extensions.Logging" Version="9.0.6" />
       <PackageReference Include="NAudio" Version="2.2.1" />
-      <PackageReference Include="Serilog" Version="4.2.0" />
-      <PackageReference Include="Serilog.Extensions" Version="8.0.3" />
+      <PackageReference Include="Serilog" Version="4.3.0" />
+      <PackageReference Include="Serilog.Extensions" Version="8.1.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
-      <PackageReference Include="System.Drawing.Common" Version="9.0.1" />
-      <PackageReference Include="System.Speech" Version="9.0.1" />
+      <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
+      <PackageReference Include="System.Speech" Version="9.0.6" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\LudereAI.Core\LudereAI.Core.csproj" />
+      <ProjectReference Include="..\LudereAI.Services\LudereAI.Services.csproj" />
       <ProjectReference Include="..\LudereAI.Shared\LudereAI.Shared.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <Page Update="Views\AuthView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
       <Page Update="Views\ChatView.xaml">
         <Generator>MSBuild:Compile</Generator>
       </Page>
-      <Page Update="Views\LoginView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
-      <Page Update="Views\SignUpView.xaml">
-        <Generator>MSBuild:Compile</Generator>
-      </Page>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="instructions.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="instructions.txt">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
     </ItemGroup>
 
 </Project>

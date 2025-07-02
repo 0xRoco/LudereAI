@@ -25,8 +25,6 @@ public class ViewLocator : ContentControl
 
     private void UpdateContent()
     {
-        
-        
         var app = (App)Application.Current;
         var services = app.Host?.Services;
         Content = services?.GetService(ViewType);
