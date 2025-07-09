@@ -1,5 +1,5 @@
-﻿using System.Windows.Input;
-using LudereAI.Shared.Models;
+﻿using LudereAI.Shared.Models;
+using KeyBindSettings = LudereAI.Core.Entities.KeyBindSettings;
 
 namespace LudereAI.Core.Interfaces.Services;
 

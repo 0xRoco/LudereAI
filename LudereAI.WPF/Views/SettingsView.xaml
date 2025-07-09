@@ -149,17 +149,38 @@
                                                    Style="{StaticResource SettingsHelpTextStyle}" />
                                     </StackPanel>
                                 </Grid>
+                            </StackPanel>
+                        </materialDesign:Card>
 
-                                <Grid Margin="0 12 0 0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
+                        <materialDesign:Card
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="AI Provider"
+                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
 
-                                    <PasswordBox Grid.Column="0"
-                                                 materialDesign:HintAssist.Hint="Enter your OpenAI API Key"
-                                                 materialDesign:PasswordBoxAssist.Password="{Binding Settings.General.AIApiKey}" />
-                                </Grid>
+                                <ComboBox Margin="5"
+                                          ItemsSource="{Binding AIProviderTemplates}"
+                                          SelectedItem="{Binding SelectedAIProviderTemplate}"
+                                          DisplayMemberPath="ProviderType"
+                                          materialDesign:HintAssist.Hint="Select AI Provider"
+                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+
+                                <PasswordBox Margin="5"
+                                             materialDesign:HintAssist.Hint="API Key"
+                                             Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                             materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" />
+                                
+                                <TextBox Margin="5"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         materialDesign:HintAssist.Hint="Model Name"
+                                         Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"/>
+
+                                <TextBox Margin="5"
+                                         Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                         materialDesign:HintAssist.Hint="Custom API Endpoint URL"
+                                         Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                                         Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}" />
                             </StackPanel>
                         </materialDesign:Card>
 
@@ -387,7 +408,7 @@
                                                Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                                                HorizontalAlignment="Center"
                                                Margin="0 0 0 4" />
-                                    <TextBlock Text="Made with ❤️"
+                                    <TextBlock Text="Made with ❤"
                                                HorizontalAlignment="Center"
                                                Foreground="{DynamicResource MaterialDesignBodyLight}" />
                                 </StackPanel>
@@ -404,7 +425,7 @@
                     Height="40"
                     Width="100"
                     Content="Cancel"
-                    Command="{Binding LoadCommand}" />
+                    Command="{Binding CancelCommand}" />
             <Button Style="{StaticResource MaterialDesignRaisedButton}"
                     Margin="0"
                     Height="40"

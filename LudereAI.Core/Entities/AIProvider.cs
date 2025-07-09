@@ -4,35 +4,23 @@ namespace LudereAI.Core.Entities;
 
 public class AIProvider
 {
-    public AIProviderType ProviderType { get; set; }
-    public string Name { get; set; }
-    public string ApiKey { get; set; }
-    public string BaseUrl { get; set; }
-    public string Model { get; set; }
-    public bool IsEnabled { get; set; }
+    public AIProviderType ProviderType { get; set; } = AIProviderType.OpenAI;
+    public string ApiKey { get; set; }  = string.Empty;
+    public string BaseUrl { get; set; } = string.Empty;
+    public string Model { get; set; } = string.Empty;
 
-    public AIProvider(AIProviderType providerType, string name, string apiKey, string baseUrl, string model, bool isEnabled)
+    public bool IsCustom => ProviderType == AIProviderType.Custom;
+    
+    public bool IsValid()
     {
-        ProviderType = providerType;
-        Name = name;
-        ApiKey = apiKey;
-        BaseUrl = baseUrl;
-        Model = model;
-        IsEnabled = isEnabled;
-    }
-
-    public AIProvider(AIProviderType providerType, string name)
-    {
-        ProviderType = providerType;
-        Name = name;
-        ApiKey = string.Empty;
-        BaseUrl = string.Empty;
-        Model = string.Empty;
-        IsEnabled = false;
+        return ProviderType != 0 && 
+               !string.IsNullOrWhiteSpace(ApiKey) && 
+               !string.IsNullOrWhiteSpace(BaseUrl) && 
+               !string.IsNullOrWhiteSpace(Model);
     }
 
     public override string ToString()
     {
-        return $"{Name}";
+        return $"{ProviderType}";
     }
 }

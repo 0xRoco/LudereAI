@@ -50,6 +50,7 @@ public class GameService : IGameService
     public async Task StartScanning()
     {
         if (_isScanning) return;
+        if (_settingsService.Settings.GameIntegration.Enabled == false) return;
         _isScanning = true;
         
         _logger.LogInformation("Starting game detection service");

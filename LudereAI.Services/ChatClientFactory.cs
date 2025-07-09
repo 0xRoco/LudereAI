@@ -2,6 +2,7 @@
 using ElevenLabs;
 using ElevenLabs.Models;
 using ElevenLabs.TextToSpeech;
+using LudereAI.Core.Entities;
 using LudereAI.Core.Entities.Configs;
 using LudereAI.Core.Interfaces;
 using LudereAI.Core.Interfaces.Services;
@@ -28,15 +29,20 @@ public class ChatClientFactory : IChatClientFactory
         _settingsService = settingsService;
         _config = new AIConfig();
 
-
         _settingsService.OnSettingsApplied += settings =>
         {
-            _config.Name = "Gemini";
-            _config.ApiKey = settings.General.AIApiKey;
-            _config.Model = "gemini-2.5-flash-preview-05-20";
-            _config.Endpoint = "https://generativelanguage.googleapis.com/v1beta/";
+            if (settings.General.AIProvider == null)
+            {
+                _logger.LogWarning("AI Provider is not configured in settings.");
+                return;
+            }
+            
+            _config.Name = settings.General.AIProvider.ToString();
+            _config.ApiKey = settings.General.AIProvider.ApiKey;
+            _config.Model = settings.General.AIProvider.Model;
+            _config.Endpoint = settings.General.AIProvider.BaseUrl;
 
-            _isOpenAI = _config.Name.Equals("openai", StringComparison.CurrentCultureIgnoreCase);
+            _isOpenAI = _config.Name.ToLower().Equals("openai");
         };
     }
 

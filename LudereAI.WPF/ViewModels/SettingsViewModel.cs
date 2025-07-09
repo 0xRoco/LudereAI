@@ -2,7 +2,9 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LudereAI.Core.Entities;
 using LudereAI.Core.Interfaces.Services;
+using LudereAI.Services;
 using LudereAI.Shared.Enums;
 using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
@@ -22,10 +24,16 @@ public partial class SettingsViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     
     [ObservableProperty]
-    private AppSettings _settings;
+    private AppSettings _appSettings;
+    
+    [ObservableProperty]
+    private AIProvider _selectedAIProviderTemplate;
     
     [ObservableProperty]
     private ObservableCollection<KeyBindingItemViewModel> _keyBindings = new();
+    
+    public ObservableCollection<AIProvider> AIProviderTemplates { get; } =
+        new(AIProviderFactory.GetAvailableProviders());
     
     public List<string> Themes { get; } = new() { "Light", "Dark" , "System" };
     public List<string> Languages { get; } = new() { "English" };
@@ -41,25 +49,29 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Save()
+    private async Task Save()
     {
-        Settings.KeyBind.Hotkeys = KeyBindings.Select(kb => kb.ToKeyBinding()).ToList();
+        AppSettings.KeyBind.Hotkeys = KeyBindings.Select(kb => kb.ToKeyBinding()).ToList();
         
-        _settingsService.SaveSettings(Settings, CancellationToken.None);
+        await _settingsService.SaveSettings(AppSettings, CancellationToken.None);
+        _settingsService.ApplySettings(AppSettings);
         
         _navigationService.CloseWindow<SettingsView>();
     }
 
     [RelayCommand]
-    private void Cancel()
+    private async Task Cancel()
     {
+        await Load();
         _navigationService.CloseWindow<SettingsView>();
     }
 
     [RelayCommand]
     private async Task Load() 
     {
-        Settings = await _settingsService.LoadSettings();
+        AppSettings = await _settingsService.LoadSettings();
+        SelectedAIProviderTemplate = AIProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.AIProvider?.ProviderType) 
+                             ?? AIProviderTemplates.First();
         LoadKeyBindings();
     }
     
@@ -67,9 +79,26 @@ public partial class SettingsViewModel : ObservableObject
     {
         KeyBindings.Clear();
         
-        foreach (var keyBinding in Settings.KeyBind.Hotkeys)
+        foreach (var keyBinding in AppSettings.KeyBind.Hotkeys)
         {
             KeyBindings.Add(new KeyBindingItemViewModel(keyBinding, _inputService));
         }
+    }
+
+    partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
+    {
+        if (value == null || AppSettings.General.AIProvider == null) return;
+
+        var apiKey = AppSettings.General.AIProvider.ApiKey;
+        
+        AppSettings.General.AIProvider = new AIProvider
+        {
+            ProviderType = value.ProviderType,
+            BaseUrl = value.BaseUrl,
+            Model = value.Model,
+            ApiKey = apiKey
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
     }
 }

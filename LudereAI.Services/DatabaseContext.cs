@@ -1,5 +1,4 @@
 ﻿using LudereAI.Core.Entities.Chat;
-using LudereAI.Core.Entities.Media;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

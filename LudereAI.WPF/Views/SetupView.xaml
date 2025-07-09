@@ -45,23 +45,34 @@
                                                  Width="50"
                                                  Height="50"
                                                  HorizontalAlignment="Center" />
+                        
                         <TextBlock Text="AI Provider" HorizontalAlignment="Center" 
                                    FontSize="16"
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0,0,0,10" />
-                        <ComboBox ItemsSource="{Binding AIProviders}"
-                                  SelectedItem="{Binding SelectedAIProvider}"
+                                   Margin="5" />
+                        
+                        <ComboBox ItemsSource="{Binding AIProviderTemplates}"
+                                  SelectedItem="{Binding SelectedAIProviderTemplate}"
+                                  DisplayMemberPath="ProviderType"
                                   materialDesign:HintAssist.Hint="Select AI Provider"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                                  Margin="5"/>
 
-                        <PasswordBox Margin="0,15,0,0"
-                                     materialDesign:HintAssist.Hint="API Key"
-                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                        <PasswordBox materialDesign:HintAssist.Hint="API Key"
+                                     Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" 
+                                     Margin="5"/>
+                                
+                        <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Model Name"
+                                 Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"
+                                 Margin="5"/>
 
-                        <TextBox Margin="0,15,0,0"
+                        <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  materialDesign:HintAssist.Hint="Custom API Endpoint URL"
-                                 Text="{Binding AppSettings.General.AICustomEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding IsCustomAIProvider, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                 Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}" 
+                                 Margin="5"/>
                     </StackPanel>
                 </materialDesign:Card>
 

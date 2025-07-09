@@ -1,7 +1,6 @@
 ﻿using LudereAI.Core.Entities;
 using LudereAI.Core.Entities.Chat;
 using LudereAI.Core.Entities.Configs;
-using LudereAI.Core.Entities.Media;
 using LudereAI.Core.Interfaces;
 using LudereAI.Core.Interfaces.Repositories;
 using LudereAI.Shared.DTOs;

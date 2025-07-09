@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
+using LudereAI.Core.Entities;
 using LudereAI.Core.Interfaces.Services;
 using LudereAI.Shared;
-using LudereAI.Shared.Models;
 using MaterialDesignThemes.Wpf;
 using Microsoft.Extensions.Logging;
 using Microsoft.Win32;
@@ -15,6 +15,7 @@ public class SettingsService(ILogger<ISettingsService> logger, IInputService inp
     private readonly string _settingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LudereAI", "settings.dat");
 
     public event Action<AppSettings>? OnSettingsApplied;
+    public AppSettings Settings { get; private set; } = new();
 
     public async Task SaveSettings(AppSettings settings, CancellationToken ct)
     {
@@ -34,8 +35,6 @@ public class SettingsService(ILogger<ISettingsService> logger, IInputService inp
             await File.WriteAllBytesAsync(_settingsPath, encryptedJson, ct);
             
             logger.LogInformation("Settings saved successfully");
-            
-            ApplySettings(settings);
         }catch (Exception ex)
         {
             logger.LogError(ex, "Failed to save settings");
@@ -60,7 +59,7 @@ public class SettingsService(ILogger<ISettingsService> logger, IInputService inp
                 DataProtectionScope.CurrentUser));
             
             var settings = json.FromJson<AppSettings>();
-            return settings ?? new AppSettings();
+            return Settings = settings ?? new AppSettings();
         }
         catch (Exception ex)
         {

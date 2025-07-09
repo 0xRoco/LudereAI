@@ -1,18 +1,19 @@
 ﻿using LudereAI.Shared.Enums;
+using LudereAI.Shared.Models;
 
-namespace LudereAI.Shared.Models;
+namespace LudereAI.Core.Entities;
 
 public class AppSettings
 {
     public GeneralSettings General { get; set; } = new();
     public GameIntegrationSettings GameIntegration { get; set; } = new();
     public KeyBindSettings KeyBind { get; set; } = new();
+    public AdvancedSettings Advanced { get; set; } = new();
 }
 
 public class GeneralSettings
 {
-    public string AIApiKey { get; set; } = string.Empty;
-    public string PiperApiUrl { get; set; } = string.Empty;
+    public AIProvider? AIProvider { get; set; } = new();
     public string Theme { get; set; } = "Dark";
     public string Language { get; set; } = "English";
     public bool TextToSpeechEnabled { get; set; } = true;
@@ -43,4 +44,11 @@ public class KeyBindSettings
             IsGlobal = true, IsEnabled = true
         }
     ];
+}
+
+public class AdvancedSettings
+{
+    public bool FirstTimeSetupCompleted { get; set; } = false;
+    public bool EnableDebugLogging { get; set; } = false;
+    public bool EnableExperimentalFeatures { get; set; } = false;
 }

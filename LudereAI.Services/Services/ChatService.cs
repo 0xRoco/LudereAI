@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using LudereAI.Core.Entities;
 using LudereAI.Core.Entities.Chat;
 using LudereAI.Core.Interfaces.Repositories;
 using LudereAI.Core.Interfaces.Services;

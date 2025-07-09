@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.Core.Entities;
 using LudereAI.Core.Interfaces.Services;
+using LudereAI.Services;
 using LudereAI.Shared.Enums;
 using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
@@ -12,39 +13,57 @@ namespace LudereAI.WPF.ViewModels;
 
 public partial class SetupViewModel : ObservableObject
 {
-    private readonly ISettingsService _settings;
-    private readonly INavigationService _navigation;
+    private readonly ISettingsService _settingsService;
+    private readonly INavigationService _navigationService;
     
-    [ObservableProperty] private AppSettings _appSettings = new();
-
-    public ObservableCollection<AIProvider> AIProviders { get; } = new()
-    {
-        new AIProvider(AIProviderType.OpenAI, "OpenAI"),
-        new AIProvider(AIProviderType.OpenAI, "OpenAI (ChatGPT)"),
-    };
+    [ObservableProperty] 
+    private AppSettings _appSettings = new();
+    
+    [ObservableProperty] 
+    private AIProvider _selectedAIProviderTemplate;
+    
+    public ObservableCollection<AIProvider> AIProviderTemplates { get; } = new(AIProviderFactory.GetAvailableProviders());
     public ObservableCollection<string> TTSProviders { get; } = ["ElevenLabs", "Piper Instance", "Custom"];
     
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsCustomAIProvider))]
-    private string _selectedAIProvider = "OpenAI (ChatGPT)";
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsCustomTTSProvider))]
     private string _selectedTTSProvider = "ElevenLabs";
-    
-    public bool IsCustomAIProvider => SelectedAIProvider == "Custom";
     public bool IsCustomTTSProvider => SelectedTTSProvider is "Piper Instance" or "Custom";
 
-    public SetupViewModel(ISettingsService settings, INavigationService navigation)
+    public SetupViewModel(ISettingsService settingsService, INavigationService navigationService)
     {
-        _settings = settings;
-        _navigation = navigation;
+        _settingsService = settingsService;
+        _navigationService = navigationService;
+
+        AppSettings.General.AIProvider ??= new AIProvider();
+        
+        SelectedAIProviderTemplate = AIProviderTemplates.First(p => p.ProviderType == AIProviderType.OpenAI);
     }
 
     [RelayCommand]
     private async Task SaveAndContinue()
     {
-        _appSettings = await _settings.LoadSettings();
+        AppSettings.Advanced.FirstTimeSetupCompleted = true;
+        await _settingsService.SaveSettings(AppSettings, CancellationToken.None);
+        _settingsService.ApplySettings(AppSettings);
         
+        _navigationService.ShowWindow<ChatView>();
+        _navigationService.CloseWindow<SetupView>();
+    }
+
+    partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
+    {
+        if (value == null || AppSettings.General.AIProvider == null) return;
         
-        _navigation.ShowWindow<ChatView>();
-        _navigation.CloseWindow<SetupView>();
+        var apiKey = AppSettings.General.AIProvider.ApiKey;
+        
+        AppSettings.General.AIProvider = new AIProvider
+        {
+            ProviderType = value.ProviderType,
+            BaseUrl = value.BaseUrl,
+            Model = value.Model,
+            ApiKey = apiKey
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
     }
 }

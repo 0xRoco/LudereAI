@@ -103,10 +103,18 @@ public partial class App
         
         var navigationService = Host.Services.GetRequiredService<INavigationService>();
         var settingsService = Host.Services.GetRequiredService<ISettingsService>();
+        var settings = await settingsService.LoadSettings();
         
-        navigationService.ShowWindow<ChatView>();
+        if (settings.Advanced.FirstTimeSetupCompleted)
+        {
+            navigationService.ShowWindow<ChatView>();
+        }
+        else
+        {
+            navigationService.ShowWindow<SetupView>();
+        }
         
-        settingsService.ApplySettings(await settingsService.LoadSettings());
+        settingsService.ApplySettings(settings);
     }
 
     private void ConfigureServices(IServiceCollection services)
