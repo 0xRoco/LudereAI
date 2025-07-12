@@ -5,36 +5,38 @@ using Microsoft.Extensions.Logging;
 
 namespace LudereAI.WPF.Services;
 
-public class NavigationService(ILogger<NavigationService> logger, IServiceProvider serviceProvider) : INavigationService
+public class NavigationService(ILogger<NavigationService> logger, IServiceProvider serviceProvider) : INavigationService, IDisposable
 {
-    private readonly List<Window> _windows = new();
+    private readonly Dictionary<Window, IServiceScope> _windowScopes = new();
 
     public static event Action<Window>? OnWindowClosed;
     public static event Action<Window>? OnWindowOpened;
 
     public void ShowWindow<T>(bool isMainWindow = true, bool showDialog = false) where T : Window
     {
-        var window = serviceProvider.GetRequiredService<T>();
-        
-        if (_windows.Contains(window))
+        var existingWindow = _windowScopes.Keys.FirstOrDefault(w => w is T);
+        if (existingWindow != null)
         {
-            window.Activate();
+            existingWindow.Activate();
             return;
         }
-        
-        
+
+        var scope = serviceProvider.CreateScope();
+        var window = scope.ServiceProvider.GetRequiredService<T>();
+
+        _windowScopes[window] = scope;
+
         window.Closed += WindowClosed;
-        _windows.Add(window);
 
         if (isMainWindow)
         {
             Application.Current.MainWindow = window;
         }
-        
+
         logger.LogInformation("Window {window} opened (MainWindow: {isMainWindow}, Dialog: {isDialog})", window.GetType().Name, isMainWindow, showDialog);
-        
+
         OnWindowOpened?.Invoke(window);
-        
+
         if (showDialog)
             window.ShowDialog();
         else
@@ -46,14 +48,14 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 
     public void CloseWindow<T>() where T : Window
     {
-        var window = _windows.FirstOrDefault(w => w.GetType() == typeof(T));
+        var window = _windowScopes.Keys.FirstOrDefault(w => w.GetType() == typeof(T));
 
         window?.Close();
     }
 
     public void CloseWindow(Window window)
     {
-        if (_windows.Contains(window))
+        if (_windowScopes.ContainsKey(window))
         {
             window.Close();
         }
@@ -61,7 +63,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 
     public void CloseAllWindows()
     {
-        var windows = _windows.ToList();
+        var windows = _windowScopes.Keys.ToList();
         foreach (var window in windows)
         {
             window.Close();
@@ -70,7 +72,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 
     public void CloseAllWindowsButMain()
     {
-        var windows = _windows.Where(window => window != Application.Current.MainWindow).ToList();
+        var windows = _windowScopes.Keys.Where(window => window != Application.Current.MainWindow).ToList();
         foreach (var window in windows)
         {
             window.Close();
@@ -79,7 +81,7 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
 
     public void CloseAllWindowsExcept<T>() where T : Window
     {
-        var windows = _windows.Where(window => window.GetType() != typeof(T)).ToList();
+        var windows = _windowScopes.Keys.Where(window => window.GetType() != typeof(T)).ToList();
         foreach (var window in windows)
         {
             window.Close();
@@ -92,20 +94,34 @@ public class NavigationService(ILogger<NavigationService> logger, IServiceProvid
         {
             return;
         }
-        
+
         logger.LogInformation("Window {window} closed", window.GetType().Name);
         OnWindowClosed?.Invoke(window);
         window.Closed -= WindowClosed;
-        _windows.Remove(window);
-        
+
+        if (_windowScopes.Remove(window, out var scope))
+        {
+            scope.Dispose();
+        }
+
         if (Application.Current.MainWindow == window)
         {
-            Application.Current.MainWindow = _windows.FirstOrDefault();
+            Application.Current.MainWindow = _windowScopes.Keys.FirstOrDefault();
         }
-        
-        if (_windows.Count == 0)
+
+        if (_windowScopes.Count == 0)
         {
             Application.Current.Shutdown();
         }
+    }
+    
+    public void Dispose()
+    {
+        foreach (var scope in _windowScopes.Values)
+        {
+            scope.Dispose();
+        }
+        _windowScopes.Clear();
+        GC.SuppressFinalize(this);
     }
 }

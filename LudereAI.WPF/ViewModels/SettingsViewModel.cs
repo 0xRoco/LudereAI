@@ -2,11 +2,17 @@
 using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using LudereAI.Core.Entities;
+using LudereAI.Core.Interfaces.Services;
+using LudereAI.Services;
+using LudereAI.Shared.Enums;
+using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Models;
+using LudereAI.WPF.Services;
 using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
-using KeyBinding = LudereAI.WPF.Models.KeyBinding;
+using KeyBinding = LudereAI.Shared.Models.KeyBinding;
 
 namespace LudereAI.WPF.ViewModels;
 
@@ -18,47 +24,26 @@ public partial class SettingsViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     
     [ObservableProperty]
-    private AppSettings _settings;
+    private AppSettings _appSettings = new();
+    
+    [ObservableProperty]
+    private AIProvider _selectedAIProviderTemplate = new();
+    
+    [ObservableProperty]
+    private TTSProvider? _selectedTtsProviderTemplate;
     
     [ObservableProperty]
     private ObservableCollection<KeyBindingItemViewModel> _keyBindings = new();
     
+    public ObservableCollection<AIProvider> AIProviderTemplates { get; } =
+        new(AIProviderFactory.GetAvailableProviders());
+    
+    public ObservableCollection<TTSProvider> TTSProviderTemplates { get; } =
+        new(TTSProviderFactory.GetAvailableProviders());
+
+    
     public List<string> Themes { get; } = new() { "Light", "Dark" , "System" };
     public List<string> Languages { get; } = new() { "English" };
-
-    [RelayCommand]
-    private void Save()
-    {
-        Settings.KeyBind.Hotkeys = KeyBindings.Select(kb => kb.ToKeyBinding()).ToList();
-        
-        _settingsService.SaveSettings(Settings);
-        
-        _navigationService.CloseWindow<SettingsView>();
-    }
-
-    [RelayCommand]
-    private void Cancel()
-    {
-        _navigationService.CloseWindow<SettingsView>();
-    }
-
-    [RelayCommand]
-    private void Load() 
-    {
-        Settings = _settingsService.LoadSettings();
-        LoadKeyBindings();
-    }
-    
-    private void LoadKeyBindings()
-    {
-        KeyBindings.Clear();
-        
-        foreach (var keyBinding in Settings.KeyBind.Hotkeys)
-        {
-            KeyBindings.Add(new KeyBindingItemViewModel(keyBinding, _inputService));
-        }
-    }
-    
     
     public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
     {
@@ -67,34 +52,80 @@ public partial class SettingsViewModel : ObservableObject
         _inputService = inputService;
         _navigationService = navigationService;
 
-        Settings = _settingsService.LoadSettings();
+        _ = Load();
+    }
+
+    [RelayCommand]
+    private async Task Save()
+    {
+        AppSettings.KeyBind.Hotkeys = KeyBindings.Select(kb => kb.ToKeyBinding()).ToList();
         
-        // Ensure defaults if no hotkeys exist
-        if (Settings.KeyBind.Hotkeys.Count == 0)
-        {
-            Settings.KeyBind.Hotkeys = new List<KeyBinding>
-            {
-                new()
-                {
-                    Id = "ToggleOverlay", 
-                    Name = "Toggle Overlay", 
-                    Key = Key.O, 
-                    Modifiers = ModifierKeys.Alt,
-                    IsGlobal = true, 
-                    IsEnabled = true
-                },
-                new()
-                {
-                    Id = "NewChat", 
-                    Name = "New Chat", 
-                    Key = Key.N, 
-                    Modifiers = ModifierKeys.Control, 
-                    IsGlobal = true,
-                    IsEnabled = true
-                }
-            };
-        }
+        await _settingsService.SaveSettings(AppSettings, CancellationToken.None);
+        _settingsService.ApplySettings(AppSettings);
         
+        _navigationService.CloseWindow<SettingsView>();
+    }
+
+    [RelayCommand]
+    private async Task Cancel()
+    {
+        await Load();
+        _navigationService.CloseWindow<SettingsView>();
+    }
+
+    [RelayCommand]
+    private async Task Load() 
+    {
+        AppSettings = await _settingsService.LoadSettings();
+        SelectedAIProviderTemplate = AIProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.AIProvider?.ProviderType) 
+                             ?? AIProviderTemplates.First();
+        
+        SelectedTtsProviderTemplate = TTSProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.TTSProvider?.ProviderType) 
+                             ?? TTSProviderTemplates.First();
         LoadKeyBindings();
+    }
+    
+    private void LoadKeyBindings()
+    {
+        KeyBindings.Clear();
+        
+        foreach (var keyBinding in AppSettings.KeyBind.Hotkeys)
+        {
+            KeyBindings.Add(new KeyBindingItemViewModel(keyBinding, _inputService));
+        }
+    }
+
+    partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
+    {
+        if (value == null) return;
+
+        var apiKey = AppSettings.General.AIProvider.ApiKey;
+        
+        AppSettings.General.AIProvider = new AIProvider
+        {
+            ProviderType = value.ProviderType,
+            BaseUrl = value.BaseUrl,
+            Model = value.Model,
+            ApiKey = apiKey
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
+    }
+    
+    partial void OnSelectedTtsProviderTemplateChanged(TTSProvider? value)
+    {
+        if (value == null) return;
+
+        var currentConfig = AppSettings.General.TTSProvider;
+        
+        AppSettings.General.TTSProvider = new TTSProvider
+        {
+            ProviderType = value.ProviderType,
+            ApiKey = currentConfig.ApiKey, 
+            VoiceId = value.RequiresVoice ? currentConfig.VoiceId : value.VoiceId,
+            BaseUrl = value.RequiresBaseUrl ? value.BaseUrl : currentConfig.BaseUrl
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
     }
 }

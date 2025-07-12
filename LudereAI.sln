@@ -1,16 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.API", "LudereAI.API\LudereAI.API.csproj", "{AFB525CE-EB87-4392-9E6F-97B75599E89E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Domain", "LudereAI.Domain\LudereAI.Domain.csproj", "{B2EE8D19-A7B6-4660-A01C-0D0CBCDCF5B4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Application", "LudereAI.Application\LudereAI.Application.csproj", "{05E4E28C-CBE6-42AD-B46A-72EFAAE756F5}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Infrastructure", "LudereAI.Infrastructure\LudereAI.Infrastructure.csproj", "{5C5A1EAF-321E-48FB-A328-5CA9CE1DA866}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.WPF", "LudereAI.WPF\LudereAI.WPF.csproj", "{5219F13C-8DE3-4BFD-AE38-238DC708BCAA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Shared", "LudereAI.Shared\LudereAI.Shared.csproj", "{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Core", "LudereAI.Core\LudereAI.Core.csproj", "{90C23A10-F581-4AE0-95E4-CB04F44A953E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LudereAI.Services", "LudereAI.Services\LudereAI.Services.csproj", "{B34CC29B-CAEE-42D7-971E-670F5D6AA3B6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,22 +14,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{AFB525CE-EB87-4392-9E6F-97B75599E89E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AFB525CE-EB87-4392-9E6F-97B75599E89E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AFB525CE-EB87-4392-9E6F-97B75599E89E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AFB525CE-EB87-4392-9E6F-97B75599E89E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B2EE8D19-A7B6-4660-A01C-0D0CBCDCF5B4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2EE8D19-A7B6-4660-A01C-0D0CBCDCF5B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2EE8D19-A7B6-4660-A01C-0D0CBCDCF5B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2EE8D19-A7B6-4660-A01C-0D0CBCDCF5B4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05E4E28C-CBE6-42AD-B46A-72EFAAE756F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05E4E28C-CBE6-42AD-B46A-72EFAAE756F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05E4E28C-CBE6-42AD-B46A-72EFAAE756F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05E4E28C-CBE6-42AD-B46A-72EFAAE756F5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5C5A1EAF-321E-48FB-A328-5CA9CE1DA866}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5C5A1EAF-321E-48FB-A328-5CA9CE1DA866}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5C5A1EAF-321E-48FB-A328-5CA9CE1DA866}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5C5A1EAF-321E-48FB-A328-5CA9CE1DA866}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5219F13C-8DE3-4BFD-AE38-238DC708BCAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5219F13C-8DE3-4BFD-AE38-238DC708BCAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5219F13C-8DE3-4BFD-AE38-238DC708BCAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,6 +22,14 @@ Global
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7556CBD1-F0C0-4B6E-B6B4-E387371D86CA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90C23A10-F581-4AE0-95E4-CB04F44A953E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90C23A10-F581-4AE0-95E4-CB04F44A953E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90C23A10-F581-4AE0-95E4-CB04F44A953E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90C23A10-F581-4AE0-95E4-CB04F44A953E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B34CC29B-CAEE-42D7-971E-670F5D6AA3B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B34CC29B-CAEE-42D7-971E-670F5D6AA3B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B34CC29B-CAEE-42D7-971E-670F5D6AA3B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B34CC29B-CAEE-42D7-971E-670F5D6AA3B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
