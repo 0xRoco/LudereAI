@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
+        <OutputType>WinExe</OutputType>
         <TargetFramework>net9.0-windows</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
@@ -27,7 +27,7 @@
       <PackageReference Include="Serilog.Extensions" Version="8.1.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
-      <PackageReference Include="System.Speech" Version="9.0.6" />
+      <PackageReference Include="System.Speech" Version="9.0.7" />
     </ItemGroup>
 
     <ItemGroup>

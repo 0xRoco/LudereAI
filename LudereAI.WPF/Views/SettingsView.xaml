@@ -89,7 +89,6 @@
                                 <TextBlock Text="Application"
                                            Style="{StaticResource SettingsCategoryHeaderStyle}" />
 
-                                <!-- Language Setting -->
                                 <Grid Margin="0 12 0 12">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="180" />
@@ -107,7 +106,6 @@
                                               HorizontalAlignment="Left" />
                                 </Grid>
 
-                                <!-- Theme Setting -->
                                 <Grid Margin="0 12 0 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="180" />
@@ -131,31 +129,6 @@
                             Background="{DynamicResource MaterialDesignPaper}"
                             Style="{StaticResource SettingsCardStyle}">
                             <StackPanel>
-                                <TextBlock Text="Speech Options"
-                                           Style="{StaticResource SettingsCategoryHeaderStyle}" />
-
-                                <Grid Margin="0 12 0 0">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                    </Grid.ColumnDefinitions>
-
-                                    <ToggleButton IsChecked="{Binding Settings.General.TextToSpeechEnabled}"
-                                                  Style="{StaticResource SettingsToggleStyle}" />
-
-                                    <StackPanel Grid.Column="1" Margin="12 0 0 0">
-                                        <TextBlock Text="Enable Text-to-Speech for AI Responses" />
-                                        <TextBlock Text="Note: Enabling TTS may increase response latency"
-                                                   Style="{StaticResource SettingsHelpTextStyle}" />
-                                    </StackPanel>
-                                </Grid>
-                            </StackPanel>
-                        </materialDesign:Card>
-
-                        <materialDesign:Card
-                            Background="{DynamicResource MaterialDesignPaper}"
-                            Style="{StaticResource SettingsCardStyle}">
-                            <StackPanel>
                                 <TextBlock Text="AI Provider"
                                            Style="{StaticResource SettingsCategoryHeaderStyle}" />
 
@@ -164,23 +137,67 @@
                                           SelectedItem="{Binding SelectedAIProviderTemplate}"
                                           DisplayMemberPath="ProviderType"
                                           materialDesign:HintAssist.Hint="Select AI Provider"
-                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
+                                          Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
 
                                 <PasswordBox Margin="5"
                                              materialDesign:HintAssist.Hint="API Key"
                                              Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
                                              materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" />
-                                
+
                                 <TextBox Margin="5"
                                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                          materialDesign:HintAssist.Hint="Model Name"
-                                         Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"/>
+                                         Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}" />
 
                                 <TextBox Margin="5"
                                          Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                          materialDesign:HintAssist.Hint="Custom API Endpoint URL"
                                          Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
                                          Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            </StackPanel>
+                        </materialDesign:Card>
+
+                        <materialDesign:Card 
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            Style="{StaticResource SettingsCardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="Text-to-Speech" Style="{StaticResource SettingsCategoryHeaderStyle}" />
+
+                                <StackPanel Margin="5">
+                                    <CheckBox IsChecked="{Binding AppSettings.General.TextToSpeechEnabled}"
+                                              Content="Enable Text-to-Speech"/>
+                                    <TextBlock Text="Enabling TTS may increase response latency"
+                                               Style="{StaticResource SettingsHelpTextStyle}" />
+                                </StackPanel>
+
+                                <Grid IsEnabled="{Binding AppSettings.General.TextToSpeechEnabled}">
+                                    <StackPanel>
+                                        <ComboBox Margin="5" 
+                                                  ItemsSource="{Binding TTSProviderTemplates}"
+                                                  SelectedItem="{Binding SelectedTtsProviderTemplate}"
+                                                  DisplayMemberPath="ProviderType"
+                                                  materialDesign:HintAssist.Hint="Select TTS Provider"
+                                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+                                        <PasswordBox Margin="5"
+                                                     materialDesign:HintAssist.Hint="API Key"
+                                                     Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                                     Visibility="{Binding AppSettings.General.TTSProvider.RequiresApiKey, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                        <TextBox Margin="5"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 materialDesign:HintAssist.Hint="Voice ID"
+                                                 Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}"
+                                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresVoice, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                        <TextBox Margin="5"
+                                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                                 materialDesign:HintAssist.Hint="Endpoint URL"
+                                                 Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresBaseUrl, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </materialDesign:Card>
 

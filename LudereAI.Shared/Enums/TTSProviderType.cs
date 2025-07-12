@@ -2,9 +2,9 @@
 
 public enum TTSProviderType : byte
 {
-    None = 0,
     ElevenLabs = 1,
-    Piper = 2,
-    Windows = 3,
+    OpenAI = 2,
+    Piper = 3,
+    Windows = 4,
     Custom = 99
 }

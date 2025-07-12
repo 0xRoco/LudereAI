@@ -16,7 +16,8 @@ LudereAI utilizes computer vision by analyzing in-game screenshots to understand
 ### 2. First-Time Setup
 When you first run LudereAI, you will be prompted to enter an API key from an AI provider.
 -   **This is required.** The application needs this key to communicate with an AI model.
--   You can get a key from services like [OpenAI](https://platform.openai.com/api-keys) or [Google AI Studio](https://aistudio.google.com/app/apikey).
+-   You can get an AI API key from services like [OpenAI](https://platform.openai.com/api-keys) or [Google AI Studio](https://aistudio.google.com/app/apikey).
+-   For TTS, you can use [ElevenLabs](https://elevenlabs.io/), [Piper](https://github.com/OHF-Voice/piper1-gpl) or the built-in Windows TTS.
 -   Your key is encrypted and stored securely on your local machine.
 
 ## Key Features

@@ -17,7 +17,7 @@ namespace LudereAI.WPF.ViewModels;
 public partial class ChatViewModel : ObservableObject
 {
     private readonly ILogger<ChatViewModel> _logger;
-    private IMapper _mapper;
+    private readonly IMapper _mapper;
     private readonly IChatService _chatService;
     private readonly IAudioService _audioService;
     private readonly INavigationService _navigationService;
@@ -166,7 +166,7 @@ public partial class ChatViewModel : ObservableObject
                 var lastMessage = CurrentConversation?.Messages.LastOrDefault(m => m.Role == MessageRole.Assistant);
                 
                 if (lastMessage?.Audio.Length > 0)
-                    await _audioService.PlayAudioAsync(lastMessage.Audio);
+                    await _audioService.PlayAudioAsync(conversation.Messages.Last().Audio);
             }
             else
             {

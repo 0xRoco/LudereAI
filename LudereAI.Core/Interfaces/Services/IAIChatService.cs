@@ -4,7 +4,7 @@ using LudereAI.Shared.DTOs;
 
 namespace LudereAI.Core.Interfaces.Services;
 
-public interface IOpenAIService
+public interface IAIChatService
 {
     Task<AIResponse> SendMessage(Conversation conversation, AssistantRequest request); 
     IAsyncEnumerable<AIResponse> StreamlineMessage(Conversation conversation, AssistantRequest request);

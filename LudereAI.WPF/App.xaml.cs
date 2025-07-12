@@ -19,6 +19,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
+using AIChatService = LudereAI.Services.Services.AIChatService;
 
 namespace LudereAI.WPF;
 
@@ -140,7 +141,8 @@ public partial class App
         // --- Operational Services ---
         services.AddTransient<IGameService, GameService>();
         services.AddTransient<IChatService, ChatService>();
-        services.AddTransient<IOpenAIService, OpenAIService>();
+        services.AddTransient<IAIChatService, AIChatService>();
+        services.AddTransient<ITextToSpeechService, TextToSpeechService>();
         services.AddTransient<IScreenshotService, ScreenshotService>();
 
         // Repositories

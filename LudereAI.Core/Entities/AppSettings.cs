@@ -13,7 +13,8 @@ public class AppSettings
 
 public class GeneralSettings
 {
-    public AIProvider? AIProvider { get; set; } = new();
+    public AIProvider AIProvider { get; set; } = new();
+    public TTSProvider TTSProvider { get; set; } = new();
     public string Theme { get; set; } = "Dark";
     public string Language { get; set; } = "English";
     public bool TextToSpeechEnabled { get; set; } = true;

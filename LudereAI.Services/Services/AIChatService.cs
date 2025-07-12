@@ -11,11 +11,12 @@ using OpenAI.Chat;
 
 namespace LudereAI.Services.Services;
 
-public class OpenAIService(
-    ILogger<IOpenAIService> logger,
+public class AIChatService(
+    ILogger<IAIChatService> logger,
     IChatClientFactory chatClientFactory,
+    ITextToSpeechService textToSpeechService,
     IMessageHandler messageHandler)
-    : IOpenAIService
+    : IAIChatService
 {
     public async Task<AIResponse> SendMessage(Conversation conversation, AssistantRequest request)
     {
@@ -38,7 +39,7 @@ public class OpenAIService(
             if (request.TextToSpeechEnabled)
             {
                 //BUG: This increases latency by shitton
-                audio = await chatClientFactory.GenerateAudio(aiMessage);
+                audio = await textToSpeechService.GenerateTTS(aiMessage);
             }
 
             var aiResponse = new AIResponse()

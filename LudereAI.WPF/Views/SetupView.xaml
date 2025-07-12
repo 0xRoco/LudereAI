@@ -26,7 +26,7 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Margin="0 0 0 16" >
+            <StackPanel Grid.Row="0" Margin="0 0 0 16">
                 <TextBlock Text="LudereAI Setup"
                            Style="{StaticResource MaterialDesignHeadline5TextBlock}"
                            HorizontalAlignment="Center" />
@@ -37,7 +37,7 @@
             </StackPanel>
 
             <StackPanel Grid.Row="1" Margin="32" Orientation="Horizontal">
-                
+
                 <materialDesign:Card Padding="16" Margin="24" Width="300" Height="300"
                                      Background="{DynamicResource MaterialDesignPaper}">
                     <StackPanel>
@@ -45,34 +45,34 @@
                                                  Width="50"
                                                  Height="50"
                                                  HorizontalAlignment="Center" />
-                        
-                        <TextBlock Text="AI Provider" HorizontalAlignment="Center" 
+
+                        <TextBlock Text="AI Provider" HorizontalAlignment="Center"
                                    FontSize="16"
                                    Style="{StaticResource MaterialDesignHeadline6TextBlock}"
                                    Margin="5" />
-                        
+
                         <ComboBox ItemsSource="{Binding AIProviderTemplates}"
                                   SelectedItem="{Binding SelectedAIProviderTemplate}"
                                   DisplayMemberPath="ProviderType"
                                   materialDesign:HintAssist.Hint="Select AI Provider"
                                   Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                  Margin="5"/>
+                                  Margin="5" />
 
                         <PasswordBox materialDesign:HintAssist.Hint="API Key"
                                      Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" 
-                                     Margin="5"/>
-                                
+                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                     Margin="5" />
+
                         <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  materialDesign:HintAssist.Hint="Model Name"
                                  Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"
-                                 Margin="5"/>
+                                 Margin="5" />
 
                         <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
                                  materialDesign:HintAssist.Hint="Custom API Endpoint URL"
                                  Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}" 
-                                 Margin="5"/>
+                                 Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                 Margin="5" />
                     </StackPanel>
                 </materialDesign:Card>
 
@@ -84,27 +84,38 @@
                                                  Width="50"
                                                  Height="50"
                                                  HorizontalAlignment="Center" />
-                        <TextBlock Text="Text-to-Speech (TTS) Provider" HorizontalAlignment="Center" 
+                        <TextBlock Text="Text-to-Speech (TTS) Provider" HorizontalAlignment="Center"
                                    FontSize="16"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}" 
-                                   Margin="0,0,0,10"/>
-                        <ComboBox ItemsSource="{Binding TTSProviders}"
-                                  SelectedItem="{Binding SelectedTTSProvider}"
+                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
+                                   Margin="0,0,0,10" />
+                        <ComboBox Margin="5"
+                                  ItemsSource="{Binding TtsProviderTemplates}"
+                                  SelectedItem="{Binding SelectedTtsProviderTemplate}"
+                                  DisplayMemberPath="ProviderType"
                                   materialDesign:HintAssist.Hint="Select TTS Provider"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"/>
-                            
-                        <PasswordBox Margin="0,15,0,0"
-                                     materialDesign:HintAssist.Hint="TTS API Key (e.g., for ElevenLabs)"
-                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                            
-                        <TextBox Margin="0,15,0,0"
-                                 materialDesign:HintAssist.Hint="Custom TTS Endpoint URL (e.g., for Piper)"
-                                 Text="{Binding AppSettings.General.TTSCustomEndpoint, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding IsCustomTTSProvider, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+
+                        <PasswordBox Margin="5"
+                                     materialDesign:HintAssist.Hint="API Key"
+                                     Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
+                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"
+                                     Visibility="{Binding AppSettings.General.TTSProvider.RequiresApiKey, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                        <TextBox Margin="5"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Voice ID"
+                                 Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresVoice, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                        <TextBox Margin="5"
+                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                 materialDesign:HintAssist.Hint="Endpoint URL"
+                                 Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
+                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresBaseUrl, Converter={StaticResource BooleanToVisibilityConverter}}" />
                     </StackPanel>
                 </materialDesign:Card>
             </StackPanel>
-            
+
             <Button Grid.Row="2" Content="Save and Continue"
                     Command="{Binding SaveAndContinueCommand}"
                     Style="{StaticResource MaterialDesignOutlinedButton}"

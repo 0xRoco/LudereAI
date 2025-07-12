@@ -1,12 +1,10 @@
 ﻿using LudereAI.Core.Entities;
 using LudereAI.Core.Entities.Chat;
-using LudereAI.Core.Entities.Configs;
 using LudereAI.Core.Interfaces;
 using LudereAI.Core.Interfaces.Repositories;
 using LudereAI.Shared.DTOs;
 using LudereAI.Shared.Enums;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using OpenAI.Chat;
 
 namespace LudereAI.Services;
@@ -15,20 +13,15 @@ public class MessageHandler : IMessageHandler
 {
     private readonly ILogger<IMessageHandler> _logger;
     private readonly IMessageRepository _messageRepository;
-    private readonly IConversationRepository _conversationRepository;
     private readonly IInstructionLoader _instructionLoader;
     private const int MaxMessageHistory = 60;
     private const int MaxScreenshotHistory = 0;
-    private readonly bool _isOpenAI;
 
-    public MessageHandler(IMessageRepository messageRepository, IInstructionLoader instructionLoader, IConversationRepository conversationRepository, IOptions<AIConfig> config, ILogger<IMessageHandler> logger)
+    public MessageHandler(IMessageRepository messageRepository, IInstructionLoader instructionLoader, ILogger<IMessageHandler> logger)
     {
         _messageRepository = messageRepository;
         _instructionLoader = instructionLoader;
-        _conversationRepository = conversationRepository;
         _logger = logger;
-        
-        _isOpenAI = config.Value.Name.Equals("openai", StringComparison.CurrentCultureIgnoreCase);
     }
 
     /*public async Task<StoredFile?> HandleScreenshot(AssistantRequest request, Conversation conversation)
@@ -83,14 +76,15 @@ public class MessageHandler : IMessageHandler
     }
 
     
-    //TODO: Move this to IChatService (IOpenAIService should not be handling database operations)
+    //TODO: Move this to IChatService (IAIChatService should not be handling database operations)
     public async Task SaveConversationMessages(AssistantRequest request, AIResponse response)
     {
+        response.ConversationId = request.ConversationId;
         var screenshotId = Guid.NewGuid().ToString("N");
         
         var userMessage = new Message
         {
-            ConversationId = response.ConversationId,
+            ConversationId = request.ConversationId,
             ScreenshotId = screenshotId,
             Content = request.Message,
             Role = MessageRole.User,
@@ -109,7 +103,7 @@ public class MessageHandler : IMessageHandler
         var assistantMessage = new Message
         {
             Id = response.MessageId,
-            ConversationId = response.ConversationId,
+            ConversationId = request.ConversationId,
             Content = response.Message,
             Role = MessageRole.Assistant
         };
@@ -119,11 +113,6 @@ public class MessageHandler : IMessageHandler
             userMessage,
             assistantMessage
         ]);
-        
-        var conversation = await _conversationRepository.Get(response.ConversationId);
-        if (conversation == null)
-            return;
-        await _conversationRepository.Update(conversation);
     }
     
     private async Task<ChatMessage> CreateChatMessage(string message, MessageRole role, string screenshot = "")

@@ -20,23 +20,22 @@ public partial class SetupViewModel : ObservableObject
     private AppSettings _appSettings = new();
     
     [ObservableProperty] 
-    private AIProvider _selectedAIProviderTemplate;
+    private AIProvider _selectedAIProviderTemplate = new();
+    [ObservableProperty]
+    private TTSProvider? _selectedTtsProviderTemplate;
     
     public ObservableCollection<AIProvider> AIProviderTemplates { get; } = new(AIProviderFactory.GetAvailableProviders());
-    public ObservableCollection<string> TTSProviders { get; } = ["ElevenLabs", "Piper Instance", "Custom"];
-    
-    [ObservableProperty] [NotifyPropertyChangedFor(nameof(IsCustomTTSProvider))]
-    private string _selectedTTSProvider = "ElevenLabs";
-    public bool IsCustomTTSProvider => SelectedTTSProvider is "Piper Instance" or "Custom";
+    public ObservableCollection<TTSProvider> TtsProviderTemplates { get; } =
+        new(TTSProviderFactory.GetAvailableProviders());
+
 
     public SetupViewModel(ISettingsService settingsService, INavigationService navigationService)
     {
         _settingsService = settingsService;
         _navigationService = navigationService;
 
-        AppSettings.General.AIProvider ??= new AIProvider();
-        
         SelectedAIProviderTemplate = AIProviderTemplates.First(p => p.ProviderType == AIProviderType.OpenAI);
+        SelectedTtsProviderTemplate = TtsProviderTemplates.First(p => p.ProviderType == TTSProviderType.Windows);
     }
 
     [RelayCommand]
@@ -52,7 +51,7 @@ public partial class SetupViewModel : ObservableObject
 
     partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
     {
-        if (value == null || AppSettings.General.AIProvider == null) return;
+        if (value == null) return;
         
         var apiKey = AppSettings.General.AIProvider.ApiKey;
         
@@ -62,6 +61,23 @@ public partial class SetupViewModel : ObservableObject
             BaseUrl = value.BaseUrl,
             Model = value.Model,
             ApiKey = apiKey
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
+    }
+    
+    partial void OnSelectedTtsProviderTemplateChanged(TTSProvider? value)
+    {
+        if (value == null) return;
+
+        var currentConfig = AppSettings.General.TTSProvider;
+        
+        AppSettings.General.TTSProvider = new TTSProvider
+        {
+            ProviderType = value.ProviderType,
+            ApiKey = currentConfig.ApiKey, 
+            VoiceId = value.RequiresVoice ? currentConfig.VoiceId : value.VoiceId,
+            BaseUrl = value.RequiresBaseUrl ? value.BaseUrl : currentConfig.BaseUrl
         };
         
         OnPropertyChanged(nameof(AppSettings));

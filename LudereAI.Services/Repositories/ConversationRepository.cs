@@ -31,12 +31,17 @@ public class ConversationRepository : IConversationRepository
 
     public async Task<IEnumerable<Conversation>> GetAll()
     {
-        return await _context.Conversations
+        var conversations = await _context.Conversations
             .AsNoTracking()
             .OrderByDescending(c=>c.UpdatedAt)
-            .Include(c => c.Messages.OrderBy(m => m.CreatedAt))
             .ToListAsync();
+
+        foreach (var conversation in conversations)
+        {
+            conversation.Messages = await _messageRepository.GetMessages(conversation.Id);
+        }
         
+        return conversations;
     }
 
     public async Task<bool> Create(Conversation conversation)

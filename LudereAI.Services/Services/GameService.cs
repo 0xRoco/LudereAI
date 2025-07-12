@@ -12,7 +12,7 @@ public class GameService : IGameService
 {
     private readonly ILogger<IGameService> _logger;
     private readonly ISettingsService _settingsService;
-    private readonly IOpenAIService _openAIService;
+    private readonly IAIChatService _aiChatService;
     private CancellationTokenSource _cts = new();
     private bool _isScanning;
     private bool _isGameRunning;
@@ -27,11 +27,11 @@ public class GameService : IGameService
 
     public GameService(
         ILogger<IGameService> logger,
-        ISettingsService settingsService, IOpenAIService openAIService)
+        ISettingsService settingsService, IAIChatService aiChatService)
     {
         _logger = logger;
         _settingsService = settingsService;
-        _openAIService = openAIService;
+        _aiChatService = aiChatService;
 
 
         _settingsService.OnSettingsApplied += async settings =>
@@ -135,7 +135,7 @@ public class GameService : IGameService
                 Title = w.Title
             }).ToList();
             
-            var predictedProcess = await _openAIService.PredictGame(processes);
+            var predictedProcess = await _aiChatService.PredictGame(processes);
             
             var process = windows.FirstOrDefault(w => w.ProcessId == predictedProcess.ProcessId);
             if (process == null) return null;

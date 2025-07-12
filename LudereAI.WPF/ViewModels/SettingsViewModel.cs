@@ -24,16 +24,23 @@ public partial class SettingsViewModel : ObservableObject
     private readonly INavigationService _navigationService;
     
     [ObservableProperty]
-    private AppSettings _appSettings;
+    private AppSettings _appSettings = new();
     
     [ObservableProperty]
-    private AIProvider _selectedAIProviderTemplate;
+    private AIProvider _selectedAIProviderTemplate = new();
+    
+    [ObservableProperty]
+    private TTSProvider? _selectedTtsProviderTemplate;
     
     [ObservableProperty]
     private ObservableCollection<KeyBindingItemViewModel> _keyBindings = new();
     
     public ObservableCollection<AIProvider> AIProviderTemplates { get; } =
         new(AIProviderFactory.GetAvailableProviders());
+    
+    public ObservableCollection<TTSProvider> TTSProviderTemplates { get; } =
+        new(TTSProviderFactory.GetAvailableProviders());
+
     
     public List<string> Themes { get; } = new() { "Light", "Dark" , "System" };
     public List<string> Languages { get; } = new() { "English" };
@@ -72,6 +79,9 @@ public partial class SettingsViewModel : ObservableObject
         AppSettings = await _settingsService.LoadSettings();
         SelectedAIProviderTemplate = AIProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.AIProvider?.ProviderType) 
                              ?? AIProviderTemplates.First();
+        
+        SelectedTtsProviderTemplate = TTSProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.TTSProvider?.ProviderType) 
+                             ?? TTSProviderTemplates.First();
         LoadKeyBindings();
     }
     
@@ -87,7 +97,7 @@ public partial class SettingsViewModel : ObservableObject
 
     partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
     {
-        if (value == null || AppSettings.General.AIProvider == null) return;
+        if (value == null) return;
 
         var apiKey = AppSettings.General.AIProvider.ApiKey;
         
@@ -97,6 +107,23 @@ public partial class SettingsViewModel : ObservableObject
             BaseUrl = value.BaseUrl,
             Model = value.Model,
             ApiKey = apiKey
+        };
+        
+        OnPropertyChanged(nameof(AppSettings));
+    }
+    
+    partial void OnSelectedTtsProviderTemplateChanged(TTSProvider? value)
+    {
+        if (value == null) return;
+
+        var currentConfig = AppSettings.General.TTSProvider;
+        
+        AppSettings.General.TTSProvider = new TTSProvider
+        {
+            ProviderType = value.ProviderType,
+            ApiKey = currentConfig.ApiKey, 
+            VoiceId = value.RequiresVoice ? currentConfig.VoiceId : value.VoiceId,
+            BaseUrl = value.RequiresBaseUrl ? value.BaseUrl : currentConfig.BaseUrl
         };
         
         OnPropertyChanged(nameof(AppSettings));
