@@ -101,7 +101,7 @@
                                     <ComboBox Grid.Column="1"
                                               materialDesign:HintAssist.Hint="Select language"
                                               ItemsSource="{Binding Languages}"
-                                              SelectedItem="{Binding Settings.General.Language}"
+                                              SelectedItem="{Binding AppSettings.General.Language}"
                                               Width="200"
                                               HorizontalAlignment="Left" />
                                 </Grid>
@@ -118,7 +118,7 @@
                                     <ComboBox Grid.Column="1"
                                               materialDesign:HintAssist.Hint="Select theme"
                                               ItemsSource="{Binding Themes}"
-                                              SelectedItem="{Binding Settings.General.Theme}"
+                                              SelectedItem="{Binding AppSettings.General.Theme}"
                                               Width="200"
                                               HorizontalAlignment="Left" />
                                 </Grid>
@@ -215,7 +215,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <ToggleButton IsChecked="{Binding Settings.General.AutoStartWithWindows}"
+                                    <ToggleButton IsChecked="{Binding AppSettings.General.AutoStartWithWindows}"
                                                   Style="{StaticResource SettingsToggleStyle}" />
 
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center"
@@ -230,7 +230,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <ToggleButton IsChecked="{Binding Settings.General.MinimizeToTray}"
+                                    <ToggleButton IsChecked="{Binding AppSettings.General.MinimizeToTray}"
                                                   Style="{StaticResource SettingsToggleStyle}" />
 
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center"
@@ -264,7 +264,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <ToggleButton IsChecked="{Binding Settings.GameIntegration.Enabled}"
+                                    <ToggleButton IsChecked="{Binding AppSettings.GameIntegration.Enabled}"
                                                   Style="{StaticResource SettingsToggleStyle}" />
 
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center"
@@ -279,7 +279,7 @@
                                         <ColumnDefinition Width="*" />
                                     </Grid.ColumnDefinitions>
 
-                                    <ToggleButton IsChecked="{Binding Settings.GameIntegration.AutoCaptureScreenshots}"
+                                    <ToggleButton IsChecked="{Binding AppSettings.GameIntegration.AutoCaptureScreenshots}"
                                                   Style="{StaticResource SettingsToggleStyle}" />
 
                                     <TextBlock Grid.Column="1" VerticalAlignment="Center"
@@ -301,7 +301,7 @@
                                              Style="{StaticResource MaterialDesignTextBox}"
                                              Width="120"
                                              HorizontalAlignment="Left"
-                                             Text="{Binding Settings.GameIntegration.ScanInterval}" />
+                                             Text="{Binding AppSettings.GameIntegration.ScanInterval}" />
                                 </Grid>
                             </StackPanel>
                         </materialDesign:Card>

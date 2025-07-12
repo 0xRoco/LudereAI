@@ -114,9 +114,6 @@ public class AIChatService(
             new UserChatMessage(processes.ToJson())
         };
         
-        
-        logger.LogInformation("Predicting game from processes: {Processes}", processes.ToJson());
-        
         var chat = chatClientFactory.CreateChatClient();
         
         var response = await chat.CompleteChatAsync(messages);
