@@ -181,12 +181,12 @@ public class InputService : IInputService, IDisposable
             }
             
             var hotkeyHash = binding.GetHashCode();
-
-            var wpfModifiers = (ModifierKeys)binding.Modifiers; 
+            const int noRepeatFlag = 0x4000; // Prevents auto repeat
+            var modifierFlags = (int)binding.Modifiers | noRepeatFlag;
             var wpfKey = Enum.Parse<Key>(binding.Key.ToString());
-            var virtualKey = KeyInterop.VirtualKeyFromKey(wpfKey);
+            var vk = KeyInterop.VirtualKeyFromKey(wpfKey);
 
-            if (_hwndSource != null && RegisterHotKey(_hwndSource.Handle, hotkeyHash, (int)wpfModifiers, virtualKey))
+            if (_hwndSource != null && RegisterHotKey(_hwndSource.Handle, hotkeyHash, modifierFlags, vk))
             {
                 _logger.LogInformation("Registered hotkey: {Hotkey}", binding);
             }

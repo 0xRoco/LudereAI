@@ -3,136 +3,177 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:local="clr-namespace:LudereAI.WPF.Views"
         xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:SetupViewModel}"
         Title="Welcome to LudereAI - First-Time Setup"
-        Height="600" Width="800"
+        Height="600" Width="1000"
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize"
-        Style="{StaticResource MaterialDesignWindow}"
-        Background="{DynamicResource MaterialDesignPaper}"
-        Foreground="{DynamicResource MaterialDesignBody}"
-        FontFamily="{DynamicResource MaterialDesignFont}">
+        Style="{DynamicResource TermWindow}">
 
-    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-        <Grid Margin="12">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+    </Window.Resources>
 
-            <StackPanel Grid.Row="0" Margin="0 0 0 16">
-                <TextBlock Text="LudereAI Setup"
-                           Style="{StaticResource MaterialDesignHeadline5TextBlock}"
-                           HorizontalAlignment="Center" />
-                <TextBlock Text="Get Started With Your Personal Context-Aware AI-Powered Gaming Companion"
-                           Style="{StaticResource MaterialDesignSubtitle1TextBlock}"
-                           HorizontalAlignment="Center"
-                           Margin="0 8 0 0" />
-            </StackPanel>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="1" Margin="32" Orientation="Horizontal">
+        <Border Grid.Row="0" Style="{StaticResource TermHeaderStrip}">
+            <DockPanel>
+                <TextBlock Text="LudereAI :: SETUP"
+                           Style="{StaticResource TermHeaderText}"
+                           DockPanel.Dock="Left"/>
+            </DockPanel>
+        </Border>
 
-                <materialDesign:Card Padding="16" Margin="24" Width="300" Height="300"
-                                     Background="{DynamicResource MaterialDesignPaper}">
+        <ScrollViewer Grid.Row="1" Style="{StaticResource TermScrollViewer}">
+            <Grid Margin="24">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="24"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource TermCard}">
                     <StackPanel>
-                        <materialDesign:PackIcon Kind="KeyChainVariant"
-                                                 Width="50"
-                                                 Height="50"
-                                                 HorizontalAlignment="Center" />
+                        <TextBlock Text="AI PROVIDER" Style="{StaticResource TermSectionTitle}"/>
 
-                        <TextBlock Text="AI Provider" HorizontalAlignment="Center"
-                                   FontSize="16"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="5" />
+                        <Grid Margin="0,6,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Provider" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding AIProviderTemplates}"
+                                      SelectedItem="{Binding SelectedAIProviderTemplate}"
+                                      DisplayMemberPath="ProviderType"
+                                      Style="{StaticResource TermComboBox}"
+                                      Width="260"/>
+                        </Grid>
 
-                        <ComboBox ItemsSource="{Binding AIProviderTemplates}"
-                                  SelectedItem="{Binding SelectedAIProviderTemplate}"
-                                  DisplayMemberPath="ProviderType"
-                                  materialDesign:HintAssist.Hint="Select AI Provider"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                                  Margin="5" />
+                        <Grid Margin="0,6,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="API Key" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <PasswordBox Grid.Column="1"
+                                         Style="{StaticResource TermPasswordBox}"
+                                         materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
 
-                        <PasswordBox materialDesign:HintAssist.Hint="API Key"
-                                     Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"
-                                     Margin="5" />
+                        <Grid Margin="0,6,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Model Name" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Style="{StaticResource TermInput}"
+                                     Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
 
-                        <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Model Name"
-                                 Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"
-                                 Margin="5" />
-
-                        <TextBox Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Custom API Endpoint URL"
-                                 Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                 Margin="5" />
+                        <Grid Margin="0,6,0,0"
+                              Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Custom API URL" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Style="{StaticResource TermInput}"
+                                     Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
                     </StackPanel>
-                </materialDesign:Card>
+                </Border>
 
-                <materialDesign:Card Margin="24" Padding="16" Width="300" Height="300"
-                                     VerticalAlignment="Center"
-                                     Background="{DynamicResource MaterialDesignPaper}">
-                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
-                        <materialDesign:PackIcon Kind="TextToSpeech"
-                                                 Width="50"
-                                                 Height="50"
-                                                 HorizontalAlignment="Center" />
-                        <TextBlock Text="Text-to-Speech (TTS) Provider" HorizontalAlignment="Center"
-                                   FontSize="16"
-                                   Style="{StaticResource MaterialDesignHeadline6TextBlock}"
-                                   Margin="0,0,0,10" />
-                        <ComboBox Margin="5"
-                                  ItemsSource="{Binding TtsProviderTemplates}"
-                                  SelectedItem="{Binding SelectedTtsProviderTemplate}"
-                                  DisplayMemberPath="ProviderType"
-                                  materialDesign:HintAssist.Hint="Select TTS Provider"
-                                  Style="{StaticResource MaterialDesignFloatingHintComboBox}" />
+                <Border Grid.Column="2" Style="{StaticResource TermCard}">
+                    <StackPanel>
+                        <TextBlock Text="TEXT-TO-SPEECH (TTS) PROVIDER" Style="{StaticResource TermSectionTitle}"/>
 
-                        <PasswordBox Margin="5"
-                                     materialDesign:HintAssist.Hint="API Key"
-                                     Style="{StaticResource MaterialDesignFloatingHintPasswordBox}"
-                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"
-                                     Visibility="{Binding AppSettings.General.TTSProvider.RequiresApiKey, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <Grid Margin="0,6,0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="TTS Provider" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding TtsProviderTemplates}"
+                                      SelectedItem="{Binding SelectedTtsProviderTemplate}"
+                                      DisplayMemberPath="ProviderType"
+                                      Style="{StaticResource TermComboBox}"
+                                      Width="260"/>
+                        </Grid>
 
-                        <TextBox Margin="5"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Voice ID"
-                                 Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresVoice, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <Grid Margin="0,6,0,6"
+                              Visibility="{Binding AppSettings.General.TTSProvider.RequiresApiKey, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="API Key" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <PasswordBox Grid.Column="1"
+                                         Style="{StaticResource TermPasswordBox}"
+                                         materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
 
-                        <TextBox Margin="5"
-                                 Style="{StaticResource MaterialDesignFloatingHintTextBox}"
-                                 materialDesign:HintAssist.Hint="Endpoint URL"
-                                 Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"
-                                 Visibility="{Binding AppSettings.General.TTSProvider.RequiresBaseUrl, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <Grid Margin="0,6,0,6"
+                              Visibility="{Binding AppSettings.General.TTSProvider.RequiresVoice, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Voice ID" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Style="{StaticResource TermInput}"
+                                     Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+
+                        <Grid Margin="0,6,0,0"
+                              Visibility="{Binding AppSettings.General.TTSProvider.RequiresBaseUrl, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="160"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Endpoint URL" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1"
+                                     Style="{StaticResource TermInput}"
+                                     Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
                     </StackPanel>
-                </materialDesign:Card>
-            </StackPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
 
-            <Button Grid.Row="2" Content="Save and Continue"
-                    Command="{Binding SaveAndContinueCommand}"
-                    Style="{StaticResource MaterialDesignOutlinedButton}"
-                    Width="200"
-                    materialDesign:ButtonAssist.CornerRadius="8"
+        <StackPanel Grid.Row="2"
+                    Orientation="Horizontal"
                     HorizontalAlignment="Center"
-                    Margin="15" />
+                    Margin="0,8,0,8">
+            <Button Content="Save and Continue"
+                    Command="{Binding SaveAndContinueCommand}"
+                    Style="{StaticResource TermButtonPrimary}"
+                    Width="220" Height="36"/>
+        </StackPanel>
 
-            <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center">
-                <materialDesign:PackIcon Kind="ShieldCheck"
-                                         Width="16" Height="16"
-                                         Margin="0 0 8 0"
-                                         VerticalAlignment="Center" />
-                <TextBlock Text="Your API key is securely stored on this computer."
-                           Style="{StaticResource MaterialDesignCaptionTextBlock}" />
-            </StackPanel>
-        </Grid>
-
+        <StackPanel Grid.Row="3"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,0,0,16">
+            <TextBlock Text="✓"
+                       Foreground="{StaticResource Term.Brush.AccentActive}"
+                       Margin="0,0,8,0"
+                       VerticalAlignment="Center"/>
+            <TextBlock Text="Your API key is securely stored on this computer."
+                       Style="{StaticResource TermHint}"
+                       VerticalAlignment="Center"/>
+        </StackPanel>
     </Grid>
 </Window>

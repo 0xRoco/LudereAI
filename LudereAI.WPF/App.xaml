@@ -8,9 +8,7 @@
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
-                <materialDesign:BundledTheme BaseTheme="Dark" PrimaryColor="Blue" SecondaryColor="Amber" />
-                <ResourceDictionary 
-                    Source="/MaterialDesignThemes.Wpf;component/Themes/materialdesign3.defaults.xaml" />
+                <ResourceDictionary Source="Themes/Terminal.xaml"/>
             </ResourceDictionary.MergedDictionaries>
             
             <Style TargetType="{x:Type infrastructure:ViewLocator}">

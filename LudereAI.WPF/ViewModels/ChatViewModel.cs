@@ -41,6 +41,7 @@ public partial class ChatViewModel : ObservableObject
     private WindowInfo? _predicatedWindow;
     [ObservableProperty] [NotifyPropertyChangedFor(nameof(CanSendMessage))]
     private bool _isOverrideEnabled;
+    [ObservableProperty] private bool _isRefreshingWindows;
     
     public bool CanSendMessage => !string.IsNullOrWhiteSpace(CurrentMessage) && !IsAssistantThinking && (IsOverrideEnabled ? ManualWindow != null : PredicatedWindow != null);
     public bool CanWriteMessage => !IsAssistantThinking;
@@ -111,11 +112,37 @@ public partial class ChatViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void RefreshProcesses() => Windows = new ObservableCollection<WindowInfo>(_gameService.GetWindowedProcesses());
+    private async Task RefreshProcesses()
+    {
+        if (IsRefreshingWindows) return;
+        IsRefreshingWindows = true;
+
+        try
+        {
+            var windowInfos = await Task.Run(() =>
+            {
+                var list = _gameService.GetWindowedProcesses();
+                return list?.ToList() ?? [];
+            });
+
+            _logger.LogInformation("Refreshed windowed processes, found {Count} windows", windowInfos.Count);
+            UpdateWindows(windowInfos);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "RefreshProcesses failed");
+            AddSystemMessage("Failed to refresh windows list.");
+        }
+        finally
+        {
+            IsRefreshingWindows = false;
+        }
+    }
     
     [RelayCommand]
     private async Task PredictGame()
     {
+        _logger.LogDebug("Predicting game window...");
         var gameWindow = await _gameService.GetGameWindow();
         if (gameWindow == null)
         {
@@ -125,6 +152,58 @@ public partial class ChatViewModel : ObservableObject
         }
         
         PredicatedWindow = gameWindow;
+    }
+
+    [RelayCommand]
+    private async Task LoadConversation(ConversationModel? model)
+    {
+        if (model == null) return;
+
+        try
+        {
+            if (Conversations.All(c => c.Id != model.Id)) await RefreshConversations();
+
+            var item = Conversations.FirstOrDefault(c => c.Id == model.Id) ?? model;
+
+            item.Messages.ToList().ForEach(m => m.CreatedAt = m.CreatedAt.ToLocalTime());
+
+            CurrentConversation = item;
+
+            CurrentMessage = string.Empty;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to load conversation {ConversationId}", model.Id);
+            AddSystemMessage("Failed to load conversation.");
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteConversation(ConversationModel? model)
+    {
+        if (model == null || string.IsNullOrWhiteSpace(model.Id)) return;
+
+        try
+        {
+            var result = true;
+            if (result)
+            {
+                Conversations.Remove(model);
+                if (CurrentConversation?.Id == model.Id)
+                {
+                    CurrentConversation = Conversations.FirstOrDefault();
+                }
+            }
+            else
+            {
+                AddSystemMessage("Failed to delete conversation: " + result);
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to delete conversation {ConversationId}", model.Id);
+            AddSystemMessage("An error occurred while deleting the conversation.");
+        }
     }
     
     
@@ -138,6 +217,15 @@ public partial class ChatViewModel : ObservableObject
     private void OpenSettings()
     {
         _navigationService.ShowWindow<SettingsView>(false, true);
+    }
+
+    private void UpdateWindows(IEnumerable<WindowInfo> windows)
+    {
+        Windows.Clear();
+        foreach (var w in windows)
+        {
+            Windows.Add(w);
+        }
     }
     
     private async Task ProcessMessage(string message)
@@ -271,6 +359,14 @@ public partial class ChatViewModel : ObservableObject
         if (CurrentConversation == null && value.Count > 0)
         {
             CurrentConversation = value.First();
+        }
+    }
+
+    partial void OnIsOverrideEnabledChanged(bool value)
+    {
+        if (value && Windows.Count == 0)
+        {
+            _ = RefreshProcesses();
         }
     }
 }

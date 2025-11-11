@@ -2,16 +2,15 @@
 
 The AI Gaming Assistant That _Sees_ Your Game.
 
-LudereAI utilizes computer vision by analyzing in-game screenshots to understand your gameplay situation. It provides personalized, contextual advice and information through an interactive chat interface, complete with optional text-to-speech responses.
+LudereAI uses computer vision by analyzing in-game screenshots to understand your gameplay situation. It provides personalized, contextual advice and information through an interactive chat interface, complete with optional text-to-speech responses.
 
-<img alt="LudereAI Chat Interface - Kingdom Come: Deliverance II" src="Docs/Preview1.jpg"/>
-<img alt="LudereAI Chat Interface - The Elder Scrolls III: Morrowind" src="Docs/Preview2.jpg"/>
-<img alt="LudereAI Chat Interface - Baldur's Gate 3" src="Docs/Preview3.jpg"/>
+<img alt="LudereAI Chat Interface - Cyberpunk 2077" src="Docs/Preview1.png"/>
+<img alt="LudereAI Chat Overlay - Baldur's Gate 3" src="Docs/Preview2.png"/>
 
 ## Getting Started
 
 ### 1. Download & Install
-[**Download the latest `LudereAI` installer from the Releases page**](https://github.com/0xRoco/LudereAI/releases)
+[**Download the latest `LudereAI` release from the Releases page**](https://github.com/0xRoco/LudereAI/releases)
 
 ### 2. First-Time Setup
 When you first run LudereAI, you will be prompted to enter an API key from an AI provider.
@@ -35,11 +34,4 @@ LudereAI is a functional proof-of-concept. I believe the project serves as a str
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## Contributing
-Contributions are welcome! If you have suggestions for improvements or new features, please open an issue or submit a pull request.
-
----
-
-*Made with ❤️*
+This project is licensed under the MIT License, see the [LICENSE](LICENSE) file for details.
