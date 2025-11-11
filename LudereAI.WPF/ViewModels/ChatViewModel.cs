@@ -185,8 +185,8 @@ public partial class ChatViewModel : ObservableObject
 
         try
         {
-            var success = await _chatService.DeleteConversation(model.Id);
-            if (success)
+            var result = await _chatService.DeleteConversation(model.Id);
+            if (result)
             {
                 Conversations.Remove(model);
                 if (CurrentConversation?.Id == model.Id)

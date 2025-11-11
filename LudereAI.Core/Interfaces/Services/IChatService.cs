@@ -14,4 +14,6 @@ public interface IChatService
     
     Task<Result<Conversation, ChatRequestResult>> SendMessage(ChatRequest request);
     Task<IEnumerable<Conversation>> GetConversations();
+
+    Task<bool> DeleteConversation(string conversationId);
 }
