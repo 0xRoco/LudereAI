@@ -105,6 +105,11 @@ public class ChatService : IChatService
         return conversations;
     }
 
+    public async Task<bool> DeleteConversation(string conversationId)
+    {
+        return await _conversationRepository.Delete(conversationId);
+    }
+
     private void ApplySettings(AppSettings settings)
     {
         SetAutoCaptureScreenshots(settings.GameIntegration.AutoCaptureScreenshots);

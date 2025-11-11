@@ -74,8 +74,7 @@ public class SettingsService(ILogger<ISettingsService> logger, IInputService inp
         {
             ApplyKeyBindSettings(settings.KeyBind);
             SetAutoStart(settings.General.AutoStartWithWindows, settings.General.MinimizeToTray);
-            ApplyTheme(settings.General.Theme);
-            
+
             OnSettingsApplied?.Invoke(settings);
         }
         catch (Exception ex)
@@ -107,6 +106,7 @@ public class SettingsService(ILogger<ISettingsService> logger, IInputService inp
         }
     }
 
+    [Obsolete("MaterialDesignThemes WPF is no longer used for theming", true)]
     private void ApplyTheme(string theme)
     {
         try

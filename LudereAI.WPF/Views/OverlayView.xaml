@@ -3,168 +3,169 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:local="clr-namespace:LudereAI.WPF.Views"
         xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
-        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-        xmlns:converters="clr-namespace:LudereAI.WPF.Converters"
+        xmlns:converters1="clr-namespace:LudereAI.WPF.Converters"
         mc:Ignorable="d"
         d:DataContext="{d:DesignInstance viewModels:ChatViewModel}"
         Background="Transparent"
-        Foreground="{DynamicResource MaterialDesignBody}"
-        FontFamily="{DynamicResource MaterialDesignFont}"
-        WindowStyle="None"
         AllowsTransparency="True"
+        WindowStyle="None"
         Topmost="True"
         ResizeMode="CanResizeWithGrip"
-        FontWeight="Regular"
-        FontSize="14"
-        TextOptions.TextFormattingMode="Ideal"
+        Style="{DynamicResource TermWindow}"
         Title="LudereAI - Chat Overlay"
-        Height="600" Width="400">
-    
+        Height="600" Width="420">
+
     <Window.Resources>
-        <SolidColorBrush x:Key="SemiTransparentBackground" Color="{Binding Color, Source={StaticResource MaterialDesignPaper}}" Opacity="0.5"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <converters1:RoleToHorizontalAlignmentConverter x:Key="RoleToAlignment"/>
+
+        <SolidColorBrush x:Key="Overlay.SemiPanel" Color="{StaticResource Term.Color.PanelAlt}" Opacity="0.88"/>
+        <SolidColorBrush x:Key="Overlay.HeaderBg" Color="{StaticResource Term.Color.Panel}" Opacity="0.95"/>
     </Window.Resources>
-    
+
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="32" 
+        <WindowChrome CaptionHeight="36"
                       ResizeBorderThickness="6"
                       UseAeroCaptionButtons="False"
                       GlassFrameThickness="0"
-                      NonClientFrameEdges="None"
-                      />
+                      NonClientFrameEdges="None"/>
     </WindowChrome.WindowChrome>
-    
-    <!-- Main layout grid -->
-    <Grid>
-        <!-- Semi-transparent background -->
-        <Border Background="{StaticResource SemiTransparentBackground}" 
-                CornerRadius="8" />
-        
-        <!-- Content grid with fully opaque elements -->
-        <Grid Margin="0">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="*" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-            </Grid.RowDefinitions>
 
-            <!-- Title Bar -->
-            <Grid Grid.Row="0" Background="{DynamicResource PrimaryHueMidBrush}" Height="32">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                
-                <TextBlock Text="LudereAI Chat" 
-                           Foreground="White" 
-                           Margin="12,0,0,0" 
-                           VerticalAlignment="Center" 
-                           FontWeight="Medium" />
-                
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" WindowChrome.IsHitTestVisibleInChrome="True"
-                            Height="32" Width="32" Padding="4"
-                            Command="{Binding MinimizeOverlayCommand}">
-                        <materialDesign:PackIcon Kind="WindowMinimize" Foreground="White" />
-                    </Button>
-                    <Button Style="{StaticResource MaterialDesignFlatButton}" WindowChrome.IsHitTestVisibleInChrome="True"
-                            Height="32" Width="32" Padding="4"
-                            Command="{Binding CloseOverlayCommand}">
-                        <materialDesign:PackIcon Kind="Close" Foreground="White" />
-                    </Button>
-                </StackPanel>
+    <Grid Margin="6">
+        <Border Background="{StaticResource Overlay.SemiPanel}"
+                BorderBrush="{StaticResource Term.Brush.Border}"
+                BorderThickness="1"
+                CornerRadius="8"
+                SnapsToDevicePixels="True">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Border Grid.Row="0"
+                        Background="{StaticResource Overlay.HeaderBg}"
+                        BorderBrush="{StaticResource Term.Brush.Accent}"
+                        BorderThickness="0,0,0,1.5"
+                        CornerRadius="8,8,0,0"
+                        Height="36">
+                    <DockPanel LastChildFill="False">
+                        <TextBlock Text="LudereAI :: OVERLAY"
+                                   Style="{StaticResource TermHeaderText}"
+                                   Margin="12,0,0,0"
+                                   VerticalAlignment="Center"
+                                   DockPanel.Dock="Left"/>
+
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="0,0,6,0">
+                            <Button Content="✕"
+                                    Width="28" Height="24"
+                                    Margin="6,0,0,0"
+                                    Style="{StaticResource TermButtonOutline}"
+                                    FontSize="12"
+                                    WindowChrome.IsHitTestVisibleInChrome="True"
+                                    Command="{Binding CloseOverlayCommand}"/>
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <ScrollViewer Grid.Row="1"
+                              x:Name="ChatScroll"
+                              Style="{StaticResource TermScrollViewer}"
+                              Padding="8,8,8,6">
+                    <ItemsControl ItemsSource="{Binding CurrentConversation.Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0,6">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+
+                                    <TextBlock Grid.Row="0"
+                                               Text="{Binding CreatedAt, StringFormat={}{0:HH:mm}}"
+                                               Style="{StaticResource TermTimestamp}"
+                                               HorizontalAlignment="{Binding Role, Converter={StaticResource RoleToAlignment}}"/>
+
+                                    <Border Grid.Row="1"
+                                            Style="{StaticResource TermMessageBubble}"
+                                            HorizontalAlignment="{Binding Role, Converter={StaticResource RoleToAlignment}}">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Role}"
+                                                       Style="{StaticResource TermRoleLabel}"/>
+                                            <TextBlock Text="{Binding Content}"
+                                                       Style="{StaticResource TermMessageText}" />
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Border Grid.Row="2"
+                        Margin="8,0,8,6"
+                        Style="{StaticResource TermProcessingBubble}"
+                        Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="PROCESSING" Style="{StaticResource TermProcessingText}"/>
+                        <Rectangle Width="10" Height="10"
+                                   Fill="{StaticResource Term.Brush.AccentWarn}"
+                                   Margin="10,0,0,0">
+                            <Rectangle.Triggers>
+                                <EventTrigger RoutedEvent="Rectangle.Loaded">
+                                    <BeginStoryboard>
+                                        <Storyboard RepeatBehavior="Forever">
+                                            <DoubleAnimation Storyboard.TargetProperty="Opacity"
+                                                             From="1" To="0.2"
+                                                             Duration="0:0:1"
+                                                             AutoReverse="True"/>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </EventTrigger>
+                            </Rectangle.Triggers>
+                        </Rectangle>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Row="3"
+                        Background="{StaticResource Term.Brush.Panel}"
+                        BorderBrush="{StaticResource Term.Brush.Border}"
+                        BorderThickness="1,1,1,0"
+                        CornerRadius="0,0,8,8"
+                        Padding="10,8,10,10">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0"
+                                 x:Name="MessageInput"
+                                 IsEnabled="{Binding CanWriteMessage}"
+                                 Style="{StaticResource TermInput}"
+                                 MinHeight="40"
+                                 MaxHeight="120"
+                                 TextWrapping="Wrap"
+                                 Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged}">
+                            <TextBox.InputBindings>
+                                <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}"/>
+                            </TextBox.InputBindings>
+                        </TextBox>
+
+                        <Button Grid.Column="1"
+                                Content="SEND"
+                                Margin="10,0,0,0"
+                                MinWidth="84"
+                                Height="40"
+                                Command="{Binding SendMessageCommand}"
+                                IsEnabled="{Binding CanSendMessage}"
+                                Style="{StaticResource TermButtonPrimary}"/>
+                    </Grid>
+                </Border>
             </Grid>
-
-            <!-- Messages -->
-            <ScrollViewer Grid.Row="1"
-                          x:Name="ChatScroll"
-                          VerticalScrollBarVisibility="Auto"
-                          Margin="12">
-                <ItemsControl ItemsSource="{Binding CurrentConversation.Messages, FallbackValue=null}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <!-- Fully opaque message card -->
-                            <materialDesign:Card Style="{StaticResource MessageBubbleStyle}"
-                                                 Background="{Binding Role, Converter={StaticResource MessageBackgroundConverter}}">
-                                <StackPanel>
-                                    <TextBlock Text="{Binding Role}"
-                                               FontWeight="Medium"
-                                               FontSize="12"
-                                               Opacity="0.7"
-                                               Margin="0,0,0,8" />
-                                    <TextBlock Text="{Binding Content}"
-                                               TextWrapping="Wrap"
-                                               FontSize="14"
-                                               LineHeight="20" />
-                                </StackPanel>
-                            </materialDesign:Card>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
-            <!-- Thinking Indicator -->
-            <materialDesign:Card Grid.Row="2"
-                                 Background="{DynamicResource MaterialDesignPaper}"
-                                 Style="{StaticResource MessageBubbleStyle}"
-                                 Margin="8,0,8,8"
-                                 Visibility="{Binding IsAssistantThinking, Converter={StaticResource BooleanToVisibilityConverter}}">
-                <StackPanel Orientation="Horizontal">
-                    <ProgressBar Style="{StaticResource MaterialDesignCircularProgressBar}"
-                                 Value="35"
-                                 IsIndeterminate="True"
-                                 Width="20"
-                                 Height="20"
-                                 Margin="0,0,12,0" />
-                    <TextBlock Text="Thinking..."
-                               FontSize="14" />
-                </StackPanel>
-            </materialDesign:Card>
-
-            <!-- Input Area -->
-            <materialDesign:Card Grid.Row="3" 
-                                 Background="{DynamicResource MaterialDesignPaper}"
-                                 UniformCornerRadius="8" 
-                                 Margin="8">
-                <Grid Margin="12,8">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-
-                    <TextBox Grid.Column="0"
-                             x:Name="MessageInput"
-                             IsEnabled="{Binding CanWriteMessage}"
-                             materialDesign:HintAssist.Hint="Type your message..."
-                             Text="{Binding CurrentMessage, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             materialDesign:TextFieldAssist.TextFieldCornerRadius="8"
-                             BorderBrush="{DynamicResource MaterialDesignDivider}"
-                             AcceptsReturn="True"
-                             TextWrapping="Wrap"
-                             VerticalScrollBarVisibility="Auto"
-                             MinHeight="40"
-                             MaxHeight="100"
-                             Margin="0,0,8,0">
-                        <TextBox.InputBindings>
-                            <KeyBinding Key="Enter" Command="{Binding SendMessageCommand}" />
-                        </TextBox.InputBindings>
-                    </TextBox>
-
-                    <Button Grid.Column="1"
-                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"
-                            Command="{Binding SendMessageCommand}"
-                            IsEnabled="{Binding CanSendMessage}"
-                            Width="40"
-                            Height="40"
-                            materialDesign:ButtonAssist.CornerRadius="20">
-                        <materialDesign:PackIcon Kind="Send" Width="20" Height="20" />
-                    </Button>
-                </Grid>
-            </materialDesign:Card>
-        </Grid>
+        </Border>
     </Grid>
 </Window>
