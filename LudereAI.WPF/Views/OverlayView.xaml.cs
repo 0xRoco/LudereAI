@@ -5,19 +5,19 @@ namespace LudereAI.WPF.Views;
 
 public partial class OverlayView : Window
 {
-    private readonly ChatViewModel _vm;
+    private readonly OverlayViewModel _vm;
     
-    public OverlayView(ChatViewModel vm)
+    public OverlayView(OverlayViewModel vm)
     {
         InitializeComponent();
         
         DataContext = _vm = vm;
-        
+
         vm.OnMessageUpdated += MessagesOnCollectionChanged;
 
         MessageInput.Focus();
     }
-    
+
     private void MessagesOnCollectionChanged()
     {
         ChatScroll.ScrollToEnd();

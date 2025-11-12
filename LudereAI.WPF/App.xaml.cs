@@ -138,6 +138,10 @@ public partial class App
         services.AddSingleton<IOverlayService, OverlayService>();
         services.AddSingleton<IAudioService, AudioService>();
 
+        // --- Session Services ---
+        services.AddSingleton<IChatSession, ChatSession>();
+        services.AddTransient<IChatCoordinator, ChatCoordinator>();
+
         // --- Operational Services ---
         services.AddTransient<IGameService, GameService>();
         services.AddTransient<IChatService, ChatService>();
@@ -157,6 +161,7 @@ public partial class App
         // --- ViewModels ---
         services.AddTransient<SetupViewModel>();
         services.AddTransient<ChatViewModel>();
+        services.AddTransient<OverlayViewModel>();
         services.AddTransient<SettingsViewModel>();
 
         // --- Views ---
@@ -188,6 +193,7 @@ public partial class App
 
     private static void App_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
     {
+        Clipboard.SetText(e.Exception.Message);
         Log.Error(e.Exception, "Unhandled application exception");
         var result = MessageBox.Show(
             $"An unhandled error occurred: {e.Exception.Message}\n\nDo you want to continue?",

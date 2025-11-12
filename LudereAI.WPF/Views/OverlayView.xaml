@@ -6,7 +6,7 @@
         xmlns:viewModels="clr-namespace:LudereAI.WPF.ViewModels"
         xmlns:converters1="clr-namespace:LudereAI.WPF.Converters"
         mc:Ignorable="d"
-        d:DataContext="{d:DesignInstance viewModels:ChatViewModel}"
+        d:DataContext="{d:DesignInstance viewModels:OverlayViewModel}"
         Background="Transparent"
         AllowsTransparency="True"
         WindowStyle="None"
@@ -144,7 +144,6 @@
 
                         <TextBox Grid.Column="0"
                                  x:Name="MessageInput"
-                                 IsEnabled="{Binding CanWriteMessage}"
                                  Style="{StaticResource TermInput}"
                                  MinHeight="40"
                                  MaxHeight="120"

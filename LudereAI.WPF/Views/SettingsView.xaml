@@ -17,21 +17,21 @@
         Width="900">
 
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Window.Resources>
 
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
         <Border Grid.Row="0" Style="{StaticResource TermHeaderStrip}">
             <DockPanel LastChildFill="False">
                 <TextBlock Text="LudereAI :: SETTINGS"
                            Style="{StaticResource TermHeaderText}"
-                           DockPanel.Dock="Left"/>
+                           DockPanel.Dock="Left" />
             </DockPanel>
         </Border>
 
@@ -43,150 +43,161 @@
                         <StackPanel Margin="12">
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="APPLICATION" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="APPLICATION" Style="{StaticResource TermSectionTitle}" />
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Language" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Language" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding Languages}"
                                                   SelectedItem="{Binding AppSettings.General.Language}"
                                                   Style="{StaticResource TermComboBox}"
-                                                  Width="220"/>
+                                                  Width="220" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Theme" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Theme" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding Themes}"
                                                   SelectedItem="{Binding AppSettings.General.Theme}"
                                                   Style="{StaticResource TermComboBox}"
-                                                  Width="220"/>
+                                                  Width="220" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="AI PROVIDER" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="AI PROVIDER" Style="{StaticResource TermSectionTitle}" />
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Provider" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Provider" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ComboBox Grid.Column="1"
                                                   ItemsSource="{Binding AIProviderTemplates}"
                                                   SelectedItem="{Binding SelectedAIProviderTemplate}"
                                                   DisplayMemberPath="ProviderType"
                                                   Style="{StaticResource TermComboBox}"
-                                                  Width="260"/>
+                                                  Width="260" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="API Key" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="API Key" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <PasswordBox Grid.Column="1"
                                                      Style="{StaticResource TermPasswordBox}"
-                                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.AIProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Model Name" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Model Name" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1"
                                                  Style="{StaticResource TermInput}"
-                                                 Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding AppSettings.General.AIProvider.Model, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,0"
                                           Visibility="{Binding AppSettings.General.AIProvider.IsCustom, Converter={StaticResource BooleanToVisibilityConverter}}">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Custom API URL" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Custom API URL" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1"
                                                  Style="{StaticResource TermInput}"
-                                                 Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
 
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="TEXT-TO-SPEECH" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="TEXT-TO-SPEECH" Style="{StaticResource TermSectionTitle}" />
 
                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                        <TextBlock Text="Enable TTS" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Enable TTS" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ToggleButton Margin="12,0,0,0"
                                                       Style="{StaticResource TermSwitchToggle}"
-                                                      IsChecked="{Binding AppSettings.General.TextToSpeechEnabled}"/>
+                                                      IsChecked="{Binding AppSettings.General.TextToSpeechEnabled}" />
                                     </StackPanel>
 
                                     <StackPanel Margin="0,8,0,0"
                                                 IsEnabled="{Binding AppSettings.General.TextToSpeechEnabled}">
                                         <Grid Margin="0,6,0,6">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="180"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="TTS Provider" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="TTS Provider" Style="{StaticResource TermLabel}"
+                                                       VerticalAlignment="Center" />
                                             <ComboBox Grid.Column="1"
                                                       ItemsSource="{Binding TTSProviderTemplates}"
                                                       SelectedItem="{Binding SelectedTtsProviderTemplate}"
                                                       DisplayMemberPath="ProviderType"
                                                       Style="{StaticResource TermComboBox}"
-                                                      Width="260"/>
+                                                      Width="260" />
                                         </Grid>
 
                                         <Grid Margin="0,6,0,6"
                                               Visibility="{Binding AppSettings.General.TTSProvider.RequiresApiKey, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="180"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="API Key" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="API Key" Style="{StaticResource TermLabel}"
+                                                       VerticalAlignment="Center" />
                                             <PasswordBox Grid.Column="1"
                                                          Style="{StaticResource TermPasswordBox}"
-                                                         materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}"/>
+                                                         materialDesign:PasswordBoxAssist.Password="{Binding AppSettings.General.TTSProvider.ApiKey, UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
 
                                         <Grid Margin="0,6,0,6"
                                               Visibility="{Binding AppSettings.General.TTSProvider.RequiresVoice, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="180"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Voice ID" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Voice ID" Style="{StaticResource TermLabel}"
+                                                       VerticalAlignment="Center" />
                                             <TextBox Grid.Column="1"
                                                      Style="{StaticResource TermInput}"
-                                                     Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     Text="{Binding AppSettings.General.TTSProvider.VoiceId, UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
 
                                         <Grid Margin="0,6,0,0"
                                               Visibility="{Binding AppSettings.General.TTSProvider.RequiresBaseUrl, Converter={StaticResource BooleanToVisibilityConverter}}">
                                             <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="180"/>
-                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="180" />
+                                                <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Endpoint URL" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                            <TextBlock Text="Endpoint URL" Style="{StaticResource TermLabel}"
+                                                       VerticalAlignment="Center" />
                                             <TextBox Grid.Column="1"
                                                      Style="{StaticResource TermInput}"
-                                                     Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}"/>
+                                                     Text="{Binding AppSettings.General.TTSProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}" />
                                         </Grid>
                                     </StackPanel>
                                 </StackPanel>
@@ -194,28 +205,30 @@
 
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="STARTUP OPTIONS" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="STARTUP OPTIONS" Style="{StaticResource TermSectionTitle}" />
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Auto-start with Windows" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Auto-start with Windows" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ToggleButton Grid.Column="1"
                                                       Style="{StaticResource TermSwitchToggle}"
-                                                      IsChecked="{Binding AppSettings.General.AutoStartWithWindows}"/>
+                                                      IsChecked="{Binding AppSettings.General.AutoStartWithWindows}" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Minimize to System Tray" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Minimize to System Tray" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ToggleButton Grid.Column="1"
                                                       Style="{StaticResource TermSwitchToggle}"
-                                                      IsChecked="{Binding AppSettings.General.MinimizeToTray}"/>
+                                                      IsChecked="{Binding AppSettings.General.MinimizeToTray}" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -228,40 +241,51 @@
                         <StackPanel Margin="12">
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="GAME DETECTION" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="GAME DETECTION" Style="{StaticResource TermSectionTitle}" />
+
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Auto-detect running games" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Auto-capture screenshots" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <ToggleButton Grid.Column="1"
                                                       Style="{StaticResource TermSwitchToggle}"
-                                                      IsChecked="{Binding AppSettings.GameIntegration.Enabled}"/>
+                                                      IsChecked="{Binding AppSettings.GameIntegration.AutoCaptureScreenshots}" />
                                     </Grid>
 
                                     <Grid Margin="0,6,0,6">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*"/>
-                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Auto-capture screenshots" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
-                                        <ToggleButton Grid.Column="1"
+                                        <TextBlock Text="Auto-detect running games" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="Disabled due to possible stability issues, manual scans are recommended."
+                                                   Foreground="{StaticResource Term.Brush.AccentError}"
+                                                   Style="{StaticResource TermHint}" />
+                                        <ToggleButton Grid.Column="2"
                                                       Style="{StaticResource TermSwitchToggle}"
-                                                      IsChecked="{Binding AppSettings.GameIntegration.AutoCaptureScreenshots}"/>
+                                                      IsEnabled="False"
+                                                      IsChecked="{Binding AppSettings.GameIntegration.Enabled}" />
                                     </Grid>
 
                                     <Grid Margin="0,10,0,0">
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="180"/>
-                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Scan interval (seconds)" Style="{StaticResource TermLabel}" VerticalAlignment="Center"/>
+                                        <TextBlock Text="Scan interval (seconds)" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Center" />
                                         <TextBox Grid.Column="1"
+                                                 IsEnabled="False"
                                                  Width="140"
                                                  Style="{StaticResource TermInput}"
-                                                 Text="{Binding AppSettings.GameIntegration.ScanInterval, UpdateSourceTrigger=PropertyChanged}"/>
+                                                 Text="{Binding AppSettings.GameIntegration.ScanInterval, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
                                 </StackPanel>
                             </Border>
@@ -274,26 +298,26 @@
                         <StackPanel Margin="12">
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="KEYBOARD SHORTCUTS" Style="{StaticResource TermSectionTitle}"/>
+                                    <TextBlock Text="KEYBOARD SHORTCUTS" Style="{StaticResource TermSectionTitle}" />
                                     <ItemsControl ItemsSource="{Binding KeyBindings}" Margin="0,8,0,8">
                                         <ItemsControl.ItemTemplate>
                                             <DataTemplate>
                                                 <Border Style="{StaticResource TermListItem}">
                                                     <Grid Margin="8">
                                                         <Grid.ColumnDefinitions>
-                                                            <ColumnDefinition Width="*"/>
-                                                            <ColumnDefinition Width="Auto"/>
-                                                            <ColumnDefinition Width="Auto"/>
+                                                            <ColumnDefinition Width="*" />
+                                                            <ColumnDefinition Width="Auto" />
+                                                            <ColumnDefinition Width="Auto" />
                                                         </Grid.ColumnDefinitions>
                                                         <Grid.RowDefinitions>
-                                                            <RowDefinition Height="Auto"/>
-                                                            <RowDefinition Height="Auto"/>
+                                                            <RowDefinition Height="Auto" />
+                                                            <RowDefinition Height="Auto" />
                                                         </Grid.RowDefinitions>
 
                                                         <TextBlock Grid.Column="0" Grid.Row="0"
                                                                    Text="{Binding Name}"
                                                                    FontSize="12"
-                                                                   FontWeight="Bold"/>
+                                                                   FontWeight="Bold" />
 
                                                         <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2"
                                                                 CornerRadius="6"
@@ -307,7 +331,7 @@
                                                                 VerticalAlignment="Center">
                                                             <TextBlock Text="{Binding KeyDisplay}"
                                                                        HorizontalAlignment="Center"
-                                                                       FontWeight="SemiBold"/>
+                                                                       FontWeight="SemiBold" />
                                                         </Border>
 
                                                         <Button Grid.Column="2" Grid.Row="0" Grid.RowSpan="2"
@@ -317,16 +341,22 @@
                                                                 Style="{StaticResource TermButtonOutline}"
                                                                 Margin="12,0,0,0"
                                                                 Width="110"
-                                                                VerticalAlignment="Center"/>
+                                                                VerticalAlignment="Center" />
                                                         <StackPanel Grid.Column="0" Grid.Row="1"
                                                                     Orientation="Horizontal" Margin="0,8,0,0">
                                                             <StackPanel Orientation="Horizontal" Margin="0,0,18,0">
-                                                                <TextBlock Text="Global" Style="{StaticResource TermLabel}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                                                <ToggleButton Style="{StaticResource TermSwitchToggle}" IsChecked="{Binding IsGlobal}"/>
+                                                                <TextBlock Text="Global"
+                                                                           Style="{StaticResource TermLabel}"
+                                                                           VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                <ToggleButton Style="{StaticResource TermSwitchToggle}"
+                                                                              IsChecked="{Binding IsGlobal}" />
                                                             </StackPanel>
                                                             <StackPanel Orientation="Horizontal">
-                                                                <TextBlock Text="Enabled" Style="{StaticResource TermLabel}" VerticalAlignment="Center" Margin="0,0,6,0"/>
-                                                                <ToggleButton Style="{StaticResource TermSwitchToggle}" IsChecked="{Binding IsEnabled}"/>
+                                                                <TextBlock Text="Enabled"
+                                                                           Style="{StaticResource TermLabel}"
+                                                                           VerticalAlignment="Center" Margin="0,0,6,0" />
+                                                                <ToggleButton Style="{StaticResource TermSwitchToggle}"
+                                                                              IsChecked="{Binding IsEnabled}" />
                                                             </StackPanel>
                                                         </StackPanel>
                                                     </Grid>
@@ -336,7 +366,7 @@
                                     </ItemsControl>
 
                                     <TextBlock Text="Note: Keybind changing is not yet implemented."
-                                               Style="{StaticResource TermHint}"/>
+                                               Style="{StaticResource TermHint}" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -348,13 +378,14 @@
                         <StackPanel Margin="12">
                             <Border Style="{StaticResource TermCard}">
                                 <StackPanel>
-                                    <TextBlock Text="ABOUT LUDEREAI" Style="{StaticResource TermSectionTitle}" HorizontalAlignment="Center"/>
+                                    <TextBlock Text="ABOUT LUDEREAI" Style="{StaticResource TermSectionTitle}"
+                                               HorizontalAlignment="Center" />
                                     <TextBlock Text="AI-Powered Context Aware Gaming Assistant"
                                                Style="{StaticResource TermLabel}"
-                                               HorizontalAlignment="Center" Margin="0,4,0,12"/>
+                                               HorizontalAlignment="Center" Margin="0,4,0,12" />
                                     <TextBlock Text="Made with ❤"
                                                Style="{StaticResource TermLabel}"
-                                               HorizontalAlignment="Center"/>
+                                               HorizontalAlignment="Center" />
                                 </StackPanel>
                             </Border>
                         </StackPanel>
@@ -372,12 +403,12 @@
                     Height="36"
                     Width="110"
                     Content="Cancel"
-                    Command="{Binding CancelCommand}"/>
+                    Command="{Binding CancelCommand}" />
             <Button Style="{StaticResource TermButtonPrimary}"
                     Height="36"
                     Width="110"
                     Content="Save"
-                    Command="{Binding SaveCommand}"/>
+                    Command="{Binding SaveCommand}" />
         </StackPanel>
     </Grid>
 </Window>

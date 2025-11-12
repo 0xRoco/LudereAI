@@ -96,20 +96,16 @@
                         <TextBlock Text="ACTIONS" Style="{DynamicResource TermSectionTitle}"/>
                         <Button Content="NEW CONVERSATION"
                                 Command="{Binding NewChatCommand}"
-                                Style="{DynamicResource TermButtonPrimary}" Margin="0,6,0,0" MinWidth="160"/>
-
-                        <Expander Header="SETTINGS" Style="{DynamicResource TermExpander}" Margin="0,10,0,0">
-                            <StackPanel>
-                                <Button Content="OVERLAY"
-                                        Command="{Binding ShowOverlayCommand}"
-                                        Style="{DynamicResource TermButtonOutline}"
-                                        Margin="0,6,0,0"/>
-                                <Button Content="SETTINGS"
-                                        Command="{Binding OpenSettingsCommand}"
-                                        Style="{DynamicResource TermButtonOutline}"
-                                        Margin="0,6,0,0"/>
-                            </StackPanel>
-                        </Expander>
+                                Style="{DynamicResource TermButtonPrimary}"
+                                Margin="0,6,0,0"/>
+                        <Button Content="OVERLAY"
+                                Command="{Binding ShowOverlayCommand}"
+                                Style="{DynamicResource TermButtonPrimary}"
+                                Margin="0,6,0,0"/>
+                        <Button Content="SETTINGS"
+                                Command="{Binding OpenSettingsCommand}"
+                                Style="{DynamicResource TermButtonPrimary}"
+                                Margin="0,6,0,0"/>
                     </StackPanel>
                 </Border>
             </Grid>
