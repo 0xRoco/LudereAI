@@ -129,7 +129,10 @@ public partial class App
             options.EnableSensitiveDataLogging();
         }, ServiceLifetime.Transient);
 
-        services.AddAutoMapper(typeof(CoreMappingProfile));
+        services.AddAutoMapper(expression =>
+        {
+                expression.AddMaps(typeof(App).Assembly);
+        });
         
         // --- Global State / UI Services ---
         services.AddSingleton<INavigationService, NavigationService>();
