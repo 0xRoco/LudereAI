@@ -5,7 +5,6 @@ using LudereAI.Core.Entities;
 using LudereAI.Core.Interfaces.Services;
 using LudereAI.Services;
 using LudereAI.Shared.Enums;
-using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
 using LudereAI.WPF.Views;
 
@@ -52,17 +51,17 @@ public partial class SetupViewModel : ObservableObject
     partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
     {
         if (value == null) return;
-        
-        var apiKey = AppSettings.General.AIProvider.ApiKey;
-        
+
+        var currentProvider = AppSettings.General.AIProvider;
+
         AppSettings.General.AIProvider = new AIProvider
         {
             ProviderType = value.ProviderType,
-            BaseUrl = value.BaseUrl,
-            Model = value.Model,
-            ApiKey = apiKey
+            BaseUrl = string.IsNullOrWhiteSpace(currentProvider.BaseUrl) ? value.BaseUrl : currentProvider.BaseUrl,
+            Model = string.IsNullOrWhiteSpace(currentProvider.Model) ? value.Model : currentProvider.Model,
+            ApiKey = currentProvider.ApiKey
         };
-        
+
         OnPropertyChanged(nameof(AppSettings));
     }
     

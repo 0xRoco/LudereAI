@@ -1,18 +1,12 @@
 ﻿using System.Collections.ObjectModel;
-using System.Windows.Input;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using LudereAI.Core.Entities;
 using LudereAI.Core.Interfaces.Services;
 using LudereAI.Services;
-using LudereAI.Shared.Enums;
-using LudereAI.Shared.Models;
 using LudereAI.WPF.Interfaces;
-using LudereAI.WPF.Models;
-using LudereAI.WPF.Services;
 using LudereAI.WPF.Views;
 using Microsoft.Extensions.Logging;
-using KeyBinding = LudereAI.Shared.Models.KeyBinding;
 
 namespace LudereAI.WPF.ViewModels;
 
@@ -31,9 +25,8 @@ public partial class SettingsViewModel : ObservableObject
     
     [ObservableProperty]
     private TTSProvider? _selectedTtsProviderTemplate;
-    
-    [ObservableProperty]
-    private ObservableCollection<KeyBindingItemViewModel> _keyBindings = new();
+
+    [ObservableProperty] private ObservableCollection<KeyBindingItemViewModel> _keyBindings = [];
     
     public ObservableCollection<AIProvider> AIProviderTemplates { get; } =
         new(AIProviderFactory.GetAvailableProviders());
@@ -41,9 +34,9 @@ public partial class SettingsViewModel : ObservableObject
     public ObservableCollection<TTSProvider> TTSProviderTemplates { get; } =
         new(TTSProviderFactory.GetAvailableProviders());
 
-    
-    public List<string> Themes { get; } = new() { "Light", "Dark" , "System" };
-    public List<string> Languages { get; } = new() { "English" };
+
+    public List<string> Themes { get; } = ["Light", "Dark", "System"];
+    public List<string> Languages { get; } = ["English"];
     
     public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
     {
@@ -99,16 +92,16 @@ public partial class SettingsViewModel : ObservableObject
     {
         if (value == null) return;
 
-        var apiKey = AppSettings.General.AIProvider.ApiKey;
-        
+        var currentProvider = AppSettings.General.AIProvider;
+
         AppSettings.General.AIProvider = new AIProvider
         {
             ProviderType = value.ProviderType,
-            BaseUrl = value.BaseUrl,
-            Model = value.Model,
-            ApiKey = apiKey
+            BaseUrl = string.IsNullOrWhiteSpace(currentProvider.BaseUrl) ? value.BaseUrl : currentProvider.BaseUrl,
+            Model = string.IsNullOrWhiteSpace(currentProvider.Model) ? value.Model : currentProvider.Model,
+            ApiKey = currentProvider.ApiKey
         };
-        
+
         OnPropertyChanged(nameof(AppSettings));
     }
     
