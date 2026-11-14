@@ -14,7 +14,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper" Version="16.1.1" />
+      <PackageReference Include="AutoMapper" Version="17.0.0" />
       <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
       <PackageReference Include="MaterialDesignColors" Version="5.2.1" />
       <PackageReference Include="MaterialDesignThemes" Version="5.2.1" />
@@ -26,6 +26,7 @@
       <PackageReference Include="Serilog" Version="4.3.0" />
       <PackageReference Include="Serilog.Extensions" Version="8.1.0" />
       <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+      <PackageReference Include="SQLitePCLRaw.lib.e_sqlite3" Version="3.53.3" />
       <PackageReference Include="System.Drawing.Common" Version="9.0.6" />
       <PackageReference Include="System.Speech" Version="9.0.7" />
     </ItemGroup>

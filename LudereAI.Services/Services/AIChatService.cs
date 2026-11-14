@@ -1,11 +1,13 @@
-﻿using LudereAI.Core.Entities;
+using LudereAI.Core.Entities;
 using LudereAI.Core.Entities.Chat;
 using LudereAI.Core.Interfaces;
 using LudereAI.Core.Interfaces.Services;
 using LudereAI.Shared;
 using LudereAI.Shared.DTOs;
 using Microsoft.Extensions.Logging;
+using OpenAI;
 using OpenAI.Chat;
+using System.ClientModel;
 
 #pragma warning disable OPENAI001
 
@@ -18,6 +20,45 @@ public class AIChatService(
     IMessageHandler messageHandler)
     : IAIChatService
 {
+    public async Task<Result<string, IAIChatService.ConnectionTestResult>> TestConnection(AIProvider provider)
+    {
+        try
+        {
+            ArgumentNullException.ThrowIfNull(provider);
+
+            if (string.IsNullOrWhiteSpace(provider.BaseUrl))
+                return Result<string, IAIChatService.ConnectionTestResult>.Error(IAIChatService.ConnectionTestResult.Error, "Base URL is required.");
+
+            if (string.IsNullOrWhiteSpace(provider.Model))
+                return Result<string, IAIChatService.ConnectionTestResult>.Error(IAIChatService.ConnectionTestResult.Error, "Model is required.");
+
+            var client = new OpenAIClient(new ApiKeyCredential(provider.ApiKey), new OpenAIClientOptions
+            {
+                Endpoint = new Uri(provider.BaseUrl)
+            });
+
+            var chat = client.GetChatClient(provider.Model);
+            var response = await chat.CompleteChatAsync([
+                new SystemChatMessage("You are a health check endpoint."),
+                new UserChatMessage("reply with pong")
+            ], new ChatCompletionOptions
+            {
+                MaxOutputTokenCount = 16,
+                Temperature = 0
+            });
+
+            if (response.Value.Content.Count == 0)
+                return Result<string, IAIChatService.ConnectionTestResult>.Error(IAIChatService.ConnectionTestResult.Error, "Provider responded with empty content.");
+
+            return Result<string, IAIChatService.ConnectionTestResult>.Success($"Connected. Provider responded: {response.Value.Content[0].Text.Trim()}");
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "AI provider connection test failed");
+            return Result<string, IAIChatService.ConnectionTestResult>.Error(IAIChatService.ConnectionTestResult.Error, ex.Message);
+        }
+    }
+
     public async Task<AIResponse> SendMessage(Conversation conversation, AssistantRequest request)
     {
         try

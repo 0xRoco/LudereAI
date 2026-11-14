@@ -13,6 +13,7 @@ namespace LudereAI.WPF.ViewModels;
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly ILogger<SettingsViewModel> _logger;
+    private readonly IAIChatService _aiChatService;
     private readonly ISettingsService _settingsService;
     private readonly IInputService _inputService;
     private readonly INavigationService _navigationService;
@@ -26,6 +27,15 @@ public partial class SettingsViewModel : ObservableObject
     [ObservableProperty]
     private TTSProvider? _selectedTtsProviderTemplate;
 
+    [ObservableProperty]
+    private bool _isTestingAIProvider;
+
+    [ObservableProperty]
+    private string _aiProviderTestMessage = string.Empty;
+
+    [ObservableProperty]
+    private bool _aiProviderTestSucceeded;
+
     [ObservableProperty] private ObservableCollection<KeyBindingItemViewModel> _keyBindings = [];
     
     public ObservableCollection<AIProvider> AIProviderTemplates { get; } =
@@ -38,9 +48,10 @@ public partial class SettingsViewModel : ObservableObject
     public List<string> Themes { get; } = ["Light", "Dark", "System"];
     public List<string> Languages { get; } = ["English"];
     
-    public SettingsViewModel(ILogger<SettingsViewModel> logger, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
+    public SettingsViewModel(ILogger<SettingsViewModel> logger, IAIChatService aiChatService, ISettingsService settingsService, IInputService inputService, INavigationService navigationService)
     {
         _logger = logger;
+        _aiChatService = aiChatService;
         _settingsService = settingsService;
         _inputService = inputService;
         _navigationService = navigationService;
@@ -60,6 +71,46 @@ public partial class SettingsViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task TestAIProviderConnection()
+    {
+        if (IsTestingAIProvider) return;
+        if (AppSettings?.General?.AIProvider == null) return;
+
+        if (string.IsNullOrWhiteSpace(AppSettings.General.AIProvider.ApiKey)
+            || string.IsNullOrWhiteSpace(AppSettings.General.AIProvider.BaseUrl)
+            || string.IsNullOrWhiteSpace(AppSettings.General.AIProvider.Model))
+        {
+            AiProviderTestSucceeded = false;
+            AiProviderTestMessage = "API key, base URL, and model are required.";
+            return;
+        }
+
+        IsTestingAIProvider = true;
+        AiProviderTestMessage = "Testing provider connection...";
+        AiProviderTestSucceeded = false;
+
+        try
+        {
+            var result = await _aiChatService.TestConnection(AppSettings.General.AIProvider);
+
+            AiProviderTestSucceeded = result.IsSuccessful;
+            AiProviderTestMessage = string.IsNullOrWhiteSpace(result.Message)
+                ? (result.IsSuccessful ? "Connection succeeded." : "Connection failed.")
+                : result.Message;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "AI provider connection test failed unexpectedly");
+            AiProviderTestSucceeded = false;
+            AiProviderTestMessage = ex.Message;
+        }
+        finally
+        {
+            IsTestingAIProvider = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task Cancel()
     {
         await Load();
@@ -76,6 +127,9 @@ public partial class SettingsViewModel : ObservableObject
         SelectedTtsProviderTemplate = TTSProviderTemplates.FirstOrDefault(p => p.ProviderType == AppSettings.General.TTSProvider?.ProviderType) 
                              ?? TTSProviderTemplates.First();
         LoadKeyBindings();
+        IsTestingAIProvider = false;
+        AiProviderTestMessage = string.Empty;
+        AiProviderTestSucceeded = false;
     }
     
     private void LoadKeyBindings()
@@ -88,10 +142,8 @@ public partial class SettingsViewModel : ObservableObject
         }
     }
 
-    partial void OnSelectedAIProviderTemplateChanged(AIProvider? value)
+    partial void OnSelectedAIProviderTemplateChanged(AIProvider value)
     {
-        if (value == null) return;
-
         var currentProvider = AppSettings.General.AIProvider;
 
         AppSettings.General.AIProvider = new AIProvider
@@ -103,8 +155,10 @@ public partial class SettingsViewModel : ObservableObject
         };
 
         OnPropertyChanged(nameof(AppSettings));
+        AiProviderTestMessage = string.Empty;
+        AiProviderTestSucceeded = false;
     }
-    
+
     partial void OnSelectedTtsProviderTemplateChanged(TTSProvider? value)
     {
         if (value == null) return;

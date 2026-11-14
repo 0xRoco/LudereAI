@@ -129,6 +129,53 @@
                                                  Style="{StaticResource TermInput}"
                                                  Text="{Binding AppSettings.General.AIProvider.BaseUrl, UpdateSourceTrigger=PropertyChanged}" />
                                     </Grid>
+
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="180" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="Connection Test" Style="{StaticResource TermLabel}"
+                                                   VerticalAlignment="Top" />
+
+                                        <StackPanel Grid.Column="1">
+                                            <Button Content="Test Connection"
+                                                    Width="150"
+                                                    HorizontalAlignment="Left"
+                                                    Command="{Binding TestAIProviderConnectionCommand}">
+                                                <Button.Style>
+                                                    <Style TargetType="Button"
+                                                           BasedOn="{StaticResource TermButtonOutline}">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsTestingAIProvider}"
+                                                                         Value="True">
+                                                                <Setter Property="IsEnabled" Value="False" />
+                                                                <Setter Property="Content" Value="Testing..." />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Button.Style>
+                                            </Button>
+
+                                            <TextBlock Margin="0,8,0,0"
+                                                       Text="{Binding AiProviderTestMessage}">
+                                                <TextBlock.Style>
+                                                    <Style TargetType="TextBlock" BasedOn="{StaticResource TermHint}">
+                                                        <Setter Property="Foreground"
+                                                                Value="{StaticResource Term.Brush.AccentError}" />
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding AiProviderTestSucceeded}"
+                                                                         Value="True">
+                                                                <Setter Property="Foreground"
+                                                                        Value="{StaticResource Term.Brush.AccentActive}" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </TextBlock.Style>
+                                            </TextBlock>
+                                        </StackPanel>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
 
